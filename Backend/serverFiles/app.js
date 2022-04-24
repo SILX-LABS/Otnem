@@ -9,7 +9,7 @@ const bodyParser = require('body-parser')
 const passport = require('passport')
 const session = require('express-session')
 
-app.use(express.static('./public'))
+app.use(express.static('../MentoNew'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(session({

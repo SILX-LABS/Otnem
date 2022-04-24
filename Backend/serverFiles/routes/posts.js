@@ -1,10 +1,11 @@
 const express = require('express')
-const {uploadPostPage, uploadFile, postPreviewPage, postComments, deleteComment, searchPage, followUser, test, assignNotif, unfollowUser, admin, registerPost, logout, changeCredentials} = require("../controllers/posts.js")
+const {uploadPostPage, uploadFile, postPreviewPage, postComments, deleteComment, searchPage, followUser, test, assignNotif, unfollowUser, admin, registerPost, logout, changeCredentials, mainPage} = require("../controllers/posts.js")
 const mutler = require('multer')
 const router = express.Router()
 const upload = mutler()
 const passport = require('passport')
 
+router.get('/',mainPage)
 router.get('/post',uploadPostPage)
 router.get('/postPreview',postPreviewPage)
 router.get('/search',searchPage)

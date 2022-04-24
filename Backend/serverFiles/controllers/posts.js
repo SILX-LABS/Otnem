@@ -15,7 +15,6 @@ admin.initializeApp({
 const firebase = admin.firestore()
 const userDB = firebase.collection('userData')
 const {init} = require('../passportConfig')
-const { response } = require('express')
 init(passport,
     async email=>{
         let snapshot = await userDB.get()
@@ -34,6 +33,14 @@ cloudinary.config({
     api_key: process.env.API_KEY, 
     api_secret: process.env.API_SECRET
 })
+const mainPage = async(req,res)=>{
+    let posts = await getAllPosts()
+    const userObj = await getUser(req)
+    posts = posts.map(post=>{
+        return {...post,...userObj}
+    })
+    res.render('index',{posts:posts})
+}
 const searchPage = async(req,res)=>{
     try{
         let query = req.query
@@ -330,6 +337,25 @@ async function getUserName(req){
     (userInfo)?userName=userInfo.name:userName='test1'
     return userName
 }
+async function getUser(req,showPassword){
+    try{
+        let userInfo = await req.user
+        let userName
+        (userInfo)?userName=userInfo.name:userName='Fuck user'
+        const {email,name,image,password} =(await userDB.doc(userName).get()).data()
+        let userObject = {
+            "userName":name,
+            "userEmail":email,
+            "profilePic":image
+        }
+        if(showPassword)
+            userObject["password"] = password
+        return userObject
+    }
+    catch(err){
+        console.log(err)
+    }
+}
 async function getAllPosts(){
     let userSnapshot = await userDB.get()
     let posts = []
@@ -346,4 +372,4 @@ async function getAllPosts(){
     }
     return posts
 }
-module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,logout,changeCredentials}
+module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,logout,changeCredentials,mainPage}
