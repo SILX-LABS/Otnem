@@ -1,0 +1,63 @@
+<h1>Create Post</h1>
+<form action="/upload" method="post" enctype="multipart/form-data">
+    <div class="inp-c-post">
+        <label for="title-inp-post">Title:</label>
+        <input type="text" name="title" maxlength="50" class="post-form-inp-post"id="title-inp-post" required>
+    </div>
+    <div class="inp-c-post" style="align-items: flex-start;">
+        <label for="disc-inp-post">Discription:</label>
+        <textarea name="disc" class="post-form-inp-post"id="disc-inp-post" maxlength="500" rows="10" style="color:white;resize: none;"></textarea>
+    </div>
+    <div class="inp-c-post" style="align-items: flex-start;">
+        <label for="tag-inp-post">Tags:</label>
+        <input type="text" name="tag" maxlength="50" class="post-form-inp-post"id="tag-inp-post" required>
+    </div>
+    <h1 id="tag-txt-post"></h1>
+    <input type="file" name="upload_file" accept="Image/*" id="hidden-inp-file-post" title="" accept="" required >
+    <div id="ch-file-c-post"class="inp-file-trigger-ch-img"><div id="ch-file-btn-post" >Add image &#9882</div></div>
+    <button type="submit" onclick="this.disabled = true;this.innerText = `Please Wait`;this.style.cursor = 'progress'" class="post-btn" id="post-btn">Submit</button>
+</form>
+<script>
+    $('#post-btn').prop('disabled', true)
+    $('#post-btn').click(async()=>{
+        let formData = new FormData()
+        formData.append("upload_file",document.querySelector('#hidden-inp-file-post').files[0],"upload_file")
+        formData.append("title",document.querySelector('#title-inp-post').value)
+        formData.append("disc",document.querySelector('#disc-inp-post').value)
+        formData.append("tags",(document.querySelector('#tag-inp-post').value).toLowerCase())
+        let res = await axios.post('/upload',formData)
+        location.href = `/postPreview?postNum=${res.data.num}&&user=${res.data.user}`
+    })
+    $('#tag-inp-post').keyup(async(e)=>{
+        let tagVal = $('#tag-inp-post').val()
+        if(e.keyCode == 32 || e.keyCode == 8 && $('#tag-inp-post').val().length < 50){
+            await $('#tag-txt-post').text(` ${tagVal}`)
+        }
+    })
+    $('.inp-file-trigger-ch-img').click(()=>{
+        $('#hidden-inp-file-post').trigger('click')
+    })
+    $('#hidden-inp-file-post').change(function(){
+        let file = this.files[0]
+        $('#ch-file-btn-post').replaceWith(function(){
+            if (file)
+            return `<img src = ${URL.createObjectURL(file)} id="ch-file-btn-post"/>`
+            return `<div id="ch-file-btn-post">Add image &#9882</div>`
+        })
+        $('#ch-file-btn-post').attr('width','500')
+        $('#ch-file-btn-post').attr('height','500')
+        $('#ch-file-c-post').attr('border-radius','0em !important')
+        $('#ch-file-c-post').attr('border','0px solid white')
+        $('#ch-file-btn-post').css('padding','0')
+        if(file||$('#title-inp-post').val()||$('#disc-inp-post').val())$('#post-btn').prop('disabled', false)
+        if(!file||!$('#title-inp-post').val()||!$('#disc-inp-post').val())$('#post-btn').prop('disabled', true)
+    })
+    $('#title-inp-post').keyup(()=>{
+        if($('#ch-file-btn-post').get(0).tagName != 'DIV'||$('#title-inp-post').val()||$('#disc-inp-post').val())$('#post-btn').prop('disabled', false)
+        if($('#ch-file-btn-post').get(0).tagName == 'DIV'||!$('#title-inp-post').val()||!$('#disc-inp-post').val())$('#post-btn').prop('disabled', true)    
+    })
+    $('#disc-inp-post').keyup(()=>{
+        if($('#ch-file-btn-post').get(0).tagName != 'DIV'||$('#title-inp-post').val()||$('#disc-inp-post').val())$('#post-btn').prop('disabled', false)
+        if($('#ch-file-btn-post').get(0).tagName == 'DIV'||!$('#title-inp-post').val()||!$('#disc-inp-post').val())$('#post-btn').prop('disabled', true)    
+    })
+</script>

@@ -1,0 +1,70 @@
+<main>
+    <div class="post-c-prev">
+        <h1 class="title-prev">{{title}}</h1>
+        <h6 class="disc-prev">{{disc}}</h6>
+            <div style="display: flex;flex-direction:row;gap:0.5vw">
+                {{#each tags}}
+                        <a href="/search?type=tag&&element={{this}}" style="font-size: 0.6em;">#{{this}}</a>
+                {{/each}}
+            </div>
+        <img class="postimg-prev" src="{{imgURL}}" alt="Image Not Available">
+        <form class="com-c-prev">
+            <form class="add-com-c-prev">
+                <textarea name="comment" placeholder="Add Your Comment" id="com-inp-prev" required postnum="{{postNum}}"postUser="{{postUser}}" cols="30" rows="3" style="resize: none;"></textarea>
+                <button id="com-sub-prev" onclick="this.disabled = true;">Submit</button>
+            </form>
+            {{#if isComment}}
+                <h1>Comments</h1>
+                {{#each commentsArray}}
+                    {{#with this}}
+                        <div class="comment-c-prev"><h3>{{user}}</h3>
+                        <h6>{{content}}</h6></div>
+                        <button class="comment-del-btn-prev" commentNum="{{commentNum}}" postnum="{{postNum}}">delete comment</button>
+                    {{/with}}
+                {{/each}}
+            {{/if}}
+            {{#unless isComment}}
+                <div>No Comments</div>
+            {{/unless}}
+        </form>
+    </div>
+    <br><br><br><br><br><br><br><br><br>
+</main>
+<script>
+    addEventListener('load',async()=>{
+        let sw = await navigator.serviceWorker.register('./sw.js')
+    })
+    async function notify(){
+        let sw = await navigator.serviceWorker.ready
+        let push = await sw.pushManager.subscribe({
+            userVisibleOnly:true,
+            applicationServerKey:'BEPh6PvlCqQCb19uCpsuf0j8g2xqvzuIKmJbW8MdszGKkinfyorfldO0yR-uWO8olU5bk_09xKDvKiPBoszhHyY'
+        })
+        await axios.post('/asignNotification',{push:JSON.stringify(push)})
+    }
+    notify()
+    $('#com-sub-prev').click(async()=>{
+        let comment = $('#com-inp-prev').val()
+        let postNum = $('#com-inp-prev').attr('postnum')
+        let postUser = $('#com-inp-prev').attr('postUser')
+        await axios.post('/comment',{
+            comment:comment,
+            postNum:postNum,
+            postUser:postUser
+        })
+        location.reload()
+    })
+    $('.comment-del-btn-prev').click(async function(){
+        let commentNum = $(this).attr('commentNum')
+        let postNum = $('#com-inp-prev').attr('postnum')
+        let postUser = $('#com-inp-prev').attr('postUser')
+        await axios.delete('/deleteComment',{
+            data:{
+                postNum:postNum,
+                commentNum:commentNum,
+                postUser:postUser
+            }
+        })
+        location.reload()
+    })
+</script>
