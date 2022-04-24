@@ -1,0 +1,78 @@
+
+
+<!DOCTYPE html>
+<html lang="en ">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="./css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>Sign in | Mento - Share your project with the world</title>
+</head>
+<body>
+  <div class="split-screen">
+    <div class="left">
+    <video id="background-video" autoplay loop muted >
+  <source src="./assets/videos/video.mp4" type="video/mp4">
+</video>
+        <section class="copy">
+          <h1>Explore Amazing projects</h1>
+          <p>Share your work with the wolrd and get paid. </p>
+
+        </section>
+    </div>
+    <div class="right">
+         <form action=""  method="post">
+           <div class="main-mockup ">        
+           </div>
+    
+           <section class="copy">
+             <h2>Sign in</h2>
+           
+           </section>
+     
+           <div class="input-container email">
+              <label for="email">Email</label>
+              <input id="email"  placeholder="Type your name or Email "  required class="login_signup_textfield" name="email" id="un" type="text">
+           </div>
+           <div class="input-container password">
+              <label for="password">Password</label>
+              <input id="password" placeholder="Must be at least 6 characters"   class="login_signup_textfield" name="password" id="pd" type="password">
+           </div>
+           <div class="input-container cta">
+          
+           </div>
+           <div class="login-container">
+               <p>Be a part of our family |  <a href="signup.html">
+                 <strong>Sign Up</strong>
+               </a></p>
+             </div>
+            <a href="index.html">
+                <button class="signup-btn" type="submit" name="submit" id="loginFunCode">
+                    Sign In
+                </button>
+            </a>
+            <p><a href="forgot-password.html" style="margin-bottom: 15px; display: block; text-align: left;">Forgot Password?</a></p>
+
+
+            
+            <section class="copy legal" style="text-align:center">
+              <p><span class="small">By continuing, you agree to accept our <br><a href="#">Privacy Policy</a> &amp; <a href="#">Terms of Service</a></span></p>
+            </section>
+         </form>
+    </div>
+  </div>
+
+  <script src="js/jquery.min.js"></script>
+    <script>
+        $(document).ready(function (c) {
+            $('.alert-close').on('click', function (c) {
+                $('.main-mockup').fadeOut('slow', function (c) {
+                    $('.main-mockup').remove();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
