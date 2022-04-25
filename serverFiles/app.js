@@ -8,8 +8,9 @@ const PORT = process.env.PORT
 const bodyParser = require('body-parser')
 const passport = require('passport')
 const session = require('express-session')
+const flash = require('express-flash')
 
-app.use(express.static('../MentoNew'))
+app.use(express.static('./MentoNew'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(session({
@@ -17,6 +18,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }))
+app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
 app.engine('hbs', exphbs.engine({ defaultLayout: 'indexLayout', extname: '.hbs' }));

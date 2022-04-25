@@ -35,11 +35,52 @@ cloudinary.config({
 })
 const mainPage = async(req,res)=>{
     let posts = await getAllPosts()
-    const userObj = await getUser(req)
-    posts = posts.map(post=>{
-        return {...post,...userObj}
+    let userName = await getUserName(req)
+    let loggedIn = false
+    let userObj = {
+        'userName':'',
+        'userEmail':'',
+        'profilePic':'',
+    }
+    if(userName){
+        userObj = await getUser(userName)
+        loggedIn = true
+    }
+    let finalArray = []
+    for(let i = 0;i<posts.length;i++){
+        let post = posts[i]
+        let userObj = await getUser(post.user)
+        if(post.user != "test" && post.user != "test1")
+            finalArray.push({...post,...userObj})
+    }
+    res.render('index',{posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,email:userObj.userEmail,userName:userObj.userName})
+}
+const login = async(req,res)=>{
+    res.render('login',{layout:'loginLayout'})
+}
+const register = async(req,res)=>{
+    res.render('login',{layout:'registerLayout'})
+}
+const profile = async(req,res)=>{
+    let userName = await getUserName(req)
+    let userObj = await getUser(userName)
+    let snapshot = await userDB.doc(userName).collection('followers').get()
+    let followers = snapshot.docs.map(doc=>{
+        return doc
     })
-    res.render('index',{posts:posts})
+    snapshot = await userDB.doc(userName).collection('following').get()
+    let following = snapshot.docs.map(doc=>{
+        return doc
+    })
+    userObj['followers'] = followers.length
+    userObj['following'] = following.length
+    let posts = await getAllUserPosts(userName)
+    posts.forEach(post=>{
+        post['name'] = userName
+        post['profilePic'] = userObj.profilePic
+    })
+    userObj['posts'] = posts
+    res.render('profile',{layout:'profileLayout',userObj:userObj})
 }
 const searchPage = async(req,res)=>{
     try{
@@ -128,18 +169,24 @@ const uploadFile = async(req,res)=>{
                 if (err) return res.send(err)
                 let imgURL = response.secure_url
                 await userDB.doc(`${userName}`).set({exists:true},{merge:true})
+                let today = new Date();
+                let dd = String(today.getDate()).padStart(2, '0')
+                let mm = String(today.getMonth() + 1).padStart(2, '0')
+                let yyyy = today.getFullYear()
+
+                today = mm + '/' + dd + '/' + yyyy
                 await userDB.doc(`${userName}`).collection(`posts`).doc(imageName).set({
                     title:title,
                     disc:disc,
                     public_id:response.public_id,
                     img:imgURL,
-                    tags:tags.split(' ').filter(Boolean)
+                    tags:tags.split(' ').filter(Boolean),
+                    date:today
                 },{merge:true})
                 let followersSnap = await userDB.doc(userName).collection('followers').get()
                 let followers = followersSnap.docs.map(doc=>{
                     return doc.id
                 })
-                console.log(followers)
                 followers.forEach(async follower=>{
                     await notify(follower,`${userName} uploaded a post`,`Check out ${userName}'s post`)
                 })
@@ -247,7 +294,7 @@ const registerPost= async(req,res)=>{
             image:'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='
         }
         await userDB.doc(body.name).set(userInfoObj,{merge:true})
-        res.send("Registered")
+        res.redirect('login')
     }
     catch(err){
         console.log(err)
@@ -334,14 +381,11 @@ async function checkElegible(user,checkUser){
 async function getUserName(req){
     let userInfo = await req.user
     let userName
-    (userInfo)?userName=userInfo.name:userName='test1'
+    (userInfo)?userName=userInfo.name:userName=undefined
     return userName
 }
-async function getUser(req,showPassword){
+async function getUser(userName,showPassword){
     try{
-        let userInfo = await req.user
-        let userName
-        (userInfo)?userName=userInfo.name:userName='Fuck user'
         const {email,name,image,password} =(await userDB.doc(userName).get()).data()
         let userObject = {
             "userName":name,
@@ -372,4 +416,13 @@ async function getAllPosts(){
     }
     return posts
 }
-module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,logout,changeCredentials,mainPage}
+async function getAllUserPosts(userName){
+    let snapshot = await userDB.doc(userName).collection('posts').get()
+    let posts = snapshot.docs.map(doc=>{
+        let data = doc.data()
+        data['id'] = doc.id
+        return data
+    })
+    return posts
+}
+module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,logout,changeCredentials,mainPage,login,register,profile}
