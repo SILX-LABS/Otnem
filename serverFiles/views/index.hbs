@@ -1,0 +1,74 @@
+{{#if loggedIn}}
+{{> navBar profilePic = profilePic}}
+{{/if}}
+{{#unless loggedIn}}
+{{> navBar profilePic = 'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='}}
+{{/unless}}
+<!-- === Items Links Selector Start === -->
+<div class="container-fluid">
+      <div class="Selector_Links">
+        <div class="SC_Item active" id="SC_IT" data-type="all">
+          <p>All</p>
+        </div>
+        <div class="SC_Item" id="SC_IT" data-type="art">
+          <p>Art</p>
+        </div>
+        <div class="SC_Item" id="SC_IT" data-type="tech">
+          <p>Tech</p>
+        </div>
+        <div class="SC_Item" id="SC_IT" data-type="uiux">
+          <p>UI/UX</p>
+        </div>
+        <div class="SC_Item" id="SC_IT" data-type="amvs">
+          <p>Amvs</p>
+        </div>
+        <div class="SC_Item" id="SC_IT" data-type="photoshop">
+          <p>Photoshop</p>
+        </div>
+        <div class="SC_Item" id="SC_IT" data-type="games">
+          <p>Games</p>
+        </div>
+        <div class="SC_Item" id="SC_IT" data-type="other">
+          <p>Other</p>
+        </div>
+      </div>
+</div>
+<!-- === Items Links Selector End === -->
+<div class="posts_cards">
+  <div class="container-fluid">
+    <div class="grid_posts">
+      {{#each posts}}
+        <div class="post_box" data-type="art">
+          <div class="index_image">
+              <img src="{{img}}" alt="Image Not Available">
+          </div>
+          <div class="top">
+              <div class="items">
+                <div class="item comment"> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">  <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg> </div>
+                <div class="item star"><i class="fa-solid fa-star"></i></div>
+              </div>
+          </div>
+          <div class="bottom">
+            <div class="UserDetails">
+              <div class="UserImage">
+                <img src="{{profilePic}}" alt="User Profile Image">
+              </div>
+              <div class="name_time">
+                <div class="name">
+                  <h6>{{userName}}</h6>
+                  {{#if verified}}
+                    <i class="fa-solid fa-circle-check"></i>
+                  {{/if}}
+                </div>
+                <h6>{{date}}</h6>
+              </div>
+            </div>
+              <div class="post_name">
+                    <h5>{{title}}</h5>
+              </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>

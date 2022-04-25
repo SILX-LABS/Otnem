@@ -1,0 +1,19 @@
+<main style=>
+    {{#unless success}}
+        <h1 style="background:rgba(189, 0, 0, 0.742);padding:0.2em 0.5em;margin-bottom: 1em;border-radius: 0.3em;opacity:0.8">{{msg}}</h1>
+    {{/unless}}
+    {{#each data}}
+        {{#with this}}
+            <a href="/postPreview?user={{user}}&&postNum={{postName}}">
+                <div class="res-c-search">
+                    <img src="{{img}}" alt="Image not available">
+                    <h6>{{title}}</h6>
+                    <h6>{{disc}}</h6>
+                </div>
+            </a>
+        {{/with}}
+    {{/each}}
+    <button onclick='notify()'>LOL</button>
+    <script>
+    </script>
+</main>
