@@ -50,9 +50,7 @@
             <a href="#" class="au">
               <li>Support</li>
             </a>
-            <a href="#" class="au">
-              <li>How it Works</li>
-            </a>
+         
           </ul>
         </div>
         <!-- Navbar Search Bar -->
@@ -71,14 +69,18 @@
           <a href="#" class="au">
             <i class="fa-solid fa-magnifying-glass" id="Search"></i>
           </a>
-          <a href="#" class="au">
+          <a href="./notification.html" class="au">
             <i class="fa-solid fa-bell" id="Notification"></i>
           </a>
+          
           <div class="profile">
             <a href="profile.html">
               <img src="assets/img/avatar.jpg" alt="Profile Image">
             </a>
           </div>
+          <a href="login.html" class="au">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </a>
         </div>
         <!-- Navbar Post Button -->
         <div class="navbar_Post_Link">
@@ -132,6 +134,7 @@
                    <div>
                      <h3>Troy</h3>
                      <p>12 Followers | 12 Following</p>
+                     
                    </div>
                 </div>
               </div>
@@ -146,7 +149,7 @@
      
         <div class="grid_posts">  
       
-          <div class="post_box" data-type="art">
+          <div class="post_box" id="post_box" data-type="art">
             <div class="index_image">
               <img src="assets/img/grid.jpg" alt="">
             </div>
@@ -217,6 +220,11 @@
 
   <!--========== MAIN JS ==========-->
   <script src="assets/js/main.js"></script>
+  <script type="text/javascript">
+    document.getElementById("post_box").onclick = function () {
+        location.href = "http://localhost:1000/MentoProject/post-details.html";
+    };
+    </script>
 </body>
 
 </html>
