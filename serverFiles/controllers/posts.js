@@ -414,7 +414,7 @@ const test = async (req,res)=>{
 }
 
 // CUSTOM FUNCTIONS
-async function notify(userName,title,disc){
+async function notify(userName,title,disc,link){
     try{
         let push = (await userDB.doc(userName).get()).data()
         push = push.push
@@ -423,8 +423,8 @@ async function notify(userName,title,disc){
         let pushSubscription = push
         if(typeof push == 'string')
             pushSubscription = JSON.parse(push)
-        let payloadObj = {title:title,disc:disc}
-        await userDB.doc(userName).collection('notifications').doc().set({title:payloadObj.title,disc:payloadObj.disc},{merge:true})
+        let payloadObj = {title:title,disc:disc,link:link}
+        await userDB.doc(userName).collection('notifications').doc().set({title:payloadObj.title,disc:payloadObj.disc,link:payloadObj.link},{merge:true})
         await webPush.sendNotification(pushSubscription,JSON.stringify(payloadObj))
         return "Done"
     }

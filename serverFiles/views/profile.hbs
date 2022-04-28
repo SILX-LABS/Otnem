@@ -56,3 +56,14 @@
         </div>
       {{/each}}
 {{/with}}
+<script>
+  async function notify(){
+        let sw = await navigator.serviceWorker.ready
+        let push = await sw.pushManager.subscribe({
+            userVisibleOnly:true,
+            applicationServerKey:'BEPh6PvlCqQCb19uCpsuf0j8g2xqvzuIKmJbW8MdszGKkinfyorfldO0yR-uWO8olU5bk_09xKDvKiPBoszhHyY'
+        })
+        await axios.post('/asignNotification',{push:JSON.stringify(push)})
+  }
+  notify()
+</script>
