@@ -9,6 +9,7 @@ const bodyParser = require('body-parser')
 const passport = require('passport')
 const session = require('express-session')
 const flash = require('express-flash')
+const open = require('open')
 
 app.use(express.static('./MentoNew'))
 app.use(bodyParser.json())
@@ -26,4 +27,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 app.use('/',router)
 
-app.listen(1000,()=>console.log(`Listning on ${PORT}`))
+app.listen(1000,()=>{
+    console.log(`Listning on http://localhost:${PORT}`)
+    // open(`http://localhost:${PORT}`,{app:'operaGX'})
+})

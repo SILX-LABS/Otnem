@@ -6,6 +6,8 @@ const serviceAccount = process.env.SERVICE_ACCOUNT_KEY
 const webPush = require('web-push')
 const passport = require('passport')
 const bcrypt = require('bcrypt')
+const emailer = require('nodemailer')
+const emailCheck = require('email-existence')
 
 const VAPIDKEYS = webPush.generateVAPIDKeys()
 webPush.setVapidDetails('mailto:pravithba10@gmail.com', process.env.PUBLIC_KEY,process.env.PRIVATE_KEY)
@@ -14,6 +16,7 @@ admin.initializeApp({
 })
 const firebase = admin.firestore()
 const userDB = firebase.collection('userData')
+const unVerifiedDB = firebase.collection('unVerified')
 const {init} = require('../passportConfig')
 init(passport,
     async email=>{
@@ -275,25 +278,60 @@ const registerPost= async(req,res)=>{
     try{
         const body = await req.body
         const userSnapshot = await userDB.get()
-        let users = userSnapshot.docs.map(doc=>{
+        await emailCheck.check(body.email,async(error,response)=>{
+            if(!response)
+                return res.redirect('register')
+            let users = userSnapshot.docs.map(doc=>{
             if(doc.data().name)
                 return doc.data()
-        })
-        users = users.filter(e=>e!==undefined)
-        for(i=0;i<users.length;i++){
+            })
+            users = users.filter(e=>e!==undefined)
+            for(i=0;i<users.length;i++){
             if(users[i].name == body.name)
                 return res.send("NAME ALR EXISTS")
             if(users[i].email == body.email)
                 return res.send("EMAIL ALR EXISTS")
-        }
-        const hashedPasswrod = await bcrypt.hash(body.password,10)
-        let userInfoObj = {
+            }
+            const hashedPasswrod = await bcrypt.hash(body.password,10)
+            let userInfoObj = {
             name:body.name,
             email:body.email,
             password:hashedPasswrod,
             image:'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='
-        }
-        await userDB.doc(body.name).set(userInfoObj,{merge:true})
+            }
+            let docref = await unVerifiedDB.add(userInfoObj)
+            // console.log(docref.id)
+            let transporter = emailer.createTransport({
+                service:'gmail',
+                auth:{
+                    user:process.env.BUISSNESS_EMAIL,
+                    pass:process.env.BUISSNESS_EMAIL_PASSWORD
+                }
+            })
+            await transporter.sendMail({
+                from:'pravithba10@gmail.com',
+                to:body.email,
+                subject:'Verification link',
+                text:`The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}`,
+                html:`<h1>Mento</h1><br><h3>The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}</h3>`
+            })
+            return res.redirect('login')
+        })
+    }
+    catch(err){
+        console.log(err)
+    }
+}
+const verifyUser = async(req,res)=>{
+    try{
+        const {id} = await req.query
+        let credentials = (await unVerifiedDB.doc(id).get()).data()
+        if(!credentials)
+            return res.send('Wrong verification id or user already exists')
+        if((await userDB.doc(credentials.name).get()).data())
+            return res.send('User already exists')
+        await userDB.doc(credentials.name).set(credentials)
+        await unVerifiedDB.doc(id).delete()
         res.redirect('login')
     }
     catch(err){
@@ -333,9 +371,22 @@ const changeCredentials = async(req,res)=>{
     }
 }
 const test = async (req,res)=>{
-    let userName = await getUserName(req)
-    console.log(userName)
-    res.send(userName)
+    let transporter = emailer.createTransport({
+        service:'gmail',
+        auth:{
+            user:'pravithba10@gmail.com',
+            pass:'PravithBA@10'
+        }
+    })
+    let info = await transporter.sendMail({
+        from:'pravithba10@gmail.com',
+        to:'phalicytoys@gmail.com',
+        subject:'hello',
+        text:'hello world',
+        html:'<h1>GAY</h1>'
+    })
+    console.log(info)
+    res.send(info)
 }
 
 // CUSTOM FUNCTIONS
@@ -425,4 +476,4 @@ async function getAllUserPosts(userName){
     })
     return posts
 }
-module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,logout,changeCredentials,mainPage,login,register,profile}
+module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser}
