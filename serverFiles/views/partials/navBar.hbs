@@ -47,6 +47,9 @@
       <a href="#" class="au">
         <i class="fa-solid fa-bell" id="Notification"></i>
       </a>
+      {{#if isAuth}}
+        <i class="fa-solid fa-arrow-right-from-bracket" onclick="logout()" style="cursor:pointer"></i>
+      {{/if}}
       <div class="profile">
         <a href="/profile">
           <img src="{{profilePic}}" alt="Profile Image">
@@ -84,6 +87,16 @@
   </a><a href="#" class="au">
     <li><i class="fa-solid fa-user"></i></li>
   </a>
+  {{#if isAuth}}
+    <i class="fa-solid fa-arrow-right-from-bracket" onclick="logout()"></i>
+  {{/if}}
 </ul>
   </div>
   <!-- MOBILE NAVBAR END -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    async function logout(){
+      await axios.delete('/logout')
+      location.reload()
+    }
+  </script>

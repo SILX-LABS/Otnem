@@ -24,8 +24,9 @@
     <div class="right" >
          <form action="/register"   method="post">
          <div class="main-mockup">
-         
-        
+          {{#if err}}
+            <h1 style="font-size:1.5rem;background:rgba(235, 17, 17, 0.865);width:100%;color:white;font-family:'Courier New', Courier, monospace;text-align:center;padding:0.5em 0;border-radius:0.2em;">{{msg}}</h1>
+          {{/if}}
            </div>
            <section class="copy">
              <h2>Sign Up</h2>

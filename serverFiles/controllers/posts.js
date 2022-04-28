@@ -18,6 +18,7 @@ const firebase = admin.firestore()
 const userDB = firebase.collection('userData')
 const unVerifiedDB = firebase.collection('unVerified')
 const {init} = require('../passportConfig')
+const { restart } = require('nodemon')
 init(passport,
     async email=>{
         let snapshot = await userDB.get()
@@ -56,7 +57,7 @@ const mainPage = async(req,res)=>{
         if(post.user != "test" && post.user != "test1")
             finalArray.push({...post,...userObj})
     }
-    res.render('index',{posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,email:userObj.userEmail,userName:userObj.userName})
+    res.render('index',{posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,email:userObj.userEmail,userName:userObj.userName,isAuth:req.isAuthenticated()})
 }
 const login = async(req,res)=>{
     res.render('login',{layout:'loginLayout'})
@@ -83,7 +84,7 @@ const profile = async(req,res)=>{
         post['profilePic'] = userObj.profilePic
     })
     userObj['posts'] = posts
-    res.render('profile',{layout:'profileLayout',userObj:userObj})
+    res.render('profile',{layout:'profileLayout',userObj:userObj,isAuth:req.isAuthenticated()})
 }
 const searchPage = async(req,res)=>{
     try{
@@ -102,7 +103,7 @@ const searchPage = async(req,res)=>{
                 tagsData = tagsData.filter(e=>e!==undefined)
                 if(!tagsData[0])
                     return res.render('searchPosts',{success:false,msg:"Tag not found"})
-                return res.render('searchPosts',{success:true,data:tagsData})
+                return res.render('searchPosts',{success:true,data:tagsData,isAuth:req.isAuthenticated()})
             case 'title':
                 if(query.element.length > 50)
                     return res.render('searchPosts',{msg:"Search element too long",success:false})
@@ -115,7 +116,7 @@ const searchPage = async(req,res)=>{
                 titleData = titleData.filter(e=>e!==undefined)
                 if(!titleData[0])
                     return res.render('searchPosts',{msg:"Title not found",success:false,data:allPosts})
-                return res.render('searchPosts',{success:true,data:titleData})
+                return res.render('searchPosts',{success:true,data:titleData,isAuth:req.isAuthenticated()})
 
             default: return res.send({msg:"Search type not found"})
         }
@@ -126,7 +127,7 @@ const searchPage = async(req,res)=>{
 }
 const uploadPostPage = async(req,res)=>{
     try {
-        res.render('uploadPost',{layout:'indexLayout',msg:"FUCKSDS"})
+        res.render('uploadPost',{layout:'indexLayout',msg:"FUCKSDS",isAuth:req.isAuthenticated()})
     } catch (error) {
         console.log(error)
     }
@@ -280,7 +281,7 @@ const registerPost= async(req,res)=>{
         const userSnapshot = await userDB.get()
         await emailCheck.check(body.email,async(error,response)=>{
             if(!response)
-                return res.redirect('register')
+                return res.render('register',{layout:'registerLayout',err:true,msg:"Email doesn't exist"})
             let users = userSnapshot.docs.map(doc=>{
             if(doc.data().name)
                 return doc.data()
@@ -288,9 +289,9 @@ const registerPost= async(req,res)=>{
             users = users.filter(e=>e!==undefined)
             for(i=0;i<users.length;i++){
             if(users[i].name == body.name)
-                return res.send("NAME ALR EXISTS")
+            return res.render('register',{layout:'registerLayout',err:true,msg:"Another user with same name already exists"})
             if(users[i].email == body.email)
-                return res.send("EMAIL ALR EXISTS")
+            return res.render('register',{layout:'registerLayout',err:true,msg:"Another user with same email alredy exists"})
             }
             const hashedPasswrod = await bcrypt.hash(body.password,10)
             let userInfoObj = {
@@ -300,7 +301,6 @@ const registerPost= async(req,res)=>{
             image:'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='
             }
             let docref = await unVerifiedDB.add(userInfoObj)
-            // console.log(docref.id)
             let transporter = emailer.createTransport({
                 service:'gmail',
                 auth:{
@@ -316,6 +316,29 @@ const registerPost= async(req,res)=>{
                 html:`<h1>Mento</h1><br><h3>The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}</h3>`
             })
             return res.redirect('login')
+        })
+    }
+    catch(err){
+        console.log(err)
+    }
+}
+const loginPost = async(req,res)=>{
+    try{
+        let body = await req.body
+        if(!body.password || !body.email)
+            return res.render('login',{layout:'loginLayout',err:true,msg:"Fields missing"})
+        let snap = await userDB.where('email', '==', body.email).get()
+        let userName = snap.docs.map(doc=>{return doc.id})
+        userName = userName.filter(e=>e!==undefined)
+        userName = userName[0]
+        body['name'] = userName
+        if(!userName)
+            return res.render('login',{layout:'loginLayout',err:true,msg:"Wrong Email"})
+        bcrypt.compare(body.password,((await userDB.doc(userName).get()).data()).password,(err,bcResponse)=>{
+            if(!bcResponse)
+                return res.render('login',{layout:'loginLayout',err:true,msg:"Wrong Password"})
+            req.login(body,(error,response)=>{})
+            return res.redirect('/')
         })
     }
     catch(err){
@@ -339,7 +362,8 @@ const verifyUser = async(req,res)=>{
     }
 }
 const logout = async(req,res)=>{
-    req.logout()
+    await req.logout()
+    res.end()
 }
 const changeCredentials = async(req,res)=>{
     try{
@@ -476,4 +500,4 @@ async function getAllUserPosts(userName){
     })
     return posts
 }
-module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser}
+module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser}

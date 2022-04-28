@@ -1,5 +1,5 @@
 const express = require('express')
-const {uploadPostPage, uploadFile, postPreviewPage, postComments, deleteComment, searchPage, followUser, test, assignNotif, unfollowUser, admin, registerPost, logout, changeCredentials, mainPage, login, register, profile, verifyUser} = require("../controllers/posts.js")
+const {uploadPostPage, uploadFile, postPreviewPage, postComments, deleteComment, searchPage, followUser, test, assignNotif, unfollowUser, admin, registerPost, logout, changeCredentials, mainPage, login, register, profile, verifyUser, loginPost} = require("../controllers/posts.js")
 const mutler = require('multer')
 const router = express.Router()
 const upload = mutler()
@@ -20,13 +20,7 @@ router.post('/asignNotification',checkAuth,assignNotif)
 router.post('/unfollow',checkAuth,unfollowUser)
 router.post('/test',test)
 router.post('/register',checkNotAuth,registerPost)
-router.post('/login',checkNotAuth,passport.authenticate('local',{
-
-    successRedirect:'/',
-    failureRedirect:'/login',
-    failureFlash:true
-    
-}))
+router.post('/login',checkNotAuth,loginPost)
 router.post('/changeCred',checkAuth,changeCredentials)
 router.delete('/logout',checkAuth,logout)
 router.delete('/deleteComment',checkAuth,deleteComment)
