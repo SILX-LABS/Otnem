@@ -216,10 +216,6 @@ body {
   
 
 }
-.image::before {
-
-}
-
 .card-c {
   height: 100%;
   width: 50%;
@@ -750,8 +746,6 @@ section {
 .grid_posts .post_box:hover{
   cursor: pointer;
 }
-.grid_postsx .post_boxx:hover{
-}
 .grid_posts .post_boxx .index_image {
   height: 100%;
   display: flex;
@@ -857,10 +851,6 @@ section {
   position: absolute;
 
   transition: 300ms all ease-in-out;
-}
-
-.grid_posts .post_box .bottom {
-
 }
 
 .grid_posts .post_box .bottom .UserImage,

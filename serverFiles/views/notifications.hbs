@@ -1,0 +1,30 @@
+{{> navBar profilePic = profilePic isAuth = true}}
+    <!-- === Items Links Selector Start === -->
+    <div class="container-fluid">
+
+    <!-- === Items Links Selector End === -->
+    <div class="posts_cards">
+      <div class="container-fluid">
+          <h2>Notification</h2>
+        <div class="grid_postsx">
+        {{#each notifications}}
+            <div class="card" onclick="window.location.href='{{link}}'" style="cursor: pointer;">
+                <div class="pd-left">
+                    <div class="pd-row">
+                       <img src="{{image}}" class="pd-image" alt="">
+                       <div>
+                         <h3>{{title}}</h3>
+                         <p>{{disc}} </p>
+                         
+                       </div>
+                    </div>
+                  </div>
+            </div>
+        {{/each}}
+        </div>
+      </div>
+    </div>
+</div>
+<script>
+
+  </script>

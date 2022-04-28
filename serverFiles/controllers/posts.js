@@ -57,6 +57,7 @@ const mainPage = async(req,res)=>{
         if(post.user != "test" && post.user != "test1")
             finalArray.push({...post,...userObj})
     }
+    console.log(finalArray)
     res.render('index',{posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,email:userObj.userEmail,userName:userObj.userName,isAuth:req.isAuthenticated()})
 }
 const login = async(req,res)=>{
@@ -85,6 +86,18 @@ const profile = async(req,res)=>{
     })
     userObj['posts'] = posts
     res.render('profile',{layout:'profileLayout',userObj:userObj,isAuth:req.isAuthenticated()})
+}
+const notifPage = async(req,res)=>{
+    let userName = await getUserName(req)
+    let user = await getUser(userName)
+    let snapshot = await userDB.doc(userName).collection('notifications').get()
+    let notifications = snapshot.docs.map(doc=>{
+        let data = doc.data()
+        data['id'] = doc.id
+        return data
+    })
+    res.render('notifications',{notifications:notifications,profilePic:user.profilePic})
+
 }
 const searchPage = async(req,res)=>{
     try{
@@ -136,6 +149,14 @@ const postComments = async(req,res)=>{
     try{
         let userName = await getUserName(req)
         let {comment,postNum,postUser} = await req.body
+        let userCheck = (await userDB.doc(postUser).get()).data()
+        if(!userCheck)
+            return res.send({success:false})
+        let postCheck = (await userDB.doc(postUser).collection('posts').doc(postNum).get()).data()
+        if(!postCheck)
+            return res.send({success:false})
+        if(!comment || !postNum || !postUser)
+            return res.send({success:false})
         if(!await checkElegible(userName,postUser))
             return res.send({success:false})
         userDB.doc(`${postUser}`).collection('posts').doc(postNum).collection('comments').doc().set({user:userName,content:comment},{merge:true})
@@ -205,34 +226,42 @@ const postPreviewPage = async(req,res)=>{
     try {
         let userName = await getUserName(req)
         let query = await req.query
+        let userCheck = (await userDB.doc(query.user).get()).data()
+        if(!userCheck)
+        return res.send({success:false})
+        let postCheck = (await userDB.doc(query.user).collection('posts').doc(query.postNum).get()).data()
+        if(!postCheck)
+        return res.send({success:false})
+        let postUser = await getUser(query.user)
+        let profilePic = ""
+        if(req.isAuthenticated()){
+            let user = await getUser(userName)
+            profilePic = user.profilePic
+        }
         if(!query.user || !query.postNum)
             return res.send("No Post Found")
         let isComment = false
         let commentsArray = []
-        if(checkElegible(userName,query.user)){
-            let postData = (await userDB.doc(query.user).collection('posts').doc(query.postNum).get()).data()
-            let commentSnapshot = await userDB.doc(query.user).collection('posts').doc(query.postNum).collection('comments').get()
-            if(!commentSnapshot.empty){
-                isComment = true
-                commentsArray = commentSnapshot.docs.map(doc=>{
-                    let data = doc.data()
-                    data['commentNum'] = doc.id
-                    return data
-                })
-            }
-            let err = false
-            if(postData == undefined){
-                postData = {}
-                postData['img'] = "https://www.publicdomainpictures.net/pictures/280000/nahled/not-found-image-15383864787lu.jpg"
-                postData['title'] = "ERRRRR"
-                postData['disc'] = "ERRRRRR"
-                err = true
-            }
-            res.render('postPreview',{layout:'indexLayout',postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,imgURL:postData.img,title:postData.title,disc:postData.disc,err:err,postNum:query.postNum})
+        let postData = (await userDB.doc(query.user).collection('posts').doc(query.postNum).get()).data()
+        let commentSnapshot = await userDB.doc(query.user).collection('posts').doc(query.postNum).collection('comments').get()
+        if(!commentSnapshot.empty){
+            isComment = true
+            commentsArray = commentSnapshot.docs.map(doc=>{
+                let data = doc.data()
+                data['commentNum'] = doc.id
+                return data
+            })
         }
-        else{
-            res.send("ERROR")
+        let err = false
+        if(postData == undefined){
+            postData = {}
+            postData['img'] = "https://www.publicdomainpictures.net/pictures/280000/nahled/not-found-image-15383864787lu.jpg"
+            postData['title'] = "ERRRRR"
+            postData['disc'] = "ERRRRRR"
+            err = true
         }
+        res.render('viewPost',{layout:'indexLayout',posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,imgURL:postData.img,title:postData.title,disc:postData.disc,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})
+        
     } catch (error) {
         console.log(error)
     }
@@ -395,26 +424,13 @@ const changeCredentials = async(req,res)=>{
     }
 }
 const test = async (req,res)=>{
-    let transporter = emailer.createTransport({
-        service:'gmail',
-        auth:{
-            user:'pravithba10@gmail.com',
-            pass:'PravithBA@10'
-        }
-    })
-    let info = await transporter.sendMail({
-        from:'pravithba10@gmail.com',
-        to:'phalicytoys@gmail.com',
-        subject:'hello',
-        text:'hello world',
-        html:'<h1>GAY</h1>'
-    })
-    console.log(info)
-    res.send(info)
+    let userName = await getUserName(req)
+    await notify(userName,'LOL',"LMFAO OK",'https://google.com','https://yt3.ggpht.com/ytc/AKedOLRhPA-LKtVy7aVo6s33G0hYPuLV4FzHvIDHc-t92Q=s88-c-k-c0x00ffffff-no-rj-mo')
+    res.send('lol')
 }
 
 // CUSTOM FUNCTIONS
-async function notify(userName,title,disc,link){
+async function notify(userName,title,disc,link,image){
     try{
         let push = (await userDB.doc(userName).get()).data()
         push = push.push
@@ -423,8 +439,8 @@ async function notify(userName,title,disc,link){
         let pushSubscription = push
         if(typeof push == 'string')
             pushSubscription = JSON.parse(push)
-        let payloadObj = {title:title,disc:disc,link:link}
-        await userDB.doc(userName).collection('notifications').doc().set({title:payloadObj.title,disc:payloadObj.disc,link:payloadObj.link},{merge:true})
+        let payloadObj = {title:title,disc:disc,link:link,image:image}
+        await userDB.doc(userName).collection('notifications').add({title:payloadObj.title,disc:payloadObj.disc,link:payloadObj.link,image:image},{merge:true})
         await webPush.sendNotification(pushSubscription,JSON.stringify(payloadObj))
         return "Done"
     }
@@ -442,8 +458,9 @@ async function checkIfUserExists(user){
     return res
 }
 async function checkElegible(user,checkUser){
+    return true
     if(checkUser == user)return true
-    let visibality = (await userDB.doc(user).get()).data
+    let visibality = (await userDB.doc(user).get()).data()
     visibality = visibality.visibality || "public"
     if(visibality == "public")return true
     let snapshot = await userDB.doc(user).collection('followers').get()
@@ -500,4 +517,4 @@ async function getAllUserPosts(userName){
     })
     return posts
 }
-module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser}
+module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage}
