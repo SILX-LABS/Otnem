@@ -434,7 +434,7 @@ const changeCredentials = async(req,res)=>{
 }
 const test = async (req,res)=>{
     console.log("\n===================\nAll :",await getAllPostsFiltered('fuajs='))
-    console.log("\n===================\nCat :",await getAllPostsFiltered("cat","all"))
+    console.log("\n===================\nCat :",await getAllPostsFiltered("cat","uiux"))
     console.log("\n===================\nTags :",await getAllPostsFiltered("tags","TaG1"))
     console.log("\n===================\nTitle :",await getAllPostsFiltered("title","All posts"))
     res.end()
