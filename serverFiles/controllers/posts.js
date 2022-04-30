@@ -17,7 +17,6 @@ const firebase = admin.firestore()
 const userDB = firebase.collection('userData')
 const unVerifiedDB = firebase.collection('unVerified')
 const {init} = require('../passportConfig')
-const { restart } = require('nodemon')
 init(passport,
     async email=>{
         let snapshot = await userDB.get()
@@ -37,26 +36,16 @@ cloudinary.config({
     api_secret: process.env.API_SECRET
 })
 const mainPage = async(req,res)=>{
-    let posts = await getAllPosts()
+    const {attr,element} = await req.query
     let userName = await getUserName(req)
     let loggedIn = false
-    let userObj = {
-        'userName':'',
-        'userEmail':'',
-        'profilePic':'',
-    }
+    let userObj = {profilePic:""}
     if(userName){
         userObj = await getUser(userName)
         loggedIn = true
     }
-    let finalArray = []
-    for(let i = 0;i<posts.length;i++){
-        let post = posts[i]
-        let userObj = await getUser(post.user)
-        if(post.user != "test" && post.user != "test1")
-            finalArray.push({...post,...userObj})
-    }
-    res.render('index',{posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,email:userObj.userEmail,userName:userObj.userName,isAuth:req.isAuthenticated()})
+    let finalArray = await getAllPostsFiltered(attr,element)
+    res.render('index',{len:finalArray.length,posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,isAuth:req.isAuthenticated()})
 }
 const login = async(req,res)=>{
     res.render('login',{layout:'loginLayout'})
@@ -182,12 +171,17 @@ const uploadFile = async(req,res)=>{
     try {
         let userName = await getUserName(req)
         let {title,disc,tags,category} = await req.body
-        if(title.length > 50 && disc.length > 550 && tags.length >= 50){
-            return res.json({msg:"Too long FFFFF",status:400})}
-            let buffer = await req.file.buffer
-            let cldUploadStream = cloudinary.uploader.upload_stream({
-                folder:`${userName}/posts/`,
-                height: 500, width: 500, crop: "scale",
+        let allCat = ["all","art","tech","uiux","amvs","photoshop","games","other"]
+        if(!allCat.includes(category.toLowerCase()))
+            category = "other"
+        if(category.toLowerCase() == 'ui/ux')
+            category = "uiux"
+        if(title.length > 50 && disc.length > 550 && tags.length >= 50)
+            return res.json({msg:"Too long FFFFF",status:400})
+        let buffer = await req.file.buffer
+        let cldUploadStream = cloudinary.uploader.upload_stream({
+            folder:`${userName}/posts/`,
+            height: 500, width: 500, crop: "scale",
             },async(err,response)=>{
                 let imageName = (response.public_id.split('/'))[((response.public_id.split('/'))).length-1]
                 if (err) return res.send(err)
@@ -439,9 +433,11 @@ const changeCredentials = async(req,res)=>{
     }
 }
 const test = async (req,res)=>{
-    let userName = await getUserName(req)
-    await notify(userName,'LOL',"LMFAO OK",'https://google.com','https://yt3.ggpht.com/ytc/AKedOLRhPA-LKtVy7aVo6s33G0hYPuLV4FzHvIDHc-t92Q=s88-c-k-c0x00ffffff-no-rj-mo')
-    res.send('lol')
+    console.log("\n===================\nAll :",await getAllPostsFiltered('fuajs='))
+    console.log("\n===================\nCat :",await getAllPostsFiltered("cat","all"))
+    console.log("\n===================\nTags :",await getAllPostsFiltered("tags","TaG1"))
+    console.log("\n===================\nTitle :",await getAllPostsFiltered("title","All posts"))
+    res.end()
 }
 
 // CUSTOM FUNCTIONS
@@ -537,5 +533,21 @@ async function checkIfDocExists(collectionRef,docName){
     let snap = await collectionRef.get()
     snap.forEach(doc=>{if(doc.id == docName)exists = true})
     return exists
+}
+async function getAllPostsFiltered(attr,element){
+    const allPosts = await getAllPosts()
+    if(attr == 'cat'&&element == 'all')
+            return await Promise.all(allPosts.map(async post=>{return {...post,...await getUser(post.user)}}))
+    switch(attr){
+        case 'cat':
+            return await Promise.all(allPosts.filter(post=>{return post.category.toLowerCase() == element.toLowerCase()}).map(async post=>{return{...post,...await getUser(post.user)}}))
+        case 'tags':
+            return await Promise.all(allPosts.filter(post=>{return post.tags.includes(element.toLowerCase())}).map(async post=>{return {...post,...await getUser(post.user)}}))
+        case 'title':
+            return await Promise.all(allPosts.filter(post=>{return post.title.toLowerCase().includes(element.toLowerCase())}).map(async post=>{return {...post,...await getUser(post.user)}}))
+        default :
+            return await Promise.all(allPosts.map(async post=>{return {...post,...await getUser(post.user)}}))
+
+    }
 }
 module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage}

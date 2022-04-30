@@ -7,28 +7,28 @@
 <!-- === Items Links Selector Start === -->
 <div class="container-fluid">
       <div class="Selector_Links">
-        <div class="SC_Item active" id="SC_IT" data-type="all">
+        <div class="SC_Item" onclick='location.href = `/?attr=cat&&element=${this.getAttribute("data-type")}`' id="SC_IT" data-type="all">
           <p>All</p>
         </div>
-        <div class="SC_Item" id="SC_IT" data-type="art">
+        <div class="SC_Item" onclick='location.href = `/?attr=cat&&element=${this.getAttribute("data-type")}`' id="SC_IT" data-type="art">
           <p>Art</p>
         </div>
-        <div class="SC_Item" id="SC_IT" data-type="tech">
+        <div class="SC_Item" onclick='location.href = `/?attr=cat&&element=${this.getAttribute("data-type")}`' id="SC_IT" data-type="tech">
           <p>Tech</p>
         </div>
-        <div class="SC_Item" id="SC_IT" data-type="uiux">
+        <div class="SC_Item" onclick='location.href = `/?attr=cat&&element=${this.getAttribute("data-type")}`' id="SC_IT" data-type="uiux">
           <p>UI/UX</p>
         </div>
-        <div class="SC_Item" id="SC_IT" data-type="amvs">
+        <div class="SC_Item" onclick='location.href = `/?attr=cat&&element=${this.getAttribute("data-type")}`' id="SC_IT" data-type="amvs">
           <p>Amvs</p>
         </div>
-        <div class="SC_Item" id="SC_IT" data-type="photoshop">
+        <div class="SC_Item" onclick='location.href = `/?attr=cat&&element=${this.getAttribute("data-type")}`' id="SC_IT" data-type="photoshop">
           <p>Photoshop</p>
         </div>
-        <div class="SC_Item" id="SC_IT" data-type="games">
+        <div class="SC_Item" onclick='location.href = `/?attr=cat&&element=${this.getAttribute("data-type")}`' id="SC_IT" data-type="games">
           <p>Games</p>
         </div>
-        <div class="SC_Item" id="SC_IT" data-type="other">
+        <div class="SC_Item" onclick='location.href = `/?attr=cat&&element=${this.getAttribute("data-type")}`' id="SC_IT" data-type="other">
           <p>Other</p>
         </div>
       </div>
@@ -72,3 +72,26 @@
     </div>
   </div>
 </div>
+<script>
+  $('.SC_Item').each(function(i,obj){
+    if(!getUrlVars()['attr']&&!getUrlVars()['element']){
+      console.log('lol')
+      if($(this).attr('data-type').toLowerCase() == 'all')
+        return $(this).addClass('active')
+    }
+    else if(getUrlVars()['attr'].toLowerCase() == "cat"&&$(this).attr('data-type').toLowerCase() == getUrlVars()['element'].toLowerCase())
+      $(this).addClass('active')
+  })
+  function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+</script>
