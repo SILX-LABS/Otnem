@@ -24,7 +24,7 @@
  
     <div class="grid_posts">  
       {{#each posts}}
-        <div class="post_box" data-type="art">
+        <div class="post_box" data-type="art" style="cursor: pointer;" onclick="window.location.href = '/postPreview?postNum={{id}}&&user={{name}}'">
           <div class="index_image">
             <img src="{{img}}" alt="">
           </div>

@@ -57,7 +57,6 @@ const mainPage = async(req,res)=>{
         if(post.user != "test" && post.user != "test1")
             finalArray.push({...post,...userObj})
     }
-    console.log(finalArray)
     res.render('index',{posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,email:userObj.userEmail,userName:userObj.userName,isAuth:req.isAuthenticated()})
 }
 const login = async(req,res)=>{
@@ -212,8 +211,9 @@ const uploadFile = async(req,res)=>{
                 let followers = followersSnap.docs.map(doc=>{
                     return doc.id
                 })
+                let user = await getUser(userName)
                 followers.forEach(async follower=>{
-                    await notify(follower,`${userName} uploaded a post`,`Check out ${userName}'s post`)
+                    await notify(follower,`${userName} uploaded a post`,`Check out ${userName}'s post`,`/postPreview?user=${userName}&&postNum=${imageName}`,user.profilePic)
                 })
                 res.send({num:imageName,user:userName})
         })
@@ -226,6 +226,8 @@ const postPreviewPage = async(req,res)=>{
     try {
         let userName = await getUserName(req)
         let query = await req.query
+        if(!query.user || !query.postNum)
+            return res.send({success:false})
         let userCheck = (await userDB.doc(query.user).get()).data()
         if(!userCheck)
         return res.send({success:false})
@@ -272,8 +274,14 @@ const followUser = async(req,res)=>{
         if(!await checkIfUserExists(followUserName))
             return res.send("User doesnt exists")
         let userName = await getUserName(req)
+        if(followUserName == userName)
+            return res.send("You cant follow yourself... idiot!!")
+        if(await checkIfDocExists(userDB.doc(userName).collection('following'),followUserName))
+            return res.send("You already follow this user")
         await userDB.doc(followUserName).collection('followers').doc(userName).set({exists:true})
         await userDB.doc(userName).collection('following').doc(followUserName).set({exists:true})
+        const {profilePic} = await getUser(userName)
+        await notify(followUserName,`${userName} followed`,`${userName} has followed you on mento`,`/notifications`,`${profilePic}`)
         res.send({msg:"Followed"})
     }
     catch(err){
@@ -283,11 +291,17 @@ const followUser = async(req,res)=>{
 const unfollowUser = async(req,res)=>{
     try{
         const {unFollowUserName} = await req.body
-        if(!await checkIfUserExists(unFollowUserName))
-        return res.send("User doesnt exists")
         let userName = await getUserName(req)
+        if(!await checkIfUserExists(unFollowUserName))
+            return res.send("User doesnt exists")
+        if(unFollowUserName == userName)
+            return res.send("You cant unfollow yourself... idiot!!")
+        if(!await checkIfDocExists(userDB.doc(userName).collection('following'),unFollowUserName))
+            return res.send("You are not following this user")
         await userDB.doc(unFollowUserName).collection('followers').doc(userName).delete()
         await userDB.doc(userName).collection('following').doc(unFollowUserName).delete()
+        const {profilePic} = await getUser(userName)
+        await notify(unFollowUserName,`${userName} unfollowed`,`${userName} has unfollowed you on mento`,`/notifications`,`${profilePic}`)
         res.send({msg:"unFollowed"})
     }
     catch(err){
@@ -516,5 +530,12 @@ async function getAllUserPosts(userName){
         return data
     })
     return posts
+}
+async function checkIfDocExists(collectionRef,docName){
+    let exists = false
+    let snap = await collectionRef.get()
+    snap.forEach(doc=>{if(doc.id == docName)exists = true})
+    console.log(exists)
+    return exists
 }
 module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage}
