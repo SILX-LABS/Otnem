@@ -138,7 +138,8 @@ const searchPage = async(req,res)=>{
 }
 const uploadPostPage = async(req,res)=>{
     try {
-        res.render('uploadPost',{layout:'indexLayout',msg:"FUCKSDS",isAuth:req.isAuthenticated()})
+        const {profilePic} = await getUser(await getUserName(req))
+        res.render('uploadPage',{layout:'indexLayout',msg:"FUCKSDS",profilePic:profilePic,isAuth:req.isAuthenticated()})
     } catch (error) {
         console.log(error)
     }
@@ -180,7 +181,7 @@ const deleteComment = async (req,res)=>{
 const uploadFile = async(req,res)=>{
     try {
         let userName = await getUserName(req)
-        let {title,disc,tags} = await req.body
+        let {title,disc,tags,category} = await req.body
         if(title.length > 50 && disc.length > 550 && tags.length >= 50){
             return res.json({msg:"Too long FFFFF",status:400})}
             let buffer = await req.file.buffer
@@ -204,7 +205,8 @@ const uploadFile = async(req,res)=>{
                     public_id:response.public_id,
                     img:imgURL,
                     tags:tags.split(' ').filter(Boolean),
-                    date:today
+                    date:today,
+                    category:category
                 },{merge:true})
                 let followersSnap = await userDB.doc(userName).collection('followers').get()
                 let followers = followersSnap.docs.map(doc=>{

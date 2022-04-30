@@ -1146,3 +1146,6 @@ section {
     margin: 0;
   }
 }
+input:focus,textarea:focus{
+  outline:none;
+}

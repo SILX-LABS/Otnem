@@ -29,7 +29,6 @@
         formData.append("tags",(document.querySelector('#tag-inp-post').value).toLowerCase())
         let res = await axios.post('/upload',formData)
         console.log('done')
-        //location.href = `/postPreview?postNum=${res.data.num}&&user=${res.data.user}`
     })
     $('#tag-inp-post').keyup(async(e)=>{
         let tagVal = $('#tag-inp-post').val()
