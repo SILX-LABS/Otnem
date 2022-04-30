@@ -9,7 +9,6 @@ const bcrypt = require('bcrypt')
 const emailer = require('nodemailer')
 const emailCheck = require('email-existence')
 
-const VAPIDKEYS = webPush.generateVAPIDKeys()
 webPush.setVapidDetails('mailto:pravithba10@gmail.com', process.env.PUBLIC_KEY,process.env.PRIVATE_KEY)
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(serviceAccount)),
