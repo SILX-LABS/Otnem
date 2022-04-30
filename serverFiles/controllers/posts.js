@@ -535,7 +535,6 @@ async function checkIfDocExists(collectionRef,docName){
     let exists = false
     let snap = await collectionRef.get()
     snap.forEach(doc=>{if(doc.id == docName)exists = true})
-    console.log(exists)
     return exists
 }
 module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage}
