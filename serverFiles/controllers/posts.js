@@ -545,6 +545,8 @@ async function getAllPostsFiltered(attr,element){
             return await Promise.all(allPosts.filter(post=>{return post.tags.includes(element.toLowerCase())}).map(async post=>{return {...post,...await getUser(post.user)}}))
         case 'title':
             return await Promise.all(allPosts.filter(post=>{return post.title.toLowerCase().includes(element.toLowerCase())}).map(async post=>{return {...post,...await getUser(post.user)}}))
+        case 'search':
+            return [...await Promise.all(allPosts.filter(post=>{return post.title.toLowerCase().includes(element.toLowerCase())}).map(async post=>{return {...post,...await getUser(post.user)}})),...await Promise.all(allPosts.filter(post=>{return post.tags.includes(element.toLowerCase())}).map(async post=>{return {...post,...await getUser(post.user)}}))].filter((v,i,a)=>a.findIndex(v2=>(v2.postName===v.postName&&v2.user===v.user))===i)
         default :
             return await Promise.all(allPosts.map(async post=>{return {...post,...await getUser(post.user)}}))
 
