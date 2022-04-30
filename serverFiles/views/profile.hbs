@@ -21,7 +21,11 @@
            <img src="./assets/img/grid.jpg"/>
         </div>
     </div>
- 
+ {{#unless isPost}}
+<div style="display: grid;place-items: center;height:25vw;">
+  <h2 style="margin-left:0vw;font-size:1.5em;font-family: 'Courier New', Courier, monospace;font-weight: bold;color:white;background-color: rgb(232, 29, 29);display:inline-block;padding:0.5em 1em;border-radius:0.2em">Sorry, No Posts Available!</h2>
+</div>
+{{/unless}}
     <div class="grid_posts">  
       {{#each posts}}
         <div class="post_box" data-type="art" style="cursor: pointer;" onclick="window.location.href = '/postPreview?postNum={{id}}&&user={{name}}'">

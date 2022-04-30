@@ -45,7 +45,10 @@ const mainPage = async(req,res)=>{
         loggedIn = true
     }
     let finalArray = await getAllPostsFiltered(attr,element)
-    res.render('index',{len:finalArray.length,posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,isAuth:req.isAuthenticated()})
+    let isPost = false
+    if(finalArray[0])
+        isPost = true
+    res.render('index',{isPost:isPost,len:finalArray.length,posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,isAuth:req.isAuthenticated()})
 }
 const login = async(req,res)=>{
     res.render('login',{layout:'loginLayout'})
@@ -72,6 +75,10 @@ const profile = async(req,res)=>{
         post['profilePic'] = userObj.profilePic
     })
     userObj['posts'] = posts
+    let isExists = false
+    if(posts[0])
+        isExists = true
+    userObj['isExists'] = isExists
     res.render('profile',{layout:'profileLayout',userObj:userObj,isAuth:req.isAuthenticated()})
 }
 const notifPage = async(req,res)=>{
@@ -131,6 +138,22 @@ const uploadPostPage = async(req,res)=>{
         res.render('uploadPage',{layout:'indexLayout',msg:"FUCKSDS",profilePic:profilePic,isAuth:req.isAuthenticated()})
     } catch (error) {
         console.log(error)
+    }
+}
+const deletePost = async(req,res)=>{
+    try{
+        const {postNum} = await req.body
+        let userName = await getUserName(req)
+        let postData = (await userDB.doc(userName).collection('posts').doc(postNum).get()).data()
+        console.log(postData)
+        if(!postData)
+            return res.send('Post not found')
+        let {public_id} = postData
+        await userDB.doc(userName).collection('posts').doc(postNum).delete()
+        cloudinary.uploader.destroy(public_id)
+        res.send('lol')
+    }catch(err){
+        console.log(err)
     }
 }
 const postComments = async(req,res)=>{
@@ -552,4 +575,4 @@ async function getAllPostsFiltered(attr,element){
 
     }
 }
-module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage}
+module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost}
