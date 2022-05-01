@@ -1,5 +1,10 @@
 {{#with userObj}}
-{{> navBar profilePic = profilePic isAuth = true}}
+{{#if loggedIn}}
+{{> navBar profilePic = profilePic isAuth = isAuth}}
+{{/if}}
+{{#unless loggedIn}}
+{{> navBar profilePic = 'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='}}
+{{/unless}}
 {{!-- {{userObj}} --}}
 <div class="posts_cards">
   <div class="container-fluid">
@@ -54,7 +59,7 @@
               </div>
             </div>
             <div class="post_name">
-              <h5>{{title}}</h5>
+              <h5 style="width: 7em;height:1.3em;overflow: hidden !important;text-overflow: ellipsis;white-space: nowrap;text-align: center;">{{title}}</h5>
             </div>
           </div>
         </div>

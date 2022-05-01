@@ -57,29 +57,41 @@ const register = async(req,res)=>{
     res.render('login',{layout:'registerLayout'})
 }
 const profile = async(req,res)=>{
-    let userName = await getUserName(req)
-    let userObj = await getUser(userName)
-    let snapshot = await userDB.doc(userName).collection('followers').get()
-    let followers = snapshot.docs.map(doc=>{
+    try{
+        let userName = await getUserName(req)
+        let query = await req.query
+        if(!query.user && !userName)
+        return res.redirect('login')
+        if(!query.user)
+            return res.redirect('/')
+        if(query.user)
+            userName = query.user
+        let userObj = await getUser(userName)
+        let snapshot = await userDB.doc(userName).collection('followers').get()
+        let followers = snapshot.docs.map(doc=>{
         return doc
-    })
-    snapshot = await userDB.doc(userName).collection('following').get()
-    let following = snapshot.docs.map(doc=>{
+        })
+        snapshot = await userDB.doc(userName).collection('following').get()
+        let following = snapshot.docs.map(doc=>{
         return doc
-    })
-    userObj['followers'] = followers.length
-    userObj['following'] = following.length
-    let posts = await getAllUserPosts(userName)
-    posts.forEach(post=>{
+        })
+        userObj['followers'] = followers.length
+        userObj['following'] = following.length
+        let posts = await getAllUserPosts(userName)
+        posts.forEach(post=>{
         post['name'] = userName
         post['profilePic'] = userObj.profilePic
-    })
-    userObj['posts'] = posts
-    let isExists = false
-    if(posts[0])
-        isExists = true
-    userObj['isExists'] = isExists
-    res.render('profile',{layout:'profileLayout',userObj:userObj,isAuth:req.isAuthenticated()})
+        })
+        userObj['posts'] = posts
+        let isPost = false
+        if(posts[0])
+            isPost = true
+        userObj['isPost'] = isPost
+        userObj['isAuth'] = req.isAuthenticated()
+        res.render('profile',{layout:'profileLayout',userObj:userObj,isAuth:req.isAuthenticated()})
+    }catch(err){
+        console.log(err)
+    }
 }
 const notifPage = async(req,res)=>{
     let userName = await getUserName(req)
@@ -145,13 +157,11 @@ const deletePost = async(req,res)=>{
         const {postNum} = await req.body
         let userName = await getUserName(req)
         let postData = (await userDB.doc(userName).collection('posts').doc(postNum).get()).data()
-        console.log(postData)
         if(!postData)
             return res.send('Post not found')
         let {public_id} = postData
         await userDB.doc(userName).collection('posts').doc(postNum).delete()
         cloudinary.uploader.destroy(public_id)
-        res.send('lol')
     }catch(err){
         console.log(err)
     }
@@ -244,6 +254,9 @@ const postPreviewPage = async(req,res)=>{
     try {
         let userName = await getUserName(req)
         let query = await req.query
+        let isDeletable = false
+        if(userName == query.user)
+            isDeletable = true
         if(!query.user || !query.postNum)
             return res.send({success:false})
         let userCheck = (await userDB.doc(query.user).get()).data()
@@ -280,7 +293,7 @@ const postPreviewPage = async(req,res)=>{
             postData['disc'] = "ERRRRRR"
             err = true
         }
-        res.render('viewPost',{layout:'indexLayout',posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,imgURL:postData.img,title:postData.title,disc:postData.disc,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})
+        res.render('viewPost',{layout:'indexLayout',isDeletable:isDeletable,posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,imgURL:postData.img,title:postData.title,disc:postData.disc,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})
         
     } catch (error) {
         console.log(error)
