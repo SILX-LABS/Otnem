@@ -62,8 +62,8 @@ const profile = async(req,res)=>{
         let query = await req.query
         if(!query.user && !userName)
         return res.redirect('login')
-        if(!query.user)
-            return res.redirect('/')
+        // if(!query.user)
+        //     return res.redirect('/')
         if(query.user)
             userName = query.user
         let userObj = await getUser(userName)
@@ -81,6 +81,7 @@ const profile = async(req,res)=>{
         posts.forEach(post=>{
         post['name'] = userName
         post['profilePic'] = userObj.profilePic
+        post['verified'] = userObj.verified
         })
         userObj['posts'] = posts
         let isPost = false
@@ -169,6 +170,8 @@ const deletePost = async(req,res)=>{
 const postComments = async(req,res)=>{
     try{
         let userName = await getUserName(req)
+        if(!userName)
+            return res.send("notAuth")
         let {comment,postNum,postUser} = await req.body
         let userCheck = (await userDB.doc(postUser).get()).data()
         if(!userCheck)
@@ -181,7 +184,7 @@ const postComments = async(req,res)=>{
         if(!await checkElegible(userName,postUser))
             return res.send({success:false})
         userDB.doc(`${postUser}`).collection('posts').doc(postNum).collection('comments').doc().set({user:userName,content:comment},{merge:true})
-        res.send({success:true,postNum:postNum})
+        res.send(postNum)
     }
     catch(err){
         console.log(err)
@@ -190,10 +193,10 @@ const postComments = async(req,res)=>{
 const deleteComment = async (req,res)=>{
     try{
         const userName = await getUserName(req)
-        if(!await checkElegible(userName,userName))
-            return res.send({success:false})
         const{commentNum,postNum,postUser} = await req.body
-        await userDB.doc(postUser).collection('posts').doc(postNum).collection('comments').doc(commentNum).delete()
+        if(userName != postUser)
+            return res.send({status:400,success:false})
+        let result = await userDB.doc(postUser).collection('posts').doc(postNum).collection('comments').doc(commentNum).delete()
         res.end()
     }
     catch(err){
@@ -279,11 +282,18 @@ const postPreviewPage = async(req,res)=>{
         let commentSnapshot = await userDB.doc(query.user).collection('posts').doc(query.postNum).collection('comments').get()
         if(!commentSnapshot.empty){
             isComment = true
-            commentsArray = commentSnapshot.docs.map(doc=>{
+            commentsArray = await Promise.all(commentSnapshot.docs.map(async doc=>{
                 let data = doc.data()
                 data['commentNum'] = doc.id
+                let userData = await getUser(data.user)
+                data['profilePic'] = userData.profilePic
+                data['verified'] = userData.verified
+                if(data.user == userName)
+                    data['own'] = true
+                else
+                    data['own'] = false
                 return data
-            })
+            }))
         }
         let err = false
         if(postData == undefined){
@@ -293,7 +303,7 @@ const postPreviewPage = async(req,res)=>{
             postData['disc'] = "ERRRRRR"
             err = true
         }
-        res.render('viewPost',{layout:'indexLayout',isDeletable:isDeletable,posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,imgURL:postData.img,title:postData.title,disc:postData.disc,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})
+        res.render('viewPost',{layout:'indexLayout',verified:postUser.verified,isDeletable:isDeletable,posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,imgURL:postData.img,title:postData.title,disc:postData.disc,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})
         
     } catch (error) {
         console.log(error)
@@ -525,11 +535,13 @@ async function getUserName(req){
 }
 async function getUser(userName,showPassword){
     try{
-        const {email,name,image,password} =(await userDB.doc(userName).get()).data()
+        const userData =(await userDB.doc(userName).get()).data()
+        const {email,name,image,password} = userData
         let userObject = {
             "userName":name,
             "userEmail":email,
-            "profilePic":image
+            "profilePic":image,
+            "verified":userData.verified
         }
         if(showPassword)
             userObject["password"] = password

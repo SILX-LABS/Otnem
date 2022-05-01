@@ -723,12 +723,26 @@ section {
 }
 
 .cardxx{
-  height: 720px;
+  max-height: fit-content;
   width: 600px;
   border-radius: 30px;
   float: right;
   background-color: #fff;
   
+}
+#comment-inp:focus{
+  outline: none;
+}
+#sub-btn-cmnt{
+  border:1px solid #23f649;
+  background-color: #23f649;
+  color:white;
+  border-radius: 0.2em;
+  cursor:pointer;
+}
+#sub-btn-cmnt:hover{
+  background-color:transparent;
+  color:#23f649;
 }
 .topx {
   height: 60px;
