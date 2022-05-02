@@ -373,7 +373,7 @@ const registerPost= async(req,res)=>{
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too large"})
         console.log(validator.verify(body.email))
         validator.verify(body.email,async (err,response)=>{
-            if(!response)
+            if(!response.success)
                 return res.render('register',{layout:'registerLayout',err:true,msg:"Email doesn't exist"})
             let users = userSnapshot.docs.map(doc=>{
             if(doc.data().name)
