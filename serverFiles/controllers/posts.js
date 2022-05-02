@@ -371,7 +371,7 @@ const registerPost= async(req,res)=>{
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too small"})
         if(body.name.length > 20)
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too large"})
-        console.log(validator.verify(body.email))
+        // console.log(validator.verify(body.email))
         validator.verify(body.email,async (err,response)=>{
             if(!response.success)
                 return res.render('register',{layout:'registerLayout',err:true,msg:"Email doesn't exist"})
@@ -408,8 +408,6 @@ const registerPost= async(req,res)=>{
                 subject:'Verification link',
                 text:`The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}`,
                 html:`<h1>Mento</h1><br><h3>The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}</h3>`
-            },(err,response)=>{
-                console.log(err,response)
             })
             return res.redirect('login')
         })
