@@ -363,6 +363,12 @@ const registerPost= async(req,res)=>{
     try{
         const body = await req.body
         const userSnapshot = await userDB.get()
+        if(body.password.length < 8)
+            return res.render('register',{layout:'registerLayout',err:true,msg:"Password too short"})
+        if(body.name.length < 5)
+            return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too small"})
+        if(body.name.length > 20)
+            return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too large"})
         await emailCheck.check(body.email,async(error,response)=>{
             if(!response)
                 return res.render('register',{layout:'registerLayout',err:true,msg:"Email doesn't exist"})
