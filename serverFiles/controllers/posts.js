@@ -8,7 +8,7 @@ const passport = require('passport')
 const bcrypt = require('bcrypt')
 const emailer = require('nodemailer')
 const emailCheck = require('email-existence')
-const validator = require('email-validator')
+const validator = require('@digitalroute/email-verify')
 
 webPush.setVapidDetails('mailto:pravithba10@gmail.com', process.env.PUBLIC_KEY,process.env.PRIVATE_KEY)
 admin.initializeApp({
@@ -371,44 +371,48 @@ const registerPost= async(req,res)=>{
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too small"})
         if(body.name.length > 20)
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too large"})
-        console.log(validator.validate(body.email))
-        if(!validator.validate(body.email))
-            return res.render('register',{layout:'registerLayout',err:true,msg:"Email doesn't exist"})
-        let users = userSnapshot.docs.map(doc=>{
+        console.log(validator.verify(body.email))
+        validator.verify(body.email,async (err,response)=>{
+            if(!response)
+                return res.render('register',{layout:'registerLayout',err:true,msg:"Email doesn't exist"})
+            let users = userSnapshot.docs.map(doc=>{
             if(doc.data().name)
                 return doc.data()
-        })
-        // console.log(response)
-        users = users.filter(e=>e!==undefined)
-        for(i=0;i<users.length;i++){
+            })
+            // console.log(response)
+            users = users.filter(e=>e!==undefined)
+            for(i=0;i<users.length;i++){
             if(users[i].name == body.name)
             return res.render('register',{layout:'registerLayout',err:true,msg:"Another user with same name already exists"})
             if(users[i].email == body.email)
             return res.render('register',{layout:'registerLayout',err:true,msg:"Another user with same email alredy exists"})
-        }
-        const hashedPasswrod = await bcrypt.hash(body.password,10)
-        let userInfoObj = {
+            }
+            const hashedPasswrod = await bcrypt.hash(body.password,10)
+            let userInfoObj = {
             name:body.name,
             email:body.email,
             password:hashedPasswrod,
             image:'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='
-        }
-        let docref = await unVerifiedDB.add(userInfoObj)
-        let transporter = emailer.createTransport({
-            service:'gmail',
-            auth:{
-                user:process.env.BUISSNESS_EMAIL,
-                pass:process.env.BUISSNESS_EMAIL_PASSWORD
             }
+            let docref = await unVerifiedDB.add(userInfoObj)
+            let transporter = emailer.createTransport({
+                service:'gmail',
+                auth:{
+                    user:process.env.BUISSNESS_EMAIL,
+                    pass:process.env.BUISSNESS_EMAIL_PASSWORD
+                }
+            })
+            await transporter.sendMail({
+                from:process.env.BUISSNESS_EMAIL,
+                to:body.email,
+                subject:'Verification link',
+                text:`The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}`,
+                html:`<h1>Mento</h1><br><h3>The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}</h3>`
+            },(err,response)=>{
+                console.log(err,response)
+            })
+            return res.redirect('login')
         })
-        await transporter.sendMail({
-            from:process.env.BUISSNESS_EMAIL,
-            to:body.email,
-            subject:'Verification link',
-            text:`The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}`,
-            html:`<h1>Mento</h1><br><h3>The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}</h3>`
-        })
-        return res.redirect('login')
     }
     catch(err){
         console.log(err)
@@ -519,8 +523,12 @@ const test = async (req,res)=>{
     // console.log("\n===================\nCat :",await getAllPostsFiltered("cat","uiux"))
     // console.log("\n===================\nTags :",await getAllPostsFiltered("tags","TaG1"))
     // console.log("\n===================\nTitle :",await getAllPostsFiltered("title","All posts"))
-    validator.validate("hyrp562@gmail.com")
-    console.log(validator.validate("pravithba10@gmail.com"))
+    // let response = await validator.validate(`hyrp562@gmail.com`)
+    await validator.verify(`hryp562@gmail.com`,(error,response)=>{
+        console.log(response)
+    })
+    // console.log(response.valid)
+    // console.log((await validator.verify("pravithba10jasdjajsdkjasdjasasas@gmail.com")).valid)
     res.end()
 }
 
