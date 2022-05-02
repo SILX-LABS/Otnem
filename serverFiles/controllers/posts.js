@@ -8,6 +8,7 @@ const passport = require('passport')
 const bcrypt = require('bcrypt')
 const emailer = require('nodemailer')
 const emailCheck = require('email-existence')
+const validator = require('email-validator')
 
 webPush.setVapidDetails('mailto:pravithba10@gmail.com', process.env.PUBLIC_KEY,process.env.PRIVATE_KEY)
 admin.initializeApp({
@@ -16,6 +17,7 @@ admin.initializeApp({
 const firebase = admin.firestore()
 const userDB = firebase.collection('userData')
 const unVerifiedDB = firebase.collection('unVerified')
+const chatRoomDB = firebase.collection('chatRoom')
 const {init} = require('../passportConfig')
 init(passport,
     async email=>{
@@ -369,44 +371,44 @@ const registerPost= async(req,res)=>{
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too small"})
         if(body.name.length > 20)
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too large"})
-        await emailCheck.check(body.email,async(error,response)=>{
-            if(!response)
-                return res.render('register',{layout:'registerLayout',err:true,msg:"Email doesn't exist"})
-            let users = userSnapshot.docs.map(doc=>{
+        console.log(validator.validate(body.email))
+        if(!validator.validate(body.email))
+            return res.render('register',{layout:'registerLayout',err:true,msg:"Email doesn't exist"})
+        let users = userSnapshot.docs.map(doc=>{
             if(doc.data().name)
                 return doc.data()
-            })
-            users = users.filter(e=>e!==undefined)
-            for(i=0;i<users.length;i++){
+        })
+        // console.log(response)
+        users = users.filter(e=>e!==undefined)
+        for(i=0;i<users.length;i++){
             if(users[i].name == body.name)
             return res.render('register',{layout:'registerLayout',err:true,msg:"Another user with same name already exists"})
             if(users[i].email == body.email)
             return res.render('register',{layout:'registerLayout',err:true,msg:"Another user with same email alredy exists"})
-            }
-            const hashedPasswrod = await bcrypt.hash(body.password,10)
-            let userInfoObj = {
+        }
+        const hashedPasswrod = await bcrypt.hash(body.password,10)
+        let userInfoObj = {
             name:body.name,
             email:body.email,
             password:hashedPasswrod,
             image:'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='
+        }
+        let docref = await unVerifiedDB.add(userInfoObj)
+        let transporter = emailer.createTransport({
+            service:'gmail',
+            auth:{
+                user:process.env.BUISSNESS_EMAIL,
+                pass:process.env.BUISSNESS_EMAIL_PASSWORD
             }
-            let docref = await unVerifiedDB.add(userInfoObj)
-            let transporter = emailer.createTransport({
-                service:'gmail',
-                auth:{
-                    user:process.env.BUISSNESS_EMAIL,
-                    pass:process.env.BUISSNESS_EMAIL_PASSWORD
-                }
-            })
-            await transporter.sendMail({
-                from:'pravithba10@gmail.com',
-                to:body.email,
-                subject:'Verification link',
-                text:`The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}`,
-                html:`<h1>Mento</h1><br><h3>The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}</h3>`
-            })
-            return res.redirect('login')
         })
+        await transporter.sendMail({
+            from:process.env.BUISSNESS_EMAIL,
+            to:body.email,
+            subject:'Verification link',
+            text:`The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}`,
+            html:`<h1>Mento</h1><br><h3>The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}</h3>`
+        })
+        return res.redirect('login')
     }
     catch(err){
         console.log(err)
@@ -484,11 +486,41 @@ const changeCredentials = async(req,res)=>{
         console.log(err)
     }
 }
+const chatRoom = async(req,res)=>{
+    // const userName = await getUserName(req)
+    const userName = "LOL"
+    let dividerStr = ' || '
+    const{user1,user2} = await req.query
+    let randStr
+    let snap = await chatRoomDB.get()
+    let chatRoomObj = {}
+    let i = 0
+    snap.forEach((doc)=>{
+        chatRoomObj[`${i}`] = {id:doc.id,divider:`${doc.data().dividerStr}`}
+        i++
+    })
+    console.log(chatRoomObj)
+    if(user1 == user2)
+        return res.send('You cant chat with yourself looser loner garbage')
+    
+    while(user1.includes(dividerStr) || user2.includes(dividerStr)){
+        await delay(000).then(()=>{
+            randStr = ((Math.random() + 1).toString(36).substring(10))[0]
+            console.log(randStr)
+            dividerStr = ` ${randStr}${randStr} `
+            console.log(dividerStr)
+        })
+    }
+    console.log("======================================")
+    return res.send("success")
+}
 const test = async (req,res)=>{
-    console.log("\n===================\nAll :",await getAllPostsFiltered('fuajs='))
-    console.log("\n===================\nCat :",await getAllPostsFiltered("cat","uiux"))
-    console.log("\n===================\nTags :",await getAllPostsFiltered("tags","TaG1"))
-    console.log("\n===================\nTitle :",await getAllPostsFiltered("title","All posts"))
+    // console.log("\n===================\nAll :",await getAllPostsFiltered('fuajs='))
+    // console.log("\n===================\nCat :",await getAllPostsFiltered("cat","uiux"))
+    // console.log("\n===================\nTags :",await getAllPostsFiltered("tags","TaG1"))
+    // console.log("\n===================\nTitle :",await getAllPostsFiltered("title","All posts"))
+    validator.validate("hyrp562@gmail.com")
+    console.log(validator.validate("pravithba10@gmail.com"))
     res.end()
 }
 
@@ -606,4 +638,7 @@ async function getAllPostsFiltered(attr,element){
 
     }
 }
-module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost}
+function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+}
+module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom}

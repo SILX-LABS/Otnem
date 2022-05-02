@@ -27,6 +27,7 @@
     "connect-ensure-login": "^0.1.1",
     "dotenv": "^16.0.0",
     "email-existence": "^0.1.6",
+    "email-validator": "^2.0.4",
     "express": "^4.17.3",
     "express-flash": "0.0.2",
     "express-handlebars": "^6.0.3",
