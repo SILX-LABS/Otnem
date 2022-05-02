@@ -23,8 +23,8 @@
               </div>
             </div>
             <div class="bottom">
-              <div class="UserDetails">
-                <div class="UserImage">
+              <div class="UserDetails" style="cursor:pointer" onclick="window.location.href = '/profile?user={{postUser}}'">
+                <div class="UserImage" >
                   <img src="{{posterProfilePic}}" alt="User Profile Image">
                 </div>
                 <div class="name_time">
@@ -52,9 +52,9 @@
                 {{#each commentsArray}}
                 <div class="comment-card" style="display:grid;">
                 <div style="display:grid;align-items: center;grid-auto-flow: column;">
-                  <div style="display: flex;flex-wrap: wrap;background:none">
-                    <img src="{{profilePic}}" style="border-radius: 50%;width:3em;height:3em;">
-                    <div class="user" style="background:none;padding:0;width:max-content;height:max-content;font-size:2em;margin:0 0 0 0.3em;font-family: 'Courier New', Courier, monospace;font-weight: bold;">{{user}}</div>
+                  <div style="display: flex;flex-wrap: wrap;background:none" >
+                    <img src="{{profilePic}}" style="cursor:pointer;border-radius: 50%;width:3em;height:3em;" onclick="window.location.href = '/profile?user={{user}}'">
+                    <div class="user" style="background:none;padding:0;width:max-content;height:max-content;font-size:2em;margin:0 0 0 0.3em;font-family: 'Courier New', Courier, monospace;font-weight: bold;cursor:pointer;" onclick="window.location.href = '/profile?user={{user}}'">{{user}}</div>
                       {{#if verified}}
                       <i class="fa-solid fa-circle-check" style="color:#1AE4FF;margin:0.9em 0 0 1em;"></i>
                       {{/if}}
