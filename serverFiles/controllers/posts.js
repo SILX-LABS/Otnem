@@ -19,6 +19,7 @@ const userDB = firebase.collection('userData')
 const unVerifiedDB = firebase.collection('unVerified')
 const chatRoomDB = firebase.collection('chatRoom')
 const {init} = require('../passportConfig')
+const { response } = require('express')
 init(passport,
     async email=>{
         let snapshot = await userDB.get()
@@ -491,20 +492,38 @@ const changeCredentials = async(req,res)=>{
 const chatRoom = async(req,res)=>{
     try{
         const userName = await getUserName(req)
-        const{user1,user2} = await req.query
-        if(userName != user1 && userName != user2)
+        const{user} = await req.query
+        if(!await checkIfDocExists(userDB,user))
+            return res.send(`${user} doesnt exist`)
+        if(userName != userName && userName != user)
             return res.send("Access denied")
-        if(user1 == user2)
+        if(userName == user)
             return res.send('You cant chat with yourself looser loner garbage')
-        const snap = await chatRoomDB.where('user1','==',user1,'&&','user2','==',user2).get()
-        if(!snap.empty)
-            return res.send({chats:(await chatRoomDB.doc(snap.docs[0].id).collection('chats').get()).docs.map(doc=>{return doc.data()})})
-        await chatRoomDB.doc().set({user1:user1,user2:user2})
-        console.log("======================================")
-        return res.send("success")
+        const snap = await chatRoomDB.where('user1','==',userName,'&&','user2','==',user).get()
+        if(snap.docs[0])
+            return res.send({chats:(await chatRoomDB.doc(snap.docs[0].id).collection('chats').orderBy("time").get()).docs.map(doc=>{return {data:doc.data()}}),chatRoomId:snap.docs[0].id})
+        let response = await chatRoomDB.add({user1:userName,user2:user})
+        return res.send({chats:[],chatRoomId:response.id})
     }catch(err){
         console.log(err)
     }
+}
+const addChat = async(req,res)=>{
+    const user = await getUserName(req)
+    // const userName = 'LOL
+    const {chatRoomId,chat} = await req.body
+    let chats = (await chatRoomDB.doc(chatRoomId).get()).data()
+    console.log(chats,user)
+    if(chats.user1 != user && chats.user2 != user)
+        return res.send("User not allowed")
+    console.log(new Date().getMilliseconds())
+    const currentMilli = Date.parse(new Date())
+    const response = await chatRoomDB.doc(chatRoomId).collection("chats").add({
+        user:user,
+        chat:chat,
+        time:currentMilli
+    })
+    res.send({success:true,chat:chat,response:response.id})
 }
 const test = async (req,res)=>{
     // console.log("\n===================\nAll :",await getAllPostsFiltered('fuajs='))
@@ -637,4 +656,4 @@ async function getAllPostsFiltered(attr,element){
 function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
-module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom}
+module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,addChat}
