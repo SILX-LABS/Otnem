@@ -489,32 +489,22 @@ const changeCredentials = async(req,res)=>{
     }
 }
 const chatRoom = async(req,res)=>{
-    // const userName = await getUserName(req)
-    const userName = "LOL"
-    let dividerStr = ' || '
-    const{user1,user2} = await req.query
-    let randStr
-    let snap = await chatRoomDB.get()
-    let chatRoomObj = {}
-    let i = 0
-    snap.forEach((doc)=>{
-        chatRoomObj[`${i}`] = {id:doc.id,divider:`${doc.data().dividerStr}`}
-        i++
-    })
-    console.log(chatRoomObj)
-    if(user1 == user2)
-        return res.send('You cant chat with yourself looser loner garbage')
-    
-    while(user1.includes(dividerStr) || user2.includes(dividerStr)){
-        await delay(000).then(()=>{
-            randStr = ((Math.random() + 1).toString(36).substring(10))[0]
-            console.log(randStr)
-            dividerStr = ` ${randStr}${randStr} `
-            console.log(dividerStr)
-        })
+    try{
+        const userName = await getUserName(req)
+        const{user1,user2} = await req.query
+        if(userName != user1 && userName != user2)
+            return res.send("Access denied")
+        if(user1 == user2)
+            return res.send('You cant chat with yourself looser loner garbage')
+        const snap = await chatRoomDB.where('user1','==',user1,'&&','user2','==',user2).get()
+        if(!snap.empty)
+            return res.send({chats:(await chatRoomDB.doc(snap.docs[0].id).collection('chats').get()).docs.map(doc=>{return doc.data()})})
+        await chatRoomDB.doc().set({user1:user1,user2:user2})
+        console.log("======================================")
+        return res.send("success")
+    }catch(err){
+        console.log(err)
     }
-    console.log("======================================")
-    return res.send("success")
 }
 const test = async (req,res)=>{
     // console.log("\n===================\nAll :",await getAllPostsFiltered('fuajs='))
@@ -522,9 +512,9 @@ const test = async (req,res)=>{
     // console.log("\n===================\nTags :",await getAllPostsFiltered("tags","TaG1"))
     // console.log("\n===================\nTitle :",await getAllPostsFiltered("title","All posts"))
     // let response = await validator.validate(`hyrp562@gmail.com`)
-    await validator.verify(`hryp562@gmail.com`,(error,response)=>{
-        console.log(response)
-    })
+    // await validator.verify(`hryp562@gmail.com`,(error,response)=>{
+    //     console.log(response)
+    // })
     // console.log(response.valid)
     // console.log((await validator.verify("pravithba10jasdjajsdkjasdjasasas@gmail.com")).valid)
     res.end()
