@@ -1,0 +1,49 @@
+{{> navBar profilePic = profilePic isAuth = true}}
+<div id="chat-c">
+
+</div>
+<input type="text" name="l" id="ll">
+<button id="l">Send Message</button>
+
+<noscript id="vars" user="{{userName}}" pfp="{{profilePic}}" user2="{{user}}" pfp2="{{profilePic2}}" ></noscript>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io()
+    main()
+    async function main(){
+        let user = getUrlVars().user
+        let {data} = await axios.get(`/chats?user=${user}`,{user:user})
+        console.log(data.chats)
+        data.chats.forEach(chat=>{
+            let user = document.createElement('h1')
+            user.innerText = chat.user
+            let msg = document.createElement('h4')
+            msg.innerText = chat.msg
+            let chatDiv = document.createElement('div')
+            chatDiv.append(user,msg)
+            document.querySelector('#chat-c').appendChild(chatDiv)
+        })
+        socket.emit('joinRoom',user)
+        $('#lll').click(async e=>{
+        })
+        socket.on('message',(msg,userName)=>{
+            console.log(msg,userName)
+        })
+        $('#l').click(e=>{
+            socket.emit('chatMsg',user,$('#ll').val())
+            console.log('clicked')
+        })
+    }
+    //await axios.get('/chats',{user:user[1]})
+    function getUrlVars(){
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for(var i = 0; i < hashes.length; i++)
+        {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+    }
+</script>

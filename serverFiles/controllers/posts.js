@@ -156,6 +156,18 @@ const uploadPostPage = async(req,res)=>{
         console.log(error)
     }
 }
+const chatPage = async(req,res,next)=>{
+    const {user} = await req.query
+    let userName = await getUserName(req)
+    if(!userName)
+        return res.redirect('login')
+    if(!await checkIfDocExists(userDB,user))
+        return res.redirect('login')
+        // return res.send("User doesnt exist")
+    const user1 = await getUser(userName)
+    const user2 = await getUser(user)
+    return res.render('chatRoom',{userName:userName,profilePic:user1.profilePic,user:user,profilePic2:user2.profilePic})
+}
 const deletePost = async(req,res)=>{
     try{
         const {postNum} = await req.body
@@ -432,7 +444,8 @@ const loginPost = async(req,res)=>{
         bcrypt.compare(body.password,((await userDB.doc(userName).get()).data()).password,(err,bcResponse)=>{
             if(!bcResponse)
                 return res.render('login',{layout:'loginLayout',err:true,msg:"Wrong Password"})
-            req.login(body,(error,response)=>{})
+            req.login(body,(error,response)=>{
+            })
             return res.redirect('/')
         })
     }
@@ -499,11 +512,19 @@ const chatRoom = async(req,res)=>{
             return res.send("Access denied")
         if(userName == user)
             return res.send('You cant chat with yourself looser loner garbage')
-        const snap = await chatRoomDB.where('user1','==',userName,'&&','user2','==',user).get()
-        if(snap.docs[0])
-            return res.send({chats:(await chatRoomDB.doc(snap.docs[0].id).collection('chats').orderBy("time").get()).docs.map(doc=>{return {data:doc.data()}}),chatRoomId:snap.docs[0].id})
-        let response = await chatRoomDB.add({user1:userName,user2:user})
-        return res.send({chats:[],chatRoomId:response.id})
+        const snap = await chatRoomDB.get()
+        if(userName == user)
+            return
+        snap.docs.forEach(doc=>{
+            let data = doc.data()
+            if(data.users.includes(userName)){
+                if(data.users.includes(user))
+                    roomID = doc.id
+            }
+        })
+        let chats = await chatRoomDB.doc(roomID).collection('chats').orderBy('time').get()
+        chats = chats.docs.map(doc=>{return doc.data()})
+        return res.send({chats:chats,chatRoomId:response.id})
     }catch(err){
         console.log(err)
     }
@@ -525,18 +546,8 @@ const addChat = async(req,res)=>{
     })
     res.send({success:true,chat:chat,response:response.id})
 }
-const test = async (req,res)=>{
-    // console.log("\n===================\nAll :",await getAllPostsFiltered('fuajs='))
-    // console.log("\n===================\nCat :",await getAllPostsFiltered("cat","uiux"))
-    // console.log("\n===================\nTags :",await getAllPostsFiltered("tags","TaG1"))
-    // console.log("\n===================\nTitle :",await getAllPostsFiltered("title","All posts"))
-    // let response = await validator.validate(`hyrp562@gmail.com`)
-    // await validator.verify(`hryp562@gmail.com`,(error,response)=>{
-    //     console.log(response)
-    // })
-    // console.log(response.valid)
-    // console.log((await validator.verify("pravithba10jasdjajsdkjasdjasasas@gmail.com")).valid)
-    res.end()
+const test = async (req,res,next)=>{
+    console.log(await req.session)
 }
 
 // CUSTOM FUNCTIONS
@@ -656,4 +667,4 @@ async function getAllPostsFiltered(attr,element){
 function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
-module.exports = {admin,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,addChat}
+module.exports = {admin,chatRoomDB,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,addChat,chatPage}
