@@ -13,6 +13,7 @@
     async function main(){
         let user = getUrlVars().user
         let {data} = await axios.get(`/chats?user=${user}`,{user:user})
+        console.log(data.chats)
         data.chats.forEach(chat=>{
             let user = document.createElement('h1')
             user.innerText = chat.user
@@ -25,14 +26,8 @@
         socket.emit('joinRoom',user)
         $('#lll').click(async e=>{
         })
-        socket.on('message',(msg)=>{
-            let user = document.createElement('h1')
-            user.innerText = msg.userName
-            let msgH4 = document.createElement('h4')
-            msgH4.innerText = msg.msg
-            let chatDiv = document.createElement('div')
-            chatDiv.append(user,msgH4)
-            document.querySelector('#chat-c').appendChild(chatDiv)
+        socket.on('message',(msg,userName)=>{
+            console.log(msg,userName)
         })
         $('#l').click(e=>{
             socket.emit('chatMsg',user,$('#ll').val())
