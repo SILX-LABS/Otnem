@@ -59,7 +59,7 @@
                       <i class="fa-solid fa-circle-check" style="color:#1AE4FF;margin:0.9em 0 0 1em;"></i>
                       {{/if}}
                       {{#if own}}
-                        <i class="fa-solid fa-trash-can" style="postition:absolute;color:red;margin:0.4em 0 0 1em;  font-size:1.5em;cursor:pointer;height:fit-content;" onclick="deleteComment('{{commentNum}}')"></i>
+                        <i class="fa-solid fa-trash-can" style="postition:absolute;color:red;margin:0.4em 0 0 1em;  font-size:1.5em;cursor:pointer;height:fit-content;" onclick="deleteComment('{{commentNum}}','{{user}}')"></i>
                       {{/if}}
                     </div>
                 </div>
@@ -85,28 +85,23 @@
     location.reload()
   }
   async function comment(postNum,postUser){
-    console.log($('#comment-inp').val())
     let comment = $('#comment-inp').val()
     let res = await axios.post('/comment',{
         comment:comment,
         postNum:postNum,
         postUser:postUser
       })
-    console.log(res)
     if(res.data.startsWith('<!DOCTYPE html>'))
       location.href = '/login'
     else
       location.reload()
   }
-  async function deleteComment(commentNum){
-    console.log("START")
+  async function deleteComment(commentNum,commentUser){
     let postNum = $("#data").attr('postNum')
-    let postUser = $("#data").attr('postUser')
-    let res = await axios.delete('/deleteComment',{data:{commentNum:commentNum,postNum:postNum,postUser:postUser}})
-    console.log(res)
+    let postUser = $("#data").attr('postuser')
+    let res = await axios.delete('/deleteComment',{data:{commentNum:commentNum,postNum:postNum,commentUser,postUser:postUser}})
     if(typeof res.data == 'string' && res.data.startsWith('<!DOCTYPE html>'))
       location.href = '/login'
     location.reload()
-    console.log(commentNum,postNum,postUser)
   }
 </script>

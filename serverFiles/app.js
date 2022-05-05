@@ -63,6 +63,25 @@ io.on('connection',async socket=>{
         await socket.join(roomID)
         socket.broadcast.to(roomID).emit('wlcmMessage',`${user},${roomID}`)
     })
+    socket.on('leaveRoom',async(user)=>{
+        let roomID
+        let userName = socket.request.session.passport.user
+        let snap = await chatRoomDB.get()
+        if(userName == user)
+            return
+        snap.docs.forEach(doc=>{
+            let data = doc.data()
+            if(data.users.includes(userName)){
+                if(data.users.includes(user))
+                    roomID = doc.id
+            }
+        })
+        if(!roomID){
+            let response = await chatRoomDB.add({users:[userName,user]})
+            roomID = response.id
+        }
+        await socket.leave(roomID)
+    })
     socket.on('chatMsg',async (user,msg)=>{
         let roomID
         const userName = socket.request.session.passport.user
@@ -83,11 +102,7 @@ io.on('connection',async socket=>{
         await chatRoomDB.doc(roomID).collection('chats').add({user:userName,msg:msg,time:Date.parse(new Date())})
         io.to(roomID).emit('message',{msg:`${msg}`,userName:userName})
     })
-    socket.on('disconect',()=>{
-        console.log('discornected')
-    })
 })
 server.listen(1000,()=>{
     console.log(`Listning on http://localhost:${PORT}`)
-    // open(`http://localhost:${PORT}`,{app:'operaGX'})
 })

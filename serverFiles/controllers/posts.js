@@ -208,11 +208,12 @@ const postComments = async(req,res)=>{
 const deleteComment = async (req,res)=>{
     try{
         const userName = await getUserName(req)
-        const{commentNum,postNum,postUser} = await req.body
-        if(userName != postUser)
+        const{commentNum,postNum,postUser,commentUser} = await req.body
+        if(userName != commentUser)
             return res.send({status:400,success:false})
         let result = await userDB.doc(postUser).collection('posts').doc(postNum).collection('comments').doc(commentNum).delete()
-        res.end()
+        console.log(commentNum,postNum,postUser,commentUser)
+        res.send(result)
     }
     catch(err){
         console.log(err)
