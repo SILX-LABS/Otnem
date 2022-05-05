@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- ========== Required meta tags  ==========-->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Settings | Mento - Share your project with the world</title>
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!--========== Font Awesome ICONS ==========-->
+  <link rel="stylesheet" href="assets/css/fontawesome.min.css" />
+  <!--========== Google Fonts ==========-->
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+
+  <!--========== Normalize CSS ==========-->
+  <link rel="stylesheet" href="assets/css/normalize.css" />
+  <link rel="stylesheet" href="./cssx/style.css">
+
+  <!--========== MAIN CSS ==========-->
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+ <style>
+   .popup {
+  display: none;
+  position: fixed;
+  padding: 10px;
+  width: 280px;
+  left: 50%;
+  margin-left: -150px;
+  height: 180px;
+  top: 50%;
+  margin-top: -100px;
+  z-index: 20;
+}
+
+#popup1 {
+  -webkit-box-shadow:  0px 0px 0px 9999px rgba(0, 0, 0, 0.5);
+  box-shadow:  0px 0px 0px 9999px rgba(0, 0, 0, 0.5);
+}
+
+#popup2:after {
+  position: fixed;
+  content: "";
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: -2;
+}
+
+#popup2:before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: none;
+  right: 0;
+  z-index: -1;
+}
+
+.popup a,
+.popup a:visited {
+  color: #E43D30;
+  text-decoration: none;
+}
+
+.pen {
+  color: #5F6368;
+  height: 50px;
+  position: absolute;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  background-color:#ECEDEF;
+}
+
+ </style>
+
+<body>
+  <div class="main__page">
+    <!-- === Navbar Start === -->
+    <div class="navbar__">
+      <div class="navbar__elements">
+        <!-- Navbar Logo -->
+        <div class="logo_company">
+          <a href="#" class="au">
+            <h3>Mento</h3>
+          </a>
+          <!-- <img src="" alt=""> -->
+        </div>
+        <!-- Navbar Links -->
+        <div class="navbar_links">
+          <ul>
+            <a href="#" class="au">
+              <li >Home</li>
+            </a>
+            <a href="#" class="au">
+              <li>Books</li>
+            </a>
+            <a href="#" class="au">
+              <li>Jobs</li>
+            </a>
+            <a href="#" class="au">
+              <li>Support</li>
+            </a>
+
+          </ul>
+        </div>
+        <!-- Navbar Search Bar -->
+        <!-- Navbar Search Bar -->
+        <form action="" class="navbar_Form">
+          <div class="Navbar_SearchBar">
+            <input id="SearchBar" type="text" placeholder="Search ..">
+            <i class="fa-solid fa-xmark" id="ExitOfSearch"></i>
+          </div>
+        </form>
+        <!-- Navbar Icons Section -->
+        <div class="navbar_section">
+          <a href="#" class="au">
+            <i class="fa-solid fa-envelope" id="Emails"></i>
+          </a>
+          <a href="#" class="au">
+            <i class="fa-solid fa-magnifying-glass" id="Search"></i>
+          </a>
+          <a href="./notification.html" class="au">
+            <i class="fa-solid fa-bell" id="Notification"></i>
+          </a>
+
+          <div class="profile">
+            <a href="profile.html">
+              <img src="./assets/img/avatar.jpg" alt="Profile Image">
+
+            </a>
+          </div>
+          <a href="login.html" class="au">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </a>
+        </div>
+        <!-- Navbar Post Button -->
+        <div class="navbar_Post_Link">
+          <a href="#" class="au">
+            <button class="navbar_Post"  onclick="show('popup2')">
+              Upload
+            </button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="popup" id="popup2">
+      <div class="choose">
+          <a href="./camera-post.html" class="camera"><i class="fa-solid fa-camera"></i></a>
+           <a  href="./video-post.html" class="video"><i class="fa-solid fa-video"></i></a>
+      </div>
+      <a href="#" class="exit" onclick="hide('popup2')">Exit</a>
+    </div>
+    <!-- === Navbar End === -->
+    <!-- MOBILE NAVBAR START -->
+    <div class="navbar_mobile">
+      <ul class="items">
+        <a href="#" class="au">
+          <li><i class="fa-solid fa-house"></i></li>
+        </a><a href="#" class="au">
+          <li><i class="fa-solid fa-bookmark"></i></li>
+        </a>
+      </ul>
+      <a href="#">
+        <button class="btn_createPost">
+          Create
+        </button>
+      </a>
+      <ul class="items">
+        <a href="#" class="au">
+          <li><i class="fa-solid fa-bell"></i></li>
+        </a><a href="#" class="au">
+          <li><i class="fa-solid fa-user"></i></li>
+        </a>
+      </ul>
+    </div>
+    <!-- MOBILE NAVBAR END -->
+    <!-- === Items Links Selector Start === -->
+
+    </div>
+    <!-- === Items Links Selector End === -->
+    <section>
+		<div class="container">
+			<div class="bg-white shadow rounded-lg d-block d-sm-flex">
+				<div class="profile-tab-nav border-right">
+					<div class="p-4">
+						<div class="img-circle text-center mb-3" style="display: flex;justify-content: center;align-items: center;">
+
+							<img src="./assets/img/avatar.jpg" alt="Image" class="shadow" style="position: relative;">
+                            <div class="pen">
+                                <i class="fa-solid fa-pen-to-square" ></i>
+                            </div>
+
+						</div>
+						<h4 class="text-center">Eyad Gomaa</h4>
+					</div>
+					<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+						<a class="nav-link active" id="account-tab" data-toggle="pill" href="#account" role="tab" aria-controls="account" aria-selected="true">
+							<i class="fa fa-home text-center mr-1"></i> 
+							  Account
+						</a>
+						<a class="nav-link" id="password-tab" data-toggle="pill" href="#password" role="tab" aria-controls="password" aria-selected="false">
+							<i class="fa fa-key text-center mr-1"></i> 
+							Password
+						</a>
+
+					</div>
+				</div>
+				<div class="tab-content p-4 p-md-5" id="v-pills-tabContent">
+					<div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
+						<h3 class="mb-4">Account Settings</h3>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>First Name</label>
+								  	<input type="text" placeholder="Enter your first name" class="form-control">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>Last Name</label>
+								  	<input type="text" class="form-control"  placeholder="Enter your last name">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>Email</label>
+								  	<input type="text" class="form-control" placeholder="Enter your email ">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>Paypal</label>
+								  	<input type="text" class="form-control" placeholder="Enter your paypal">
+								</div>
+							</div>
+
+
+							<div class="col-md-12">
+								<div class="form-group">
+								  	<label>Bio</label>
+									<textarea class="form-control" placeholder="Enter your bio" rows="4"></textarea>
+								</div>
+							</div>
+						</div>
+						<div style="display: flex;">
+							<button class="btn  " style="background-color: #000;color:#fff">Update</button>
+							<button class="btn btn-light">Cancel</button>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+						<h3 class="mb-4">Password Settings</h3>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>Old password</label>
+								  	<input type="password" class="form-control" placeholder="Enter your current password">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>New password</label>
+								  	<input type="password" class="form-control" placeholder="Enter your new password">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>Confirm new password</label>
+								  	<input type="password" class="form-control" placeholder="Confirm your password">
+								</div>
+							</div>
+						</div>
+						<div style="display:flex">
+							<button class="btn " style="background-color: #000;color:#fff">Update</button>
+							<button class="btn btn-light">Cancel</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</section>
+
+  </div>
+  <!--========== Bootstrap 5 JS ==========-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js "
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM "
+    crossorigin="anonymous "></script>
+
+  <!--========== POPPER JS ==========-->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js "
+    integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p "
+    crossorigin="anonymous "></script>
+
+  <!--========== JQuery JS ==========-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js "></script>
+
+  <!--========== MAIN JS ==========-->
+  <script src="assets/js/main.js"></script>
+  <script>
+    $ = function(id) {
+  return document.getElementById(id);
+}
+
+var show = function(id) {
+  $(id).style.display ='block';
+}
+var hide = function(id) {
+  $(id).style.display ='none';
+}
+  </script>
+
+<script type="text/javascript">
+  document.getElementById("post_box").onclick = function () {
+      location.href = "http://localhost:1000/MentoProject/post-details.html";
+  };
+  </script>
+  	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>
