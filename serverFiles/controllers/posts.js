@@ -97,6 +97,9 @@ const profile = async(req,res)=>{
         console.log(err)
     }
 }
+const settings = async(req,res)=>{
+    res.render('settings')
+}
 const notifPage = async(req,res)=>{
     let userName = await getUserName(req)
     let user = await getUser(userName)
@@ -668,4 +671,4 @@ async function getAllPostsFiltered(attr,element){
 function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
-module.exports = {admin,chatRoomDB,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,addChat,chatPage}
+module.exports = {admin,chatRoomDB,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,addChat,chatPage,settings}

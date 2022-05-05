@@ -666,6 +666,8 @@ section {
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   margin: 0 1rem;
   gap: 3rem;
+  margin-top: 40px;
+
 }
 
 .user {
@@ -714,12 +716,36 @@ section {
   position: relative;
 }
 
+.post-info {
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border-bottom: 2px solid #ECECEC;
+}
+.topx h2 {
+  font-weight: bold;
+}
 .grid_postsx .post_boxx{
   overflow: hidden;
   border-radius: 50px;
-  height: 720px;
+  height: 800px;
   width: 600px;
   position: relative;
+}
+
+.full_post {
+  height: 54px;
+  width: 340px;
+}
+.bottom-post {
+height: 50px;
+display: flex;
+font-weight: bold;
+justify-content:center;
+align-items: center;
+width: 100%;
 }
 
 .cardxx{
@@ -734,11 +760,14 @@ section {
   outline: none;
 }
 #sub-btn-cmnt{
-  border:1px solid #23f649;
+  border: 1px solid #23f649;
   background-color: #23f649;
-  color:white;
-  border-radius: 0.2em;
-  cursor:pointer;
+  color: white;
+  height: 68px;
+  width: 100%;
+  border-radius: 1.2em;
+
+  cursor: pointer;
 }
 #sub-btn-cmnt:hover{
   background-color:transparent;

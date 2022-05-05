@@ -6,9 +6,19 @@
 {{> navBar profilePic = 'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='}}
 {{/unless}}
 {{!-- {{userObj}} --}}
+<style>
+  .bottom-post {
+height: 50px;
+display: flex;
+font-weight: bold;
+justify-content:center;
+align-items: center;
+width:100%;
+  }
+</style>
 <div class="posts_cards">
   <div class="container-fluid">
-    <div class="top-profile">
+    <div class="top-profile" style="margin-top: 40px;">
        <div class="user"> 
           <div class="pd-left">
             <div class="pd-row">
@@ -17,6 +27,11 @@
                  <h3>{{userName}}</h3>
                  <p>{{followers}} Followers | {{following}} Following</p>
                </div>
+               <a href="./settings">
+                 <div class="settings">
+                   <i class="fa-solid fa-gear"></i>
+               </div>
+               </a>
             </div>
           </div>
           <div class="pd-right">
@@ -24,44 +39,59 @@
         </div>
         <div class="cover">
            <img src="./assets/img/grid.jpg"/>
+      <div class="pen" style="">
+          <i class="fa-solid fa-pen-to-square" ></i>
+
+        </div>
         </div>
     </div>
  {{#unless isPost}}
 <div style="display: grid;place-items: center;height:25vw;">
-  <h2 style="margin-left:0vw;font-size:1.5em;font-family: 'Courier New', Courier, monospace;font-weight: bold;color:white;background-color: rgb(232, 29, 29);display:inline-block;padding:0.5em 1em;border-radius:0.2em">Sorry, No Posts Available!</h2>
+  <h2 style="margin-left:0vw;font-size:1.5em;font-weight: bold;color:#757575;display:inline-block;padding:0.5em 1em;border-radius:0.2em">Sorry, No Posts Available!</h2>
 </div>
 {{/unless}}
     <div class="grid_posts">  
-      {{#each posts}}
-        <div class="post_box" data-type="art" style="cursor: pointer;" onclick="window.location.href = '/postPreview?postNum={{id}}&&user={{name}}'">
+     <div class="full_post">
+        {{#each posts}}
+        <div class="post_box" data-type="art" onclick="window.location.href = '/postPreview?postNum={{postName}}&&user={{userName}}'">
           <div class="index_image">
-            <img src="{{img}}" alt="">
+              <img src="{{img}}" alt="Image Not Available">
           </div>
           <div class="top">
-            <div class="items">
-              <div class="item comment"> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">  <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg> </div>
-              <div class="item star"><i class="fa-solid fa-star"></i></div>
-            </div>
+              <div class="items">
+                <div class="item comment"> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">  <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg> </div>
+                <div class="item star"><i class="fa-solid fa-star"></i></div>
+              </div>
           </div>
           <div class="bottom">
-            <div class="UserDetails">
+            <div class="UserDetails" style="cursor: pointer;" onclick="window.location.href = '/profile?user={{userName}}'">
               <div class="UserImage">
                 <img src="{{profilePic}}" alt="User Profile Image">
               </div>
               <div class="name_time">
                 <div class="name">
-                  <h6 style="width: 3em;height:1.3em;overflow: hidden !important;text-overflow: ellipsis;white-space: nowrap;text-align: end; margin-right:0.5em">{{name}}</h6>
+                  <h6 style="width: auto;height:1.3em;overflow: hidden !important;text-overflow: ellipsis;white-space: nowrap;text-align: end; margin-right:0.5em">{{userName}}</h6>
                   {{#if verified}}
-                  <i class="fa-solid fa-circle-check"></i>
+                    <i class="fa-solid fa-circle-check"></i>
                   {{/if}}
                 </div>
                 <h6>{{date}}</h6>
               </div>
             </div>
-            <div class="post_name">
-              <h5 style="width: 7em;height:1.3em;overflow: hidden !important;text-overflow: ellipsis;white-space: nowrap;text-align: end; margin-right:0.5em">{{title}}</h5>
-            </div>
+              <div class="post_name">
+                    <h5 style="width: 4rem;height:1.3em;overflow: hidden !important;text-overflow: ellipsis;white-space: nowrap;text-align: end; margin-right:0.5em">{{title}}</h5>
+              </div>
           </div>
+
         </div>
       {{/each}}
+      <div class="bottom-post">
+        <div>
+                 <h2></h2>
+                 <p>0 Likes | 0 Comments </p>
+
+                
+               </div>
+      </div>
+     </div>
 {{/with}}

@@ -14,11 +14,16 @@
             </div>
             <div class="top">
               <div class="items">
+                
                 {{#if isDeletable}}
                 <div class="item edit" style="background-color: red;"onclick='axios.delete(`/deletePost`,{data:{postNum:"{{postNum}}"}});location.href = "/profile"'><i class="fa-solid fa-trash-can" style="color: white;"></i></div>
                 {{/if}}
                 {{!-- <div class="item comment"> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">  <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg> </div> --}}
-                <div class="item star" ><i class="fa-solid fa-star"></i></div>
+               
+                     <div class="item hire" ><i class="fa-solid fa-user-group"></i></div>
+                    <div class="item donate" ><i class="fa-solid fa-money-bill"></i></div>
+
+                     <div class="item star" ><i class="fa-solid fa-star-half-stroke"></i></div>
 
               </div>
             </div>
@@ -38,7 +43,7 @@
                 </div>
               </div>
               <div class="post_name">
-                <h5 style="width: 18em;height:1.3em;overflow: hidden !important;text-overflow: ellipsis;white-space: nowrap;text-align: end; margin-right:0.5em">{{title}}</h5>
+                <h5 style="width: 100%;height:1.3em;overflow: hidden !important;text-overflow: ellipsis;white-space: nowrap;text-align: end; margin-right:0.5em">{{title}}</h5>
               </div>
             </div>
           </div>
@@ -47,14 +52,24 @@
             <div class="topx">
               <h2>Opinions</h2>
             </div>
-              <div style="height:33em;border-bottom: 1px solid #ECECEC;">
+            <div class="post-info">
+                <div>
+                  <h2></h2>
+                 <p>0 Likes | 0 Comments | 0 Shares</p>
+               </div>
+            </div>
+              <div style="height:25em;border-bottom: 1px solid #ECECEC;">
             <div class="comment-c" style="padding: 1em 0 0 1em;display:flex;flex-wrap:wrap;overflow-y:auto;gap:1em;max-height:33em;background:none;flex-direction: column;">
                 {{#each commentsArray}}
-                <div class="comment-card" style="display:grid;">
+                <div class="comment-card" style="    display: grid;
+    width: 344px;
+    background: #ECEDEF;
+    padding: 16px;
+    border-radius: 25px;">
                 <div style="display:grid;align-items: center;grid-auto-flow: column;">
                   <div style="display: flex;flex-wrap: wrap;background:none" >
                     <img src="{{profilePic}}" style="cursor:pointer;border-radius: 50%;width:3em;height:3em;" onclick="window.location.href = '/profile?user={{user}}'">
-                    <div class="user" style="background:none;padding:0;width:max-content;height:max-content;font-size:2em;margin:0 0 0 0.3em;font-family: 'Courier New', Courier, monospace;font-weight: bold;cursor:pointer;" onclick="window.location.href = '/profile?user={{user}}'">{{user}}</div>
+                    <div class="user" style="background:none;padding:0;width:max-content;height:max-content;font-size:1.7em;margin:0 0 0 0.3em;font-weight: bold;cursor:pointer;" onclick="window.location.href = '/profile?user={{user}}'">{{user}}</div>
                       {{#if verified}}
                       <i class="fa-solid fa-circle-check" style="color:#1AE4FF;margin:0.9em 0 0 1em;"></i>
                       {{/if}}
@@ -69,7 +84,7 @@
             </div>
              </div>
             <div class="bottom" style="width:39vw;margin:0.3em 0 0.8em 0.5vw;display:grid;height:6.7em;">
-              <textarea name="comment" id="comment-inp" cols="20" rows="8" style="resize: none;outline:none;padding:0.5em ;border:none" placeholder="Comment here"></textarea>
+              <textarea name="comment" id="comment-inp" cols="20" rows="8" style="resize: none;outline:none;padding:0.5em ;border:none" placeholder="Enter your Opinions"></textarea>
               <button type="submit" id="sub-btn-cmnt" onclick="comment('{{postNum}}','{{postUser}}')">Comment</button>
             </div>
           </div>
@@ -85,23 +100,28 @@
     location.reload()
   }
   async function comment(postNum,postUser){
+    console.log($('#comment-inp').val())
     let comment = $('#comment-inp').val()
     let res = await axios.post('/comment',{
         comment:comment,
         postNum:postNum,
         postUser:postUser
       })
+    console.log(res)
     if(res.data.startsWith('<!DOCTYPE html>'))
       location.href = '/login'
     else
       location.reload()
   }
   async function deleteComment(commentNum,commentUser){
+    console.log("START")
     let postNum = $("#data").attr('postNum')
-    let postUser = $("#data").attr('postuser')
-    let res = await axios.delete('/deleteComment',{data:{commentNum:commentNum,postNum:postNum,commentUser,postUser:postUser}})
+    let postUser = $("#data").attr('postUser')
+    let res = await axios.delete('/deleteComment',{data:{commentNum:commentNum,postNum:postNum,postUser:postUser,commentUser:commentUser}})
+    console.log(res)
     if(typeof res.data == 'string' && res.data.startsWith('<!DOCTYPE html>'))
       location.href = '/login'
     location.reload()
+    console.log(commentNum,postNum,postUser)
   }
 </script>
