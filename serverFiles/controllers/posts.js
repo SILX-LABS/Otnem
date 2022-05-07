@@ -160,16 +160,24 @@ const uploadPostPage = async(req,res)=>{
     }
 }
 const chatPage = async(req,res,next)=>{
+    try{        
+        const {user} = await req.query
+        let userName = await getUserName(req)
+        if(!userName)
+            return res.redirect('login')
+        if(!await checkIfDocExists(userDB,user))
+            return res.redirect('login')
+        const user1 = await getUser(userName)
+        const user2 = await getUser(user)
+        return res.render('chatRoom',{userName:userName,profilePic:user1.profilePic,user:user,profilePic2:user2.profilePic})
+    }
+    catch(err){
+        console.log(err)
+    }
+}
+const checkIfUserExistsRoute = async(req,res)=>{
     const {user} = await req.query
-    let userName = await getUserName(req)
-    if(!userName)
-        return res.redirect('login')
-    if(!await checkIfDocExists(userDB,user))
-        return res.redirect('login')
-        // return res.send("User doesnt exist")
-    const user1 = await getUser(userName)
-    const user2 = await getUser(user)
-    return res.render('chatRoom',{userName:userName,profilePic:user1.profilePic,user:user,profilePic2:user2.profilePic})
+    return res.send(await checkIfUserExists(user))
 }
 const deletePost = async(req,res)=>{
     try{
@@ -508,6 +516,7 @@ const changeCredentials = async(req,res)=>{
 }
 const chatRoom = async(req,res)=>{
     try{
+        let roomID
         const userName = await getUserName(req)
         const{user} = await req.query
         if(!await checkIfDocExists(userDB,user))
@@ -526,6 +535,10 @@ const chatRoom = async(req,res)=>{
                     roomID = doc.id
             }
         })
+        if(!roomID){
+            let response = await chatRoomDB.add({users:[userName,user]})
+            roomID = response.id
+        }
         let chats = await chatRoomDB.doc(roomID).collection('chats').orderBy('time').get()
         chats = chats.docs.map(doc=>{return doc.data()})
         return res.send({chats:chats,chatRoomId:response.id})
@@ -533,22 +546,36 @@ const chatRoom = async(req,res)=>{
         console.log(err)
     }
 }
-const addChat = async(req,res)=>{
-    const user = await getUserName(req)
-    // const userName = 'LOL
-    const {chatRoomId,chat} = await req.body
-    let chats = (await chatRoomDB.doc(chatRoomId).get()).data()
-    console.log(chats,user)
-    if(chats.user1 != user && chats.user2 != user)
-        return res.send("User not allowed")
-    console.log(new Date().getMilliseconds())
-    const currentMilli = Date.parse(new Date())
-    const response = await chatRoomDB.doc(chatRoomId).collection("chats").add({
-        user:user,
-        chat:chat,
-        time:currentMilli
-    })
-    res.send({success:true,chat:chat,response:response.id})
+const getChatMembers = async(req,res)=>{
+    try{
+        const userName = await getUserName(req)
+        let chats = await chatRoomDB.where('users','array-contains',`${userName}`).get()
+        if(!chats)
+            return res.send({chats:[]})
+        chats = await Promise.all(chats.docs.map(async doc=>{
+            let data = doc.data()
+            data.users = data.users.filter(e=>e!==`${userName}`)
+            data.users = data.users[0]
+            data['userData'] = await getUser(data.users)
+            let unRead = ((await userDB.doc(userName).collection('unRead').doc(data.users).get()).data())
+            data['unread'] = (unRead)?unRead.num:0
+            return {...data,...{id:doc.id}}
+        }))
+        function compare( a, b ) {
+            if ( a.time > b.time ){
+              return -1;
+            }
+            if ( a.time < b.time ){
+              return 1;
+            }
+            return 0;
+        }
+        chats = chats.sort(compare)
+        return res.send({chats:chats})
+    }
+    catch(err){
+        console.log(err)
+    }
 }
 const test = async (req,res,next)=>{
     console.log(await req.session)
@@ -671,4 +698,4 @@ async function getAllPostsFiltered(attr,element){
 function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
-module.exports = {admin,chatRoomDB,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,addChat,chatPage,settings}
+module.exports = {admin,userDB,chatRoomDB,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute}

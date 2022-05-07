@@ -1,49 +1,133 @@
 {{> navBar profilePic = profilePic isAuth = true}}
-<div id="chat-c">
-
+<h1 style="margin-left: 0.5em;font-size:1.5em;">Messages</h1>
+<div id="main-c">
+    <div id="user-chat-c">
+    </div>
+    <div id="chat-c">
+        <div class="chats">
+        </div>
+        <input type="text" name="msg" id="chat-msg">
+    </div>
 </div>
 <input type="text" name="l" id="ll">
 <button id="l">Send Message</button>
+<input type="text" name="l" id="ee">
+<button id="e">Add user</button>
+<div class="chat-c"></div>
 
-<noscript id="vars" user="{{userName}}" pfp="{{profilePic}}" user2="{{user}}" pfp2="{{profilePic2}}" ></noscript>
+<noscript id="data" user="eaaeytd" pfp="https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4="></noscript>
+<noscript id="vars" user="{{userName}}" pfp="{{profilePic}}"></noscript>
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io()
     main()
     async function main(){
-        let user = getUrlVars().user
-        let {data} = await axios.get(`/chats?user=${user}`,{user:user})
+        let chats = await axios.get('/chatMem')
+        if(!chats.data.chats[0])
+            return socket.emit('joinRoom','Phalicy')
+        else
+            socket.emit('joinRoom',($('#data').attr('user')))
+        let {data} = await axios.get(`/chats?user=${$('#data').attr('user')}`)
         console.log(data.chats)
-        data.chats.forEach(chat=>{
-            let user = document.createElement('h1')
-            user.innerText = chat.user
-            let msg = document.createElement('h4')
-            msg.innerText = chat.msg
-            let chatDiv = document.createElement('div')
-            chatDiv.append(user,msg)
-            document.querySelector('#chat-c').appendChild(chatDiv)
+        if(data.chats)
+        {
+            data.chats.forEach(chat=>{
+                addMsg(chat.msg,chat.user,chat.time)
+            })
+        }
+        chats.data.chats.forEach(chat=>{
+            let userData = chat.userData
+            let pfp = document.createElement('img')
+                pfp.src = userData.profilePic
+                pfp.classList.add('chat-pfp')
+            let user = document.createElement('div')
+                user.innerText = chat.users
+                user.classList.add('chat-name')
+            let typ = document.createElement('div')
+                typ.classList.add('chat-typ')
+            let nameC = document.createElement('div')
+                nameC.classList.add('name-c')
+                nameC.append(user,typ)
+            let date = document.createElement('div')
+                date.innerText = `${new Date(chat.time).getDate()}/${new Date(chat.time).getMonth() + 1}/${new Date(chat.time).getFullYear()}`
+                date.classList.add('chat-date')
+            let unRead = document.createElement('div')
+                unRead.innerText = chat.unread
+                unRead.classList.add('chat-unread')
+            let endchat = document.createElement('div')
+                endchat.classList.add('end-chat')
+                endchat.append(date,unRead)
+            let userC = document.createElement('div') 
+                userC.classList.add('user-chat')
+                userC.append(pfp,nameC,endchat)
+                userC.classList.add(chat.users)
+                userC.addEventListener('click',e=>{
+                    socket.emit('joinRoom',chat.users)
+                    $('#data').attr('user',chat.users)
+                    $('#data').attr('pfp',`${userData.profilePic}`)
+                })
+            document.querySelector('#user-chat-c').append(userC)
         })
-        socket.emit('joinRoom',user)
-        $('#lll').click(async e=>{
+        socket.on('notif',(msg,user)=>{
+            console.log(msg,user,'notif')
         })
-        socket.on('message',(msg,userName)=>{
-            console.log(msg,userName)
+        socket.on('message',(res)=>{
+            addMsg(res.msg,res.userName,res.time)
+            console.log(msg,userName,time,"+++++++++++++++++++++++++++++++++++++++++++++")
         })
-        $('#l').click(e=>{
-            socket.emit('chatMsg',user,$('#ll').val())
-            console.log('clicked')
+        $('#l').click(async e=>{
+            socket.emit('chatMsg',$('#data').attr('user'),$('#ll').val())
+            console.log($('#data').attr('user'))
+        })
+        $('#e').click(async e=>{
+            if((await axios.get(`/checkUser?user=${$('#ee').val()}`)).data){                
+                $('#data').attr('user',$('#ee').val())
+                socket.emit('joinRoom',$('#ee').val())
+            }
         })
     }
-    //await axios.get('/chats',{user:user[1]})
-    function getUrlVars(){
-        var vars = [], hash;
-        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-        for(var i = 0; i < hashes.length; i++)
-        {
-            hash = hashes[i].split('=');
-            vars.push(hash[0]);
-            vars[hash[0]] = hash[1];
+    function addMsg(msg,user,time){
+        let pfp
+        let isMine
+        if(user == $('#data').attr('user')){
+            pfp = $('#data').attr('pfp')
+            isMine = false
         }
-        return vars;
+        else if(user == $('#vars').attr('user')){
+            pfp = $('#vars').attr('pfp')
+            isMine = true
+        }
+        let profilePic = document.createElement('img')
+            profilePic.src = pfp
+            profilePic.classList.add('chat-pfp')
+        let name = document.createElement('div')
+            name.classList.add('chats-name')
+            name.innerText = user
+        let timeDiv = document.createElement('div')
+            timeDiv.classList.add('chat-time')
+            timeDiv.innerText = `${new Date(time).getHours()}:${new Date(time).getMinutes()}`
+        let top = document.createElement('div')
+            top.classList.add('chat-user-details')
+            if(isMine)
+                top.append(timeDiv,name)
+            else
+                top.append(name,timeDiv)
+        let chatMsg = document.createElement('div')
+            chatMsg.innerText = msg
+            chatMsg.classList.add('chat-msg',(isMine)?"mine":"not-mine")
+        let rest = document.createElement('div')
+            rest.classList.add('rest')
+            rest.append(top,chatMsg)
+        let chatHolder = document.createElement('div')
+            chatHolder.classList.add('chat-h')
+            if(isMine){
+                chatHolder.append(rest,profilePic)
+                chatHolder.classList.add('mine-h')
+            }
+            else{
+                chatHolder.classList.add('not-mine-h')
+                chatHolder.append(profilePic,rest)
+            }
+        document.querySelector('.chats').append(chatHolder)
     }
 </script>

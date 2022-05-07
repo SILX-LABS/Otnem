@@ -58,14 +58,10 @@
                  <p>0 Likes | 0 Comments | 0 Shares</p>
                </div>
             </div>
-              <div style="height:25em;border-bottom: 1px solid #ECECEC;">
-            <div class="comment-c" style="padding: 1em 0 0 1em;display:flex;flex-wrap:wrap;overflow-y:auto;gap:1em;max-height:33em;background:none;flex-direction: column;">
+              <div style="height:33em;border-bottom: 1px solid #ECECEC;overflow-y:auto">
+            <div class="comment-c" style="padding: 1em 0 0 1em;display:flex;gap:1em;height:33em;background:none;flex-direction: column;">
                 {{#each commentsArray}}
-                <div class="comment-card" style="    display: grid;
-    width: 344px;
-    background: #ECEDEF;
-    padding: 16px;
-    border-radius: 25px;">
+                <div class="comment-card" style="display: grid; width: 344px; background: #ECEDEF; padding: 16px; border-radius: 25px;">
                 <div style="display:grid;align-items: center;grid-auto-flow: column;">
                   <div style="display: flex;flex-wrap: wrap;background:none" >
                     <img src="{{profilePic}}" style="cursor:pointer;border-radius: 50%;width:3em;height:3em;" onclick="window.location.href = '/profile?user={{user}}'">
