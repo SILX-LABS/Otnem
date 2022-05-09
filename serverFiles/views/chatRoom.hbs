@@ -1,90 +1,156 @@
 {{> navBar profilePic = profilePic isAuth = true}}
-<h1 style="margin-left: 0.5em;font-size:1.5em;">Messages</h1>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+<div class="top-chat" style="display: grid;">
+    <h1 style="margin-left: 0.5em;font-size:1.5em;width:9.85em">Messages</h1>
+    <input type="text" name="s-user" id="s-user" placeholder="Search user..." class="search-user">
+</div>
 <div id="main-c">
     <div id="user-chat-c">
+        <div class="user-chat">No Users</div>
     </div>
-    <div id="chat-c">
+    <div id="chat-c" style="margin-top:-7.3em;">
+    <div class="user-top-chat" onclick="" style="cursor:pointer;border-bottom: 1px solid rgb(224, 224, 224);height:3em;margin-top:1em;display:flex;padding-bottom:-2em;justify-content: flex-start;align-items: flex-start;gap:1em">
+        <img class="chat-pfp"src="https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4=" alt="" srcset="">
+        <div class="chat-user-details" style="justify-content: center;font-size:1.2em;flex-direction: column;gap:0;"><div class="chat-name">No Users</div><div class="chat-date" style="margin-top:-0.8em">16:20</div></div>
+    </div>
         <div class="chats">
         </div>
-        <input type="text" name="msg" id="chat-msg">
+        <div class="inp-c">
+            <div class="inp-f">
+                <input type="text" placeholder="Write a message..." name="msg" id="chat-msg">
+                <button class="sub-chat" ><i class="fa fa-send"></i></button>
+            </div>
+        </div>
     </div>
 </div>
-<input type="text" name="l" id="ll">
-<button id="l">Send Message</button>
-<input type="text" name="l" id="ee">
-<button id="e">Add user</button>
-<div class="chat-c"></div>
+{{!-- <input type="text" name="l" id="ee">
+<button id="e">Add user</button> --}}
 
-<noscript id="data" user="eaaeytd" pfp="https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4="></noscript>
+<noscript id="data" user="" pfp=""></noscript>
 <noscript id="vars" user="{{userName}}" pfp="{{profilePic}}"></noscript>
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io()
+    $('#chat-msg').focus()
     main()
     async function main(){
         let chats = await axios.get('/chatMem')
-        if(!chats.data.chats[0])
-            return socket.emit('joinRoom','Phalicy')
-        else
-            socket.emit('joinRoom',($('#data').attr('user')))
+        if(chats.data.chats[0])
+            return sumMain(chats)
+        socket.on('notif',(res)=>{
+            console.log(res)
+            location.reload()})
+        $('#s-user').keyup(async e=>{
+            if((await axios.get(`/checkUser?user=${$('#s-user').val()}`)).data && e.keyCode == 13){                
+                $('#data').attr('user',$('#s-user').val())
+                socket.emit('joinRoom',$('#s-user').val())
+                $('#user-chat-c').prepend($(`.${$('#data').attr('user')}`))
+                location.reload()
+            }
+        })
+    }
+    async function sumMain(chats){
+        socket.emit('joinRoom',chats.data.chats[0].users)
+        $('.user-top-chat').click(e=>{location.href=`/profile?user=${$('#data').attr('user')}`})
+        $('#data').attr('user',`${chats.data.chats[0].users}`)
+        $('#data').attr('pfp',`${chats.data.chats[0].userData.profilePic}`)
+        $('.chat-user-details .chat-name').text(`${chats.data.chats[0].users}`)
+        $('.user-top-chat .chat-pfp').attr('src',`${chats.data.chats[0].userData.profilePic}`)
+        await showChat($('#data').attr('user'))
+        $('#user-chat-c').html('')
+        chats.data.chats.forEach(async chat=>{
+            await addUser(chat)
+        })
+        socket.on('notif',(res)=>{
+            if($(`.${res.userName}`) && $('#data').attr('user') != res.userName){
+                $(`.${res.userName}-unread`).css('display','block')
+                let unReadNum = $(`.${res.userName}-unread`).text()
+                $(`.${res.userName}-unread`).text(`${Number(unReadNum)+1}`)
+                $('#user-chat-c').prepend($(`.${res.userName}`))
+            }
+        })
+        socket.on('message',(res)=>{
+            addMsg(res.msg,res.userName,res.time)
+        })
+        $('.sub-chat').click(async e=>{
+            if($('#chat-msg').val() != ''){
+                socket.emit('chatMsg',$('#data').attr('user'),$('#chat-msg').val())
+                $('#chat-msg').val('')
+                $('#chat-msg').focus()
+            }
+        })
+        $('#chat-msg').keyup(async e=>{
+            if(e.keyCode == 13 && $('#chat-msg').val() != ''){
+                socket.emit('chatMsg',$('#data').attr('user'),$('#chat-msg').val())
+                $('#chat-msg').val('')
+                $('#user-chat-c').prepend($(`.${$('#data').attr('user')}`))
+            }
+        })
+        $('#s-user').keyup(async e=>{
+            if((await axios.get(`/checkUser?user=${$('#s-user').val()}`)).data && e.keyCode == 13){                
+                $('#data').attr('user',$('#s-user').val())
+                socket.emit('joinRoom',$('#s-user').val())
+                $('#user-chat-c').prepend($(`.${$('#data').attr('user')}`))
+                location.reload()
+            }
+        })
+        $(`${chats.data.chats[0].users}-unread`).css('display','none')
+        $(`${chats.data.chats[0].users}-unread`).text('0')
+    }
+    async function addUser(chat){
+    let userData = chat.userData
+    let pfp = document.createElement('img')
+        pfp.src = userData.profilePic
+        pfp.classList.add('chat-pfp',`${chat.users}-pfp`)
+    let user = document.createElement('div')
+        user.innerText = chat.users
+        user.classList.add('chat-name')
+    let typ = document.createElement('div')
+        typ.classList.add('chat-typ')
+    let nameC = document.createElement('div')
+        nameC.classList.add('name-c')
+        nameC.append(user,typ)
+    let date = document.createElement('div')
+        date.innerText = `${new Date(chat.time).getDate()}/${new Date(chat.time).getMonth() + 1}/${new Date(chat.time).getFullYear()}`
+        date.classList.add('chat-date')
+    let unRead = document.createElement('div')
+        unRead.innerText = chat.unread
+        if(chat.unread == 0)
+            unRead.style = 'display:none'
+        unRead.classList.add('chat-unread',`${chat.users}-unread`)
+    let endchat = document.createElement('div')
+        endchat.classList.add('end-chat')
+        endchat.append(date,unRead)
+    let userC = document.createElement('div') 
+        userC.classList.add('user-chat')
+        userC.append(pfp,nameC,endchat)
+        userC.classList.add(chat.users)
+        userC.addEventListener('click',async e=>{
+            socket.emit('joinRoom',chat.users)
+            $('#data').attr('user',chat.users)
+            $('#data').attr('pfp',`${userData.profilePic}`)
+            $('.user-top-chat .chat-pfp').attr('src',`${chat.userData.profilePic}`)
+            $('.chat-user-details .chat-name').text(`${chat.users}`)
+            unRead.style = 'display:none'
+            unRead.innerText = '0'
+            $('#chat-msg').focus()
+            await showChat(chat.users)
+        })
+    document.querySelector('#user-chat-c').append(userC)
+    }
+    async function showChat(user){
         let {data} = await axios.get(`/chats?user=${$('#data').attr('user')}`)
-        console.log(data.chats)
-        if(data.chats)
-        {
+        $('.chats').html('')
+        if(data.chats){
             data.chats.forEach(chat=>{
                 addMsg(chat.msg,chat.user,chat.time)
             })
         }
-        chats.data.chats.forEach(chat=>{
-            let userData = chat.userData
-            let pfp = document.createElement('img')
-                pfp.src = userData.profilePic
-                pfp.classList.add('chat-pfp')
-            let user = document.createElement('div')
-                user.innerText = chat.users
-                user.classList.add('chat-name')
-            let typ = document.createElement('div')
-                typ.classList.add('chat-typ')
-            let nameC = document.createElement('div')
-                nameC.classList.add('name-c')
-                nameC.append(user,typ)
-            let date = document.createElement('div')
-                date.innerText = `${new Date(chat.time).getDate()}/${new Date(chat.time).getMonth() + 1}/${new Date(chat.time).getFullYear()}`
-                date.classList.add('chat-date')
-            let unRead = document.createElement('div')
-                unRead.innerText = chat.unread
-                unRead.classList.add('chat-unread')
-            let endchat = document.createElement('div')
-                endchat.classList.add('end-chat')
-                endchat.append(date,unRead)
-            let userC = document.createElement('div') 
-                userC.classList.add('user-chat')
-                userC.append(pfp,nameC,endchat)
-                userC.classList.add(chat.users)
-                userC.addEventListener('click',e=>{
-                    socket.emit('joinRoom',chat.users)
-                    $('#data').attr('user',chat.users)
-                    $('#data').attr('pfp',`${userData.profilePic}`)
-                })
-            document.querySelector('#user-chat-c').append(userC)
-        })
-        socket.on('notif',(msg,user)=>{
-            console.log(msg,user,'notif')
-        })
-        socket.on('message',(res)=>{
-            addMsg(res.msg,res.userName,res.time)
-            console.log(msg,userName,time,"+++++++++++++++++++++++++++++++++++++++++++++")
-        })
-        $('#l').click(async e=>{
-            socket.emit('chatMsg',$('#data').attr('user'),$('#ll').val())
-            console.log($('#data').attr('user'))
-        })
-        $('#e').click(async e=>{
-            if((await axios.get(`/checkUser?user=${$('#ee').val()}`)).data){                
-                $('#data').attr('user',$('#ee').val())
-                socket.emit('joinRoom',$('#ee').val())
-            }
-        })
+        let chat = data.chats[data.chats.length - 1]
+        if(chat){
+            $('.chat-user-details .chat-date').text(`${new Date(chat.time).getHours()}:${(new Date(chat.time).getMinutes() < 10)?'0':''}${new Date(chat.time).getMinutes()}`)
+            $('#chat-msg').focus()
+        }
     }
     function addMsg(msg,user,time){
         let pfp
@@ -95,17 +161,26 @@
         }
         else if(user == $('#vars').attr('user')){
             pfp = $('#vars').attr('pfp')
+            user = "You"
             isMine = true
         }
         let profilePic = document.createElement('img')
             profilePic.src = pfp
-            profilePic.classList.add('chat-pfp')
+            profilePic.classList.add('chat-pfp','chats-pfp')
+            if(isMine)
+                profilePic.setAttribute('onclick','location.href = "/profile"') 
+            else
+                profilePic.setAttribute('onclick',`location.href = "/profile?user=${user}"`)
         let name = document.createElement('div')
-            name.classList.add('chats-name')
+            name.classList.add('chat-name')
             name.innerText = user
+            if(isMine)
+                name.setAttribute('onclick','location.href = "/profile"') 
+            else
+                name.setAttribute('onclick',`location.href = "/profile?user=${user}"`)
         let timeDiv = document.createElement('div')
-            timeDiv.classList.add('chat-time')
-            timeDiv.innerText = `${new Date(time).getHours()}:${new Date(time).getMinutes()}`
+            timeDiv.classList.add('chat-date')
+            timeDiv.innerText = `${new Date(time).getHours()}:${(new Date(time).getMinutes() < 10)?'0':''}${new Date(time).getMinutes()}`
         let top = document.createElement('div')
             top.classList.add('chat-user-details')
             if(isMine)
@@ -116,7 +191,7 @@
             chatMsg.innerText = msg
             chatMsg.classList.add('chat-msg',(isMine)?"mine":"not-mine")
         let rest = document.createElement('div')
-            rest.classList.add('rest')
+            rest.classList.add('rest',(isMine)?'mine-r':'not-mine-r')
             rest.append(top,chatMsg)
         let chatHolder = document.createElement('div')
             chatHolder.classList.add('chat-h')
@@ -129,5 +204,7 @@
                 chatHolder.append(profilePic,rest)
             }
         document.querySelector('.chats').append(chatHolder)
+        let objDiv = document.querySelector(".chats")
+        objDiv.scrollTop = objDiv.scrollHeight
     }
 </script>

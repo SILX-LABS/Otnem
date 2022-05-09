@@ -63,10 +63,10 @@ const profile = async(req,res)=>{
     try{
         let userName = await getUserName(req)
         let query = await req.query
+        if(query.user && !await checkIfUserExists(query.user))
+            return res.redirect('/')
         if(!query.user && !userName)
-        return res.redirect('login')
-        // if(!query.user)
-        //     return res.redirect('/')
+            return res.redirect('login')
         if(query.user)
             userName = query.user
         let userObj = await getUser(userName)
@@ -92,7 +92,7 @@ const profile = async(req,res)=>{
             isPost = true
         userObj['isPost'] = isPost
         userObj['isAuth'] = req.isAuthenticated()
-        res.render('profile',{layout:'profileLayout',userObj:userObj,isAuth:req.isAuthenticated()})
+        res.render('profile',{layout:'profileLayout',userObj:userObj,profilePic:userObj.profilePic,isAuth:req.isAuthenticated()})
     }catch(err){
         console.log(err)
     }

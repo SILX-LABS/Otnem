@@ -1,8 +1,8 @@
 {{#with userObj}}
-{{#if loggedIn}}
+{{#if isAuth}}
 {{> navBar profilePic = profilePic isAuth = isAuth}}
 {{/if}}
-{{#unless loggedIn}}
+{{#unless isAuth}}
 {{> navBar profilePic = 'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='}}
 {{/unless}}
 {{!-- {{userObj}} --}}
@@ -22,7 +22,7 @@ width:100%;
        <div class="user"> 
           <div class="pd-left">
             <div class="pd-row">
-               <img src="{{profilePic}}" class="pd-image" alt="">
+               <img src="{{profilePic}}" class="pd-image" style="width: 7em;height: 7em;" alt="">
                <div>
                  <h3>{{userName}}</h3>
                  <p>{{followers}} Followers | {{following}} Following</p>
@@ -53,7 +53,7 @@ width:100%;
     <div class="grid_posts">  
      <div class="full_post">
         {{#each posts}}
-        <div class="post_box" data-type="art" onclick="window.location.href = '/postPreview?postNum={{postName}}&&user={{userName}}'">
+        <div class="post_box" data-type="art" onclick="window.location.href = '/postPreview?postNum={{id}}&&user={{name}}'">
           <div class="index_image">
               <img src="{{img}}" alt="Image Not Available">
           </div>

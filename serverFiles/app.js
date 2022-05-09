@@ -42,6 +42,8 @@ io.use((socket,next)=>{
         next()
 })
 io.on('connection',async socket=>{
+    let userName = socket.request.session.passport.user
+    await socket.join(userName)
     socket.on('joinRoom',async(user)=>{
         try{
             if(typeof user != 'string')
@@ -50,7 +52,6 @@ io.on('connection',async socket=>{
                 return
             let roomID
             let userName = socket.request.session.passport.user
-            await socket.join(userName)
             let snap = await chatRoomDB.get()
             if(userName == user)
                 return
@@ -86,6 +87,8 @@ io.on('connection',async socket=>{
         let roomID
         const userName = socket.request.session.passport.user
         let snap = await chatRoomDB.get()
+        if(msg == '')
+            return
         if(userName == user)
             return
         snap.docs.forEach(doc=>{
@@ -104,7 +107,7 @@ io.on('connection',async socket=>{
         await userDB.doc(user).collection('unRead').doc(userName).update({num: FieldValue.increment(1)})
         await chatRoomDB.doc(roomID).set({'time':currTime},{merge:true})
         io.to(roomID).emit('message',{msg:`${msg}`,userName:userName,time:currTime})
-        io.to(user).emit('notif',{msg:`${user} sent a message`,userName:user,time:currTime})
+        io.to(user).emit('notif',{msg:`${userName} sent a message`,userName:userName,time:currTime})
     })
 })
 server.listen(1000,()=>{
