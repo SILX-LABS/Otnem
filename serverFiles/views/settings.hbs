@@ -3,14 +3,15 @@
     </div>
     <!-- === Items Links Selector End === -->
     <section>
+	{{#with userData}}
 		<div class="container">
 			<div class="bg-white shadow rounded-lg d-block d-sm-flex">
 				<div class="profile-tab-nav border-right">
 					<div class="p-4">
 						<div class="img-circle text-center mb-3" style="display: flex;justify-content: center;align-items: center;">
 
-							<img src="./assets/img/avatar.jpg" alt="Image" class="shadow" style="position: relative;">
-                            <div class="pen">
+							<img src="{{profilePic}}" alt="Image" class="shadow" style="position: relative;">
+                            <div class="pen" style="cursor: pointer;">
                                 <i class="fa-solid fa-pen-to-square" ></i>
                             </div>
 
@@ -18,60 +19,51 @@
 						<h4 class="text-center"></h4>
 					</div>
 					<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-						<a class="nav-link active" id="account-tab" data-toggle="pill" href="#account" role="tab" aria-controls="account" aria-selected="true">
+						<div style="cursor: pointer;" class="nav-link active" id="account-tab" data-toggle="pill" role="tab" aria-controls="account" aria-selected="true">
 							<i class="fa fa-home text-center mr-1"></i> 
 							  Account
-						</a>
-						<a class="nav-link" id="password-tab" data-toggle="pill" href="#password" role="tab" aria-controls="password" aria-selected="false">
+						</div>
+						<div style="cursor: pointer;" class="nav-link" id="password-tab" data-toggle="pill" role="tab" aria-controls="password" aria-selected="false">
 							<i class="fa fa-key text-center mr-1"></i> 
 							Password
-						</a>
+						</div>
 
 					</div>
 				</div>
 				<div class="tab-content p-4 p-md-5" id="v-pills-tabContent">
-					<div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
+					<div class="tab-pane acc-set fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
 						<h3 class="mb-4">Account Settings</h3>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
 								  	<label>First Name</label>
-								  	<input type="text" placeholder="Enter your first name" class="form-control">
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-								  	<label>Last Name</label>
-								  	<input type="text" class="form-control"  placeholder="Enter your last name">
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-								  	<label>Email</label>
-								  	<input type="text" class="form-control" placeholder="Enter your email ">
+								  	<input type="text" placeholder="{{userName}}" value="{{userName}}" class="form-control">
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="form-group">
 								  	<label>Paypal</label>
-								  	<input type="text" class="form-control" placeholder="Enter your paypal">
-								</div>
-							</div>
-
-
-							<div class="col-md-12">
-								<div class="form-group">
-								  	<label>Bio</label>
-									<textarea class="form-control" placeholder="Enter your bio" rows="4"></textarea>
+								  	<input type="text" class="form-control" placeholder="{{paypal}}" value="{{paypal}}">
 								</div>
 							</div>
 						</div>
 						<div style="display: flex;">
-							<button class="btn  " style="background-color: #000;color:#fff">Update</button>
-							<button class="btn btn-light">Cancel</button>
+							<button class="btn" style="background-color: #000;color:#fff">Update</button>
+							<button onclick="javascript:window.history.back(-1);return false;" class="btn btn-light">Cancel</button>
 						</div>
 					</div>
-					<div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+					<div class="tab-pane acc-set fade " id="pfp" role="tabpanel" aria-labelledby="account-tab">
+						<h3 class="mb-4">Profile Pic Settings</h3>
+						<div class="row pfp-row" >
+							<input type="file" name="pfp" id="pfp-inp" style="display: none;" >
+							<div class="pfp-file-inp" onclick="$('#pfp-inp').click()"><i class="fa fa-camera pfp-icon"></i></div>
+						</div>
+						<div style="display: flex;">
+							<button class="btn" style="background-color: #000;color:#fff">Update</button>
+							<button onclick="javascript:window.history.back(-1);return false;" class="btn btn-light">Cancel</button>
+						</div>
+					</div>
+					<div class="tab-pane acc-set fade " id="password" role="tabpanel" aria-labelledby="password-tab">
 						<h3 class="mb-4">Password Settings</h3>
 						<div class="row">
 							<div class="col-md-6">
@@ -104,6 +96,50 @@
 				</div>
 			</div>
 		</div>
+	{{/with}}
 	</section>
 
   </div>
+<script>
+	$('#pfp-inp').change(function(){
+		let file = this.files[0]
+		if(file)
+			$('.pfp-file-inp').html(`<img src='${URL.createObjectURL(file)}' alt='Img Not available' srcset='' style="width:90%;height:90%;border-radius:0.5em">`)
+		else
+			$('.pfp-file-inp').html('<i class="fa fa-camera pfp-icon"></i>')
+	})
+	$('.pen').click(e=>{
+		sel('pfp')
+	})
+	$('#password-tab').click(e=>{
+		sel('password')
+	})
+	$('#account-tab').click(e=>{
+		sel('account')
+	})
+	function sel(option){
+		switch(option){
+			case 'pfp':
+				$('#account').removeClass('show','active').css('display','none')
+				$('#password').removeClass('show','active').css('display','none')
+				$('#pfp').addClass('show','active').css('display','block')
+				$('#account-tab').removeClass('active')
+				$('#password-tab').removeClass('active')
+				return
+			case 'password':
+				$('#account').removeClass('show','active').css('display','none')
+				$('#pfp').removeClass('show','active').css('display','none')
+				$('#password').addClass('show','active').css('display','block')
+				$('#account-tab').removeClass('active')
+				$('#password-tab').addClass('active')
+				return
+			case 'account':
+				$('#pfp').removeClass('show','active').css('display','none')
+				$('#password').removeClass('show','active').css('display','none')
+				$('#account').addClass('show','active').css('display','block')
+				$('#account-tab').addClass('active')
+				$('#password-tab').removeClass('active')
+
+		}
+	}
+</script>

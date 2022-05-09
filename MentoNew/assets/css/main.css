@@ -537,10 +537,6 @@ section {
   transition: 300ms all ease-in-out;
 }
 
-.grid_posts .post_box .bottom {
-
-}
-
 .grid_posts .post_box .bottom .UserImage,
 .grid_posts .post_box .bottom .name_time,
 .grid_posts .post_box .bottom .UserImage,

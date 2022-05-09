@@ -98,7 +98,8 @@ const profile = async(req,res)=>{
     }
 }
 const settings = async(req,res)=>{
-    res.render('settings')
+    let userData = await getUser(await getUserName(req))
+    res.render('settings',{userName:userData.userName,profilePic:userData.profilePic,userData:userData})
 }
 const notifPage = async(req,res)=>{
     let userName = await getUserName(req)
@@ -396,7 +397,6 @@ const registerPost= async(req,res)=>{
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too small"})
         if(body.name.length > 20)
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too large"})
-        // console.log(validator.verify(body.email))
         validator.verify(body.email,async (err,response)=>{
             if(!response.success)
                 return res.render('register',{layout:'registerLayout',err:true,msg:"Email doesn't exist"})
@@ -404,7 +404,6 @@ const registerPost= async(req,res)=>{
             if(doc.data().name)
                 return doc.data()
             })
-            // console.log(response)
             users = users.filter(e=>e!==undefined)
             for(i=0;i<users.length;i++){
             if(users[i].name == body.name)
@@ -417,7 +416,8 @@ const registerPost= async(req,res)=>{
             name:body.name,
             email:body.email,
             password:hashedPasswrod,
-            image:'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='
+            image:'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4=',
+            paypal:"none",
             }
             let docref = await unVerifiedDB.add(userInfoObj)
             let transporter = emailer.createTransport({
@@ -636,7 +636,8 @@ async function getUser(userName,showPassword){
             "userName":name,
             "userEmail":email,
             "profilePic":image,
-            "verified":userData.verified
+            "verified":userData.verified,
+            "paypal":userData.paypal
         }
         if(showPassword)
             userObject["password"] = password

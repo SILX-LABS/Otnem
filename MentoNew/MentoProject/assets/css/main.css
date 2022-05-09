@@ -1371,3 +1371,26 @@ input:focus,textarea:focus{
   outline:none;
   border-radius: 0.5em;
 }
+.pfp-file-inp{
+  height: 35em;
+  width: 35em;
+  display: grid;
+  place-items:center;
+  border:0.3em solid #23ee48;
+  border-radius: 1em;
+  cursor: pointer;
+}
+.pfp-file-inp:focus,.pfp-file-inp:active{
+  border-color:#21df44;
+}
+.pfp-file-inp:focus,.pfp-file-inp:active > .fa-camera{
+  color:#21df44;
+}
+.fa-camera{
+  font-size: 4em;
+  color: #23f649;
+}
+.pfp-row{
+  display: grid;
+  place-content: center;
+}
