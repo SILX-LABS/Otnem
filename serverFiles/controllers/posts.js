@@ -92,7 +92,12 @@ const profile = async(req,res)=>{
             isPost = true
         userObj['isPost'] = isPost
         userObj['isAuth'] = req.isAuthenticated()
-        res.render('profile',{layout:'profileLayout',userObj:userObj,profilePic:userObj.profilePic,isAuth:req.isAuthenticated()})
+        userObj['isMine'] = (await getUserName(req) == query.user || !query.user)?true:false
+        if(!await getUserName(req))userObj['isMine'] = false
+        let userPfp = ''
+        if(req.isAuthenticated())
+            userPfp = (await getUser(await getUserName(req))).profilePic
+        res.render('profile',{layout:'profileLayout',userObj:userObj,profilePic:userPfp,isAuth:req.isAuthenticated()})
     }catch(err){
         console.log(err)
     }
@@ -488,27 +493,45 @@ const logout = async(req,res)=>{
 const changeCredentials = async(req,res)=>{
     try{
         let userName = await getUserName(req)
-        let {cred,newElement} = await req.body
+        let {cred} = await req.body
         switch(cred){
             case 'password':
+                let {newElement} = await req.body
+                if(newElement.length < 8)
+                    return res.send({success:false,msg:"Password too short"})
                 let {currentElement} = await req.body
                 let currentPassword = (await userDB.doc(userName).get()).data()
                 currentPassword = currentPassword.password
-                console.log(newElement)
                 bcrypt.compare(currentElement,currentPassword,async function(err,response){
                     if(response){
                         let newHashedPassword = await bcrypt.hash(newElement,10)
-                        await userDB.doc(userName).set({password:newHashedPassword},{merge:true})
-                        return res.send("Changed")
+                        await userDB.doc(userName).update({password:newHashedPassword})
+                        return res.send({success:true,msg:"Changed"})
                     }
                     else{
-                        return await res.send("Passwords didnt match")
+                        return await res.send({success:false,msg:"Passwords didnt match"})
                     }
                 })
+                return
             case 'profilePic':
-                await userDB.doc(userName).set({image:newElement},{merge:true})
-                return res.send("Changed")
-            }
+                if(!req.file)
+                    return res.send({success:false,msg:'File not found'})
+                let buffer = req.file.buffer
+                let cldstrm =  cloudinary.uploader.upload_stream({
+                    folder:`${userName}/`,
+                    height: 500, width: 500, crop: "scale",
+                },async(err,response)=>{
+                    let URL = response.secure_url;
+                    await userDB.doc(userName).update({image:URL})
+                    return res.send({success:true,msg:"Changed"})
+                })
+                return streamify.createReadStream(buffer).pipe(cldstrm)
+            case 'account':
+                let {newPaypal} = await req.body
+                await userDB.doc(userName).update({paypal:newPaypal})
+                return res.send({success:true,msg:"Changed"})
+            default:return res.send({success:false,msg:"No lol"}) 
+        }
     }
     catch(err){
         console.log(err)

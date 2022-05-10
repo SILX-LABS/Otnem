@@ -32,44 +32,41 @@
 				</div>
 				<div class="tab-content p-4 p-md-5" id="v-pills-tabContent">
 					<div class="tab-pane acc-set fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
-						<h3 class="mb-4">Account Settings</h3>
+						<h3 class="mb-4">Paypal Settings</h3>
+            			<h1 class="err err-pay"></h1>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
-								  	<label>First Name</label>
-								  	<input type="text" placeholder="{{userName}}" value="{{userName}}" class="form-control">
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
 								  	<label>Paypal</label>
-								  	<input type="text" class="form-control" placeholder="{{paypal}}" value="{{paypal}}">
+								  	<input type="text" class="form-control inp-paypal" placeholder="{{paypal}}" value="{{paypal}}">
 								</div>
 							</div>
 						</div>
 						<div style="display: flex;">
-							<button class="btn" style="background-color: #000;color:#fff">Update</button>
+							<button class="btn btn-account" style="background-color: #000;color:#fff">Update</button>
 							<button onclick="javascript:window.history.back(-1);return false;" class="btn btn-light">Cancel</button>
 						</div>
 					</div>
 					<div class="tab-pane acc-set fade " id="pfp" role="tabpanel" aria-labelledby="account-tab">
 						<h3 class="mb-4">Profile Pic Settings</h3>
+            			<h1 class="err err-pfp"></h1>
 						<div class="row pfp-row" >
 							<input type="file" name="pfp" id="pfp-inp" style="display: none;" >
 							<div class="pfp-file-inp" onclick="$('#pfp-inp').click()"><i class="fa fa-camera pfp-icon"></i></div>
 						</div>
 						<div style="display: flex;">
-							<button class="btn" style="background-color: #000;color:#fff">Update</button>
+							<button class="btn btn-pfp" style="background-color: #000;color:#fff">Update</button>
 							<button onclick="javascript:window.history.back(-1);return false;" class="btn btn-light">Cancel</button>
 						</div>
 					</div>
 					<div class="tab-pane acc-set fade " id="password" role="tabpanel" aria-labelledby="password-tab">
 						<h3 class="mb-4">Password Settings</h3>
+            			<h1 class="err err-pass"></h1>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
 								  	<label>Old password</label>
-								  	<input type="password" class="form-control" placeholder="Enter your current password">
+								  	<input type="password"class="form-control inp-old-pass" placeholder="Enter your current password">
 								</div>
 							</div>
 						</div>
@@ -77,18 +74,18 @@
 							<div class="col-md-6">
 								<div class="form-group">
 								  	<label>New password</label>
-								  	<input type="password" class="form-control" placeholder="Enter your new password">
+								  	<input type="password" class="form-control inp-new-pass" placeholder="Enter your new password">
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="form-group">
 								  	<label>Confirm new password</label>
-								  	<input type="password" class="form-control" placeholder="Confirm your password">
+								  	<input type="password" class="form-control inp-cnf-pass" placeholder="Confirm your password">
 								</div>
 							</div>
 						</div>
 						<div style="display:flex">
-							<button class="btn " style="background-color: #000;color:#fff">Update</button>
+							<button class="btn btn-password" style="background-color: #000;color:#fff">Update</button>
 							<button class="btn btn-light">Cancel</button>
 						</div>
 					</div>
@@ -101,6 +98,51 @@
 
   </div>
 <script>
+	$('.btn-account').click(async e=>{
+		let res = await axios.post('/changeCred',{cred:'account',newPaypal:$('.inp-paypal').val()})
+		if(res.data.success)
+				location.href = '/profile'
+		else
+			$('.err-pay').css('display','block')
+			$('.err-pay').text(res.data.msg)
+	})
+	$('.btn-pfp').click(async e=>{
+		let formData = new FormData()
+        formData.append("profile_pic",document.querySelector('#pfp-inp').files[0],"profile_pic")
+		formData.append("cred",'profilePic')
+		let res = await axios.post('/changeCred',formData)
+		if(res.data.success)
+				location.href = '/profile'
+		else
+			$('.err-pfp').css('display','block')
+			$('.err-pfp').text(res.data.msg)
+	})
+	$('.btn-password').click(async e=>{
+		if($('.inp-new-pass').val() == $('.inp-cnf-pass').val()){
+			let res = await axios.post('/changeCred',{cred:'password',newElement:$('.inp-new-pass').val(),currentElement:$('.inp-old-pass').val()})
+			if(res.data.success)
+				location.href = '/profile'
+			else
+				$('.err-pass').css('display','block')
+				$('.err-pass').text(res.data.msg)
+		}
+		else
+			console.log('confirm password wrong')
+	})
+	$('.inp-cnf-pass').keyup(e=>{
+		if(e.keyCode != 13)
+			return
+		if($('.inp-new-pass').val() == $('.inp-cnf-pass').val()){
+			let res = await axios.post('/changeCred',{cred:'password',newElement:$('.inp-new-pass').val(),currentElement:$('.inp-old-pass').val()})
+			if(res.data.success)
+				location.href = '/profile'
+			else
+				$('.err-pass').css('display','block')
+				$('.err-pass').text(res.data.msg)
+		}
+		else
+			console.log('confirm password wrong')
+	})
 	$('#pfp-inp').change(function(){
 		let file = this.files[0]
 		if(file)
@@ -125,6 +167,7 @@
 				$('#pfp').addClass('show','active').css('display','block')
 				$('#account-tab').removeClass('active')
 				$('#password-tab').removeClass('active')
+				$('.inp-paypal').val('')
 				return
 			case 'password':
 				$('#account').removeClass('show','active').css('display','none')
@@ -132,6 +175,7 @@
 				$('#password').addClass('show','active').css('display','block')
 				$('#account-tab').removeClass('active')
 				$('#password-tab').addClass('active')
+				$('.inp-paypal').val('')
 				return
 			case 'account':
 				$('#pfp').removeClass('show','active').css('display','none')
@@ -139,7 +183,7 @@
 				$('#account').addClass('show','active').css('display','block')
 				$('#account-tab').addClass('active')
 				$('#password-tab').removeClass('active')
-
+				$('.inp-paypal').removeProp('readOnly')
 		}
 	}
 </script>

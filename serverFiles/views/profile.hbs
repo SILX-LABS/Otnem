@@ -1,10 +1,10 @@
-{{#with userObj}}
 {{#if isAuth}}
 {{> navBar profilePic = profilePic isAuth = isAuth}}
 {{/if}}
 {{#unless isAuth}}
 {{> navBar profilePic = 'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='}}
 {{/unless}}
+{{#with userObj}}
 {{!-- {{userObj}} --}}
 <style>
   .bottom-post {
@@ -27,11 +27,13 @@ width:100%;
                  <h3>{{userName}}</h3>
                  <p>{{followers}} Followers | {{following}} Following</p>
                </div>
+               {{#if isMine}}
                <a href="./settings">
                  <div class="settings">
                    <i class="fa-solid fa-gear"></i>
                </div>
                </a>
+               {{/if}}
             </div>
           </div>
           <div class="pd-right">
