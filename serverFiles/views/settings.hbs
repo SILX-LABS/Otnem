@@ -99,7 +99,9 @@
   </div>
 <script>
 	$('.btn-account').click(async e=>{
+		console.log('lol')
 		let res = await axios.post('/changeCred',{cred:'account',newPaypal:$('.inp-paypal').val()})
+		console.log('lol')
 		if(res.data.success)
 				location.href = '/profile'
 		else
@@ -129,7 +131,7 @@
 		else
 			console.log('confirm password wrong')
 	})
-	$('.inp-cnf-pass').keyup(e=>{
+	$('.inp-cnf-pass').keyup(async e=>{
 		if(e.keyCode != 13)
 			return
 		if($('.inp-new-pass').val() == $('.inp-cnf-pass').val()){
