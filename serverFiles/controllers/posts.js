@@ -169,10 +169,11 @@ const chatPage = async(req,res,next)=>{
     try{        
         const {user} = await req.query
         let userName = await getUserName(req)
+        console.log()
         if(!userName)
             return res.redirect('login')
         if(!await checkIfDocExists(userDB,user))
-            return res.redirect('login')
+            return res.send("F")
         const user1 = await getUser(userName)
         const user2 = await getUser(user)
         return res.render('chatRoom',{userName:userName,profilePic:user1.profilePic,user:user,profilePic2:user2.profilePic})
@@ -229,7 +230,6 @@ const deleteComment = async (req,res)=>{
         if(userName != commentUser)
             return res.send({status:400,success:false})
         let result = await userDB.doc(postUser).collection('posts').doc(postNum).collection('comments').doc(commentNum).delete()
-        console.log(commentNum,postNum,postUser,commentUser)
         res.send(result)
     }
     catch(err){
@@ -653,7 +653,16 @@ async function getUserName(req){
 }
 async function getUser(userName,showPassword){
     try{
-        const userData =(await userDB.doc(userName).get()).data()
+        const userData = (await userDB.doc(userName).get()).data()
+        if(!userData){
+            return {
+                "userName":'deletedUser',
+                "userEmail":'deletedUserEmail',
+                "profilePic":'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4=',
+                "verified":false,
+                "paypal":'none'
+            }
+        }
         const {email,name,image,password} = userData
         let userObject = {
             "userName":name,

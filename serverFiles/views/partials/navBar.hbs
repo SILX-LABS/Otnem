@@ -130,9 +130,11 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <script>
-  async function notify(){ let sw = await navigator.serviceWorker.ready let push
-  = await sw.pushManager.subscribe({ userVisibleOnly:true,
+  async function notify(){ 
+  let sw = await navigator.serviceWorker.ready 
+  let push = await sw.pushManager.subscribe({ userVisibleOnly:true,
   applicationServerKey:'BEPh6PvlCqQCb19uCpsuf0j8g2xqvzuIKmJbW8MdszGKkinfyorfldO0yR-uWO8olU5bk_09xKDvKiPBoszhHyY'
-  }) await axios.post('/asignNotification',{push:JSON.stringify(push)}) }
+  }) 
+  await axios.post('/asignNotification',{push:JSON.stringify(push)}) }
   if($('#isAuth').attr('auth') == 'true') notify()
 </script>

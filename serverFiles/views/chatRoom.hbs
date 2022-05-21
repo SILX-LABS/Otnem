@@ -65,7 +65,6 @@
         if (chats.data.chats[0])
             return sumMain(chats)
         socket.on('notif', (res) => {
-            console.log(res)
             location.reload()
         })
         $('#s-user').keyup(async e => {
@@ -129,7 +128,7 @@
         let userData = chat.userData
         let pfp = document.createElement('img')
         pfp.src = userData.profilePic
-        pfp.classList.add('chat-pfp', `${chat.users}-pfp`)
+        pfp.classList.add('chat-pfp', `${chat.users.replaceAll(' ','-')}-pfp`)
         let user = document.createElement('div')
         user.innerText = chat.users
         user.classList.add('chat-name')
@@ -145,14 +144,14 @@
         unRead.innerText = chat.unread
         if (chat.unread == 0)
             unRead.style = 'display:none'
-        unRead.classList.add('chat-unread', `${chat.users}-unread`)
+        unRead.classList.add('chat-unread', `${chat.users.replaceAll(' ','-')}-unread`)
         let endchat = document.createElement('div')
         endchat.classList.add('end-chat')
         endchat.append(date, unRead)
         let userC = document.createElement('div')
         userC.classList.add('user-chat')
         userC.append(pfp, nameC, endchat)
-        userC.classList.add(chat.users)
+        userC.classList.add(chat.users.replaceAll(' ','-'))
         userC.addEventListener('click', async e => {
             socket.emit('joinRoom', chat.users)
             $('#data').attr('user', chat.users)
@@ -169,29 +168,36 @@
     async function showChat(user) {
         let { data } = await axios.get(`/chats?user=${$('#data').attr('user')}`)
         $('.chats').html('')
+        if(!data.chats){
+            addMsg("User Doesnt exist", "GOD", new Date())
+        }
         if (data.chats) {
             data.chats.forEach(chat => {
                 addMsg(chat.msg, chat.user, chat.time)
             })
-        }
-        let chat = data.chats[data.chats.length - 1]
-        if (chat) {
-            $('.chat-user-details .chat-date').text(`${new Date(chat.time).getHours()}:${(new Date(chat.time).getMinutes() < 10) ? '0' : ''}${new Date(chat.time).getMinutes()}`)
-            $('#chat-msg').focus()
+            let chat = data.chats[data.chats.length - 1]
+            if (chat) {
+                $('.chat-user-details .chat-date').text(`${new Date(chat.time).getHours()}:${(new Date(chat.time).getMinutes() < 10) ? '0' : ''}${new Date(chat.time).getMinutes()}`)
+                $('#chat-msg').focus()
+            }
         }
     }
     function addMsg(msg, user, time) {
         let pfp
         let isMine
         if (user == $('#data').attr('user')) {
-            pfp = $('#data').attr('pfp')
+            pfp = ($('#data').attr('pfp') !=  undefined)?$('#data').attr('pfp'):"https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4="
             isMine = false
         }
         else if (user == $('#vars').attr('user')) {
-            pfp = $('#vars').attr('pfp')
+            pfp = ($('#vars').attr('pfp') !=  undefined)?$('#vars').attr('pfp'):"https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4="
             user = "You"
             isMine = true
         }
+        else{
+            pfp = ($('#data').attr('pfp') !=  undefined)?$('#data').attr('pfp'):"https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4="
+        }
+        
         let profilePic = document.createElement('img')
         profilePic.src = pfp
         profilePic.classList.add('chat-pfp', 'chats-pfp')

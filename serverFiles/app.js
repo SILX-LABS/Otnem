@@ -83,31 +83,39 @@ io.on('connection',async socket=>{
             console.log(err)
         }
     })
-    socket.on('chatMsg',async (user,msg)=>{
-        let roomID
-        const userName = socket.request.session.passport.user
-        let snap = await chatRoomDB.get()
-        if(msg == '')
-            return
-        if(userName == user)
-            return
-        snap.docs.forEach(doc=>{
-            let data = doc.data()
-            if(data.users.includes(userName)){
-                if(data.users.includes(user))
-                    roomID = doc.id
+        socket.on('chatMsg',async (user,msg)=>{
+        try{
+            let roomID
+            const userName = socket.request.session.passport.user
+            let snap = await chatRoomDB.get()
+            if(msg == '')
+                return
+            if(userName == user)
+                return
+            snap.docs.forEach(doc=>{
+                let data = doc.data()
+                if(data.users.includes(userName)){
+                    if(data.users.includes(user))
+                        roomID = doc.id
+                }
+            })
+            let currTime = Date.parse(new Date())
+            if(!roomID){
+                let response = await chatRoomDB.add({users:[userName,user],time:currTime})
+                roomID = response.id
             }
-        })
-        let currTime = Date.parse(new Date())
-        if(!roomID){
-            let response = await chatRoomDB.add({users:[userName,user],time:currTime})
-            roomID = response.id
+            await chatRoomDB.doc(roomID).collection('chats').add({user:userName,msg:msg,time:currTime})
+            try {
+                await userDB.doc(user).collection('unRead').doc(userName).update({num: FieldValue.increment(1)})
+            } catch (error) {
+            }
+            await chatRoomDB.doc(roomID).set({'time':currTime},{merge:true})
+            io.to(roomID).emit('message',{msg:`${msg}`,userName:userName,time:currTime})
+            io.to(user).emit('notif',{msg:`${userName} sent a message`,userName:userName,time:currTime})
         }
-        await chatRoomDB.doc(roomID).collection('chats').add({user:userName,msg:msg,time:currTime})
-        await userDB.doc(user).collection('unRead').doc(userName).update({num: FieldValue.increment(1)})
-        await chatRoomDB.doc(roomID).set({'time':currTime},{merge:true})
-        io.to(roomID).emit('message',{msg:`${msg}`,userName:userName,time:currTime})
-        io.to(user).emit('notif',{msg:`${userName} sent a message`,userName:userName,time:currTime})
+        catch(err){
+            console.log(err)
+        }
     })
 })
 server.listen(1000,()=>{
