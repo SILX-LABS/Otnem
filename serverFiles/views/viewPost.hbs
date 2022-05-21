@@ -2,122 +2,163 @@
 {{> navBar profilePic = profilePic isAuth = isAuth}}
 {{/if}}
 {{#unless isAuth}}
-{{> navBar profilePic = 'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='}}
+{{> navBar profilePic =
+'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='}}
 {{/unless}}
+<style>
+  .bottom-post {
+    height: 50px;
+    display: flex;
+    font-weight: bold;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  @media screen and (max-width: 991px)  {
+    .navbar__  {
+      display:none;
+    }
+  }
+
+  #house {
+  color:#D1DBDF;
+}
+</style>
 <div class="posts_cards">
-      <div class="container-fluid">
-        <div class="grid_postsx">  
-      
-          <div class="post_boxx" data-type="art">
-            <div class="index_image">
-              <img src="{{imgURL}}" alt="">
+  <div class="container-fluid px-0 px-lg-3">
+    <div class="grid_postsx row">
+      <div class="col-12 col-lg-6 px-0 px-lg-3">
+        <div class="post_boxx" data-type="art">
+          <div class="index_image">
+            <img src="{{imgURL}}" alt="">
+          </div>
+          <div class="top">
+            <div class="items">
+              {{#if isDeletable}}
+              <div class="item edit bg-danger bg-gradient"
+                onclick='axios.delete(`/deletePost`,{data:{postNum:"{{postNum}}"}});location.href = "/profile"'><i
+                  class="fa-solid fa-trash-can" style="color: white;"></i></div>
+              {{/if}}
+              {{!-- <div class="item comment"> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+                  fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
+                  <path
+                    d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                </svg> </div> --}}
+              <div class="item hire"><i class="fa-solid fa-user-group"></i></div>
+              <div class="item donate"><i class="fa-solid fa-money-bill"></i></div>
+              <div class="item star"><i class="fa-solid fa-star-half-stroke"></i></div>
             </div>
-            <div class="top">
-              <div class="items">
-                
-                {{#if isDeletable}}
-                <div class="item edit" style="background-color: red;"onclick='axios.delete(`/deletePost`,{data:{postNum:"{{postNum}}"}});location.href = "/profile"'><i class="fa-solid fa-trash-can" style="color: white;"></i></div>
-                {{/if}}
-                {{!-- <div class="item comment"> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">  <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg> </div> --}}
-               
-                     <div class="item hire" ><i class="fa-solid fa-user-group"></i></div>
-                    <div class="item donate" ><i class="fa-solid fa-money-bill"></i></div>
-
-                     <div class="item star" ><i class="fa-solid fa-star-half-stroke"></i></div>
-
+          </div>
+          <div class="bottom">
+            <div class="UserDetails" style="cursor:pointer"
+              onclick="window.location.href = '/profile?user={{postUser}}'">
+              <div class="UserImage">
+                <img src="{{posterProfilePic}}" alt="User Profile Image">
+              </div>
+              <div class="name_time">
+                <div class="name">
+                  <h6>{{postUser}}</h6>
+                  {{#if verified}}
+                  <i class="fa-solid fa-circle-check"></i>
+                  {{/if}}
+                </div>
+                <h6>{{date}}</h6>
               </div>
             </div>
-            <div class="bottom">
-              <div class="UserDetails" style="cursor:pointer" onclick="window.location.href = '/profile?user={{postUser}}'">
-                <div class="UserImage" >
-                  <img src="{{posterProfilePic}}" alt="User Profile Image">
+            <div class="title_of_post">
+              <div class="post_title">
+                <div class="post__name">
+                  <h5 title="Post Nmae">
+                    {{title}}</h5>
                 </div>
-                <div class="name_time">
-                  <div class="name">
-                    <h6>{{postUser}}</h6>
-                    {{#if verified}}
-                    <i class="fa-solid fa-circle-check"></i>
-                    {{/if}}
-                  </div>
-                  <h6>{{date}}</h6>
-                </div>
-              </div>
-              <div class="post_name">
-                <h5 style="width: 100%;height:1.3em;overflow: hidden !important;text-overflow: ellipsis;white-space: nowrap;text-align: end; margin-right:0.5em">{{title}}</h5>
               </div>
             </div>
           </div>
-              <div class="cardxx" data-type="art">
-         
-            <div class="topx">
-              <h2>Opinions</h2>
-            </div>
-            <div class="post-info">
-                <div>
-                  <h2></h2>
-                 <p>0 Likes | 0 Comments | 0 Shares</p>
-               </div>
-            </div>
-              <div style="height:33em;border-bottom: 1px solid #ECECEC;overflow-y:auto">
-            <div class="comment-c" style="padding: 1em 0 0 1em;display:flex;gap:1em;height:33em;background:none;flex-direction: column;">
-                {{#each commentsArray}}
-                <div class="comment-card" style="display: grid; width: 344px; background: #ECEDEF; padding: 16px; border-radius: 25px;">
-                <div style="display:grid;align-items: center;grid-auto-flow: column;">
-                  <div style="display: flex;flex-wrap: wrap;background:none" >
-                    <img src="{{profilePic}}" style="cursor:pointer;border-radius: 50%;width:3em;height:3em;" onclick="window.location.href = '/profile?user={{user}}'">
-                    <div class="user" style="background:none;padding:0;width:max-content;height:max-content;font-size:1.7em;margin:0 0 0 0.3em;font-weight: bold;cursor:pointer;" onclick="window.location.href = '/profile?user={{user}}'">{{user}}</div>
-                      {{#if verified}}
-                      <i class="fa-solid fa-circle-check" style="color:#1AE4FF;margin:0.9em 0 0 1em;"></i>
-                      {{/if}}
-                      {{#if own}}
-                        <i class="fa-solid fa-trash-can" style="postition:absolute;color:red;margin:0.4em 0 0 1em;  font-size:1.5em;cursor:pointer;height:fit-content;" onclick="deleteComment('{{commentNum}}','{{user}}')"></i>
-                      {{/if}}
-                    </div>
-                </div>
-                <div class="comment" style="margin:0.5em 0 0 1em;height:fit-content;font-size:1.3em;width:100%;background:none;">{{content}}</div>
-                </div>
-                {{/each}}
-            </div>
-             </div>
-            <div class="bottom" style="width:39vw;margin:0.3em 0 0.8em 0.5vw;display:grid;height:6.7em;">
-              <textarea name="comment" id="comment-inp" cols="20" rows="8" style="resize: none;outline:none;padding:0.5em ;border:none" placeholder="Enter your Opinions"></textarea>
-              <button type="submit" id="sub-btn-cmnt" onclick="comment('{{postNum}}','{{postUser}}')">Comment</button>
-            </div>
+        </div>
+        <div class="post-info">
+          <div>
+            <h2></h2>
+            <p>0 Likes | 0 Comments | 0 Shares</p>
           </div>
-     
         </div>
       </div>
+      <div class="col-12 col-lg-6">
+        <div class="cardxx" data-type="art">
+          <div class="topx py-2">
+            <h2>Opinions</h2>
+          </div>
+            <div class="des">
+                <p>Description hi there </p>
+            </div>
+          <div class="comments_container">
+            <div class="comment_c">
+              {{#each commentsArray}}
+              <div class="comment_item">
+                <div class="d-flex flex-warp align-items-center justify-content-between pe-3r">
+                  <div class="item_d d-flex align-items-center gap-1">
+                    <div class="img_container">
+                      {{#if verified}}
+                      <i class="fa-solid fa-circle-check verified_user"></i>
+                      {{/if}}
+                      <img src="{{profilePic}}" onclick="window.location.href = '/profile?user={{user}}'">
+                    </div>
+                    <div class="username_post" onclick="window.location.href = '/profile?user={{user}}'">{{user}}</div>
+                  </div>
+                  <div class="items_tools">
+                    {{#if own}}
+                    <i class="fa-solid fa-trash-can delete_comment_button text-danger me-3" title="Delete Comment"
+                      onclick="deleteComment('{{commentNum}}','{{user}}')"></i>
+                    {{/if}}
+                  </div>
+                </div>
+                <div class="comment_post">
+                  {{content}}</div>
+              </div>
+              {{/each}}
+            </div>
+          </div>
+          <div class="comment_Entering">
+            <textarea name="comment" class="comment_input" id="comment-inp" rows="1"
+              placeholder="Enter your Opinions"></textarea>
+            <button type="submit" class="py-3" id="sub-btn-cmnt"
+              onclick="comment('{{postNum}}','{{postUser}}')">Comment</button>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <noscript id="data" postNum="{{postNum}}" postUser="{{postUser}}"></noscript>
+  </div>
+</div>
+<noscript id="data" postNum="{{postNum}}" postUser="{{postUser}}"></noscript>
 
 <script>
-  async function deletePost(postNum){
-    await axios.delete(`/deletePost`,{data:{postNum:postNum}})
+  async function deletePost(postNum) {
+    await axios.delete(`/deletePost`, { data: { postNum: postNum } })
     location.reload()
   }
-  async function comment(postNum,postUser){
+  async function comment(postNum, postUser) {
     console.log($('#comment-inp').val())
     let comment = $('#comment-inp').val()
-    let res = await axios.post('/comment',{
-        comment:comment,
-        postNum:postNum,
-        postUser:postUser
-      })
+    let res = await axios.post('/comment', {
+      comment: comment,
+      postNum: postNum,
+      postUser: postUser
+    })
     console.log(res)
-    if(res.data.startsWith('<!DOCTYPE html>'))
+    if (res.data.startsWith('<!DOCTYPE html>'))
       location.href = '/login'
     else
       location.reload()
   }
-  async function deleteComment(commentNum,commentUser){
+  async function deleteComment(commentNum, commentUser) {
     console.log("START")
     let postNum = $("#data").attr('postNum')
     let postUser = $("#data").attr('postUser')
-    let res = await axios.delete('/deleteComment',{data:{commentNum:commentNum,postNum:postNum,postUser:postUser,commentUser:commentUser}})
+    let res = await axios.delete('/deleteComment', { data: { commentNum: commentNum, postNum: postNum, postUser: postUser, commentUser: commentUser } })
     console.log(res)
-    if(typeof res.data == 'string' && res.data.startsWith('<!DOCTYPE html>'))
+    if (typeof res.data == 'string' && res.data.startsWith('<!DOCTYPE html>'))
       location.href = '/login'
     location.reload()
-    console.log(commentNum,postNum,postUser)
+    console.log(commentNum, postNum, postUser)
   }
 </script>

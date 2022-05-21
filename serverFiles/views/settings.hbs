@@ -99,9 +99,7 @@
   </div>
 <script>
 	$('.btn-account').click(async e=>{
-		console.log('lol')
 		let res = await axios.post('/changeCred',{cred:'account',newPaypal:$('.inp-paypal').val()})
-		console.log('lol')
 		if(res.data.success)
 				location.href = '/profile'
 		else

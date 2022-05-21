@@ -1,87 +1,100 @@
 {{> navBar profilePic = profilePic isAuth = true}}
-  <div class="post-x">
-        <div class="form-step  form-step-active">
-        
-          <div class="pick-image" style="cursor: pointer;">
-              <div id="ch-file-btn-post"><i class="fa-solid fa-camera"></i></div>
-          </div>
-
-         <div class="create-post" style="width: 40vw;">
-           <div class="profile-photo">
-               <img src="{{profilePic}}" alt="">
-           </div>
-           <input type="text" placeholder="Title your post bro " style="border: none;font-size: 1.5em;" id="create-post" maxlength="50" class="title-inp-post">
-           <input type="submit" onclick="this.disabled = true;this.style.content = `Wait`;this.style.cursor = 'progress'"value="Post" class="btn btn-primary " id="post-btn" style="background-color: #23F649; border: #23F649;">
-       </div>
-       <div class="tags" style="width: 35vw;">
-        <input type="text" class="tag-inp-post" placeholder="Tag your website" style="border: none;font-size:1.5em;margin-right:-15%" id="create-post">
-        <div class="cars">
-          <select name="cars" id="cars" class="cat-inp-post" style="border-radius: 0.1em;font-size:1.3rem">
-            <option value="volvo">All</option>
-            <option value="volvo">Art</option>
-            <option value="saab">UI/UX</option>
-            <option value="opel">Tech</option>
-            <option value="audi">Amvs</option>
-            <option value="volvo">Photosop</option>
-            <option value="volvo">Games</option>
-            <option value="volvo">Other</option>
-          </select>
+<style>
+  @media screen and (max-width: 991px)  {
+    .navbar__  {
+      display:none;
+    }
+  }
+</style>
+<div class="post-x">
+    <div class="row">
+        <div class="col-12 col-lg-5">
+            <div class="form-step  form-step-active ps-0 ps-md-0 px-lg-3 pd-xl-5">
+                <div class="input_Post">
+                    <div class="profile-photo">
+                        <img src="{{profilePic}}" alt="Profile Avatar">
+                    </div>
+                    <input type="text" placeholder="Title your post bro" id="create-post" maxlength="50" class="title-inp-post mx-3">
+                    <button role="button" type="submit"
+                        onclick="this.disabled = true;this.style.content = `Wait`;this.style.cursor = 'progress'"
+                         class="btn_Mento" id="post-btn">Post</button>
+                </div>
+                <div class="input_Post mt-3">
+                    <input type="text" class="tag-inp-post w-100" placeholder="Tag your website" id="create-post">
+                    <div class="cars ms-3">
+                        <select name="cars" id="cars" class="cat-inp-post">
+                            <option value="volvo">All</option>
+                            <option value="volvo">Art</option>
+                            <option value="saab">UI/UX</option>
+                            <option value="opel">Tech</option>
+                            <option value="audi">Amvs</option>
+                            <option value="volvo">Photosop</option>
+                            <option value="volvo">Games</option>
+                            <option value="volvo">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input_Post mt-3">
+                    <textarea type="text" class="disc-inp-post" rows="4" placeholder="Discribe your post bro" id="create-post"></textarea>
+                </div>
+            </div>
         </div>
+        <div class="col-12 col-lg-7 mt-3 mt-lg-0">
+            <div class="w-100 d-flex align-items-start align-items-lg-center justify-content-start justify-content-lg-center">
+                <div class="pick-image m-0 m-lg-auto" role="button">
+                    <div id="ch-file-btn-post"><i class="fa-solid fa-camera"></i></div>
+                </div>
+                <input type="file" name="upload_file" accept="Image/*" id="hidden-inp-file-post" style="display: none;" required>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- === Items Links Selector End === -->
 
-      </div>
-           <div class="description" style="width:40vw;">
-           <textarea type="text" class="disc-inp-post" placeholder="Discribe your post bro " style="border: none;font-size:1.5em;resize: none;padding:0.5em" id="create-post"></textarea>
-          </div>
-        
-     </div>
-    </div>
-    <input type="file" name="upload_file" accept="Image/*" id="hidden-inp-file-post" title="" accept="" required style="display: none;">
-    </div>
-    <!-- === Items Links Selector End === -->
-   
-  </div>
-  <script>
+</div>
+<script>
     $('#post-btn').prop('disabled', true)
-    $('#post-btn').click(async()=>{
+    $('#post-btn').click(async () => {
         let formData = new FormData()
-        formData.append("upload_file",document.querySelector('#hidden-inp-file-post').files[0],"upload_file")
-        formData.append("title",document.querySelector('.title-inp-post').value)
-        formData.append("disc",document.querySelector('.disc-inp-post').value)
-        formData.append("tags",(document.querySelector('.tag-inp-post').value).toLowerCase())
-        formData.append("category",(document.querySelector('.cat-inp-post').options[document.querySelector('.cat-inp-post').selectedIndex].text).toLowerCase())
-        let res = await axios.post('/upload',formData)
+        formData.append("upload_file", document.querySelector('#hidden-inp-file-post').files[0], "upload_file")
+        formData.append("title", document.querySelector('.title-inp-post').value)
+        formData.append("disc", document.querySelector('.disc-inp-post').value)
+        formData.append("tags", (document.querySelector('.tag-inp-post').value).toLowerCase())
+        formData.append("category", (document.querySelector('.cat-inp-post').options[document.querySelector('.cat-inp-post').selectedIndex].text).toLowerCase())
+        let res = await axios.post('/upload', formData)
         location.href = `/postPreview?user=${res.data.user}&&postNum=${res.data.num}`
     })
-    $('.tag-inp-post').keyup(async(e)=>{
+    $('.tag-inp-post').keyup(async (e) => {
         let tagVal = $('.tag-inp-post').val()
-        if(e.keyCode == 32 || e.keyCode == 8 && $('.tag-inp-post').val().length < 50){
+        if (e.keyCode == 32 || e.keyCode == 8 && $('.tag-inp-post').val().length < 50) {
             await $('#tag-txt-post').text(` ${tagVal}`)
         }
     })
-    $('.pick-image').click(()=>{
+    $('.pick-image').click(() => {
         $('#hidden-inp-file-post').trigger('click')
     })
-    $('#hidden-inp-file-post').change(function(){
+    $('#hidden-inp-file-post').change(function () {
         let file = this.files[0]
-        $('#ch-file-btn-post').replaceWith(function(){
+        $('#ch-file-btn-post').replaceWith(function () {
             if (file)
                 return `<img src = ${URL.createObjectURL(file)} id="ch-file-btn-post"/>`
             return `<div id="ch-file-btn-post"><i class="fa-solid fa-camera"></i></div>`
         })
-        $('#ch-file-btn-post').attr('width','500')
-        $('#ch-file-btn-post').attr('height','500')
-        $('#ch-file-c-post').attr('border-radius','0em !important')
-        $('#ch-file-c-post').attr('border','0px solid white')
-        $('#ch-file-btn-post').css('padding','0')
-        if(file||$('.title-inp-post').val()||$('.disc-inp-post').val())$('#post-btn').prop('disabled', false)
-        if(!file||!$('.title-inp-post').val()||!$('.disc-inp-post').val())$('#post-btn').prop('disabled', true)
+        $('#ch-file-btn-post').attr('width', '500')
+        $('#ch-file-btn-post').attr('height', '500')
+        $('#ch-file-c-post').attr('border-radius', '0em !important')
+        $('#ch-file-c-post').attr('border', '0px solid white')
+        $('#ch-file-btn-post').css('padding', '0')
+        if (file || $('.title-inp-post').val() || $('.disc-inp-post').val()) $('#post-btn').prop('disabled', false)
+        if (!file || !$('.title-inp-post').val() || !$('.disc-inp-post').val()) $('#post-btn').prop('disabled', true)
     })
-    $('.title-inp-post').keyup(()=>{
-        if($('#ch-file-btn-post').get(0).tagName != 'DIV'||$('.title-inp-post').val()||$('.disc-inp-post').val())$('#post-btn').prop('disabled', false)
-        if($('#ch-file-btn-post').get(0).tagName == 'DIV'||!$('.title-inp-post').val()||!$('.disc-inp-post').val())$('#post-btn').prop('disabled', true)    
+    $('.title-inp-post').keyup(() => {
+        if ($('#ch-file-btn-post').get(0).tagName != 'DIV' || $('.title-inp-post').val() || $('.disc-inp-post').val()) $('#post-btn').prop('disabled', false)
+        if ($('#ch-file-btn-post').get(0).tagName == 'DIV' || !$('.title-inp-post').val() || !$('.disc-inp-post').val()) $('#post-btn').prop('disabled', true)
     })
-    $('.disc-inp-post').keyup(()=>{
-        if($('#ch-file-btn-post').get(0).tagName != 'DIV'||$('.title-inp-post').val()||$('.disc-inp-post').val())$('#post-btn').prop('disabled', false)
-        if($('#ch-file-btn-post').get(0).tagName == 'DIV'||!$('.title-inp-post').val()||!$('.disc-inp-post').val())$('#post-btn').prop('disabled', true)    
+    $('.disc-inp-post').keyup(() => {
+        if ($('#ch-file-btn-post').get(0).tagName != 'DIV' || $('.title-inp-post').val() || $('.disc-inp-post').val()) $('#post-btn').prop('disabled', false)
+        if ($('#ch-file-btn-post').get(0).tagName == 'DIV' || !$('.title-inp-post').val() || !$('.disc-inp-post').val()) $('#post-btn').prop('disabled', true)
     })
 </script>

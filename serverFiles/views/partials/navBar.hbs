@@ -1,11 +1,13 @@
 <!-- === Navbar Start === -->
 <div class="navbar__">
-  <noscript auth='{{isAuth}}' id="isAuth"></noscript>
+  <noscript auth="{{isAuth}}" id="isAuth"></noscript>
   <div class="navbar__elements">
     <!-- Navbar Logo -->
     <div class="logo_company">
       <a href="/" class="au">
+
         <h3>Mento</h3>
+
       </a>
       <!-- <img src="" alt=""> -->
     </div>
@@ -24,36 +26,55 @@
         <a href="#" class="au">
           <li>Support</li>
         </a>
-        <a href="#" class="au">
+        <a href="../how.hbs" class="au">
           <li>How it Works</li>
         </a>
       </ul>
     </div>
     <!-- Navbar Search Bar -->
-    <!-- Navbar Search Bar -->
-    <form action="" class="navbar_Form">
+    <form action="" class="navbar_Form mx-3 mx-xl-0">
       <div class="Navbar_SearchBar">
-        <input id="SearchBar" type="text" placeholder="Search .." onkeypress="if(event['key'] == 'Enter')location.href=`/?attr=search&&element=${this.value}`;if(event['key'] == 'Enter')event.preventDefault()">
+        <input
+          id="SearchBar"
+          type="text"
+          placeholder="Search .."
+          onkeypress="if(event['key'] == 'Enter')location.href=`/?attr=search&&element=${this.value}`;if(event['key'] == 'Enter')event.preventDefault()"
+        />
         <i class="fa-solid fa-xmark" id="ExitOfSearch"></i>
       </div>
     </form>
+
     <!-- Navbar Icons Section -->
     <div class="navbar_section">
       <a href="/chatRoom?user=Phalicy" class="au">
         <i class="fa-solid fa-envelope" id="Emails"></i>
       </a>
-      <a href="#" class="au">
+      {{! <a href="#" class="au">
         <i class="fa-solid fa-magnifying-glass" id="Search"></i>
-      </a>
+      </a> }}
+      
       <a href="/notifications" class="au">
         <i class="fa-solid fa-bell" id="Notification"></i>
       </a>
+        <a class="au" href="/search"  id="searchx">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </a>
       {{#if isAuth}}
-        <i class="fa-solid fa-arrow-right-from-bracket" onclick="logout()" style="cursor:pointer"></i>
+        <i
+           id="logout"
+          class="fa-solid fa-arrow-right-from-bracket"
+          onclick="logout()"
+          style="cursor:pointer"
+        ></i>
       {{/if}}
-      <div class="profile">
+      <div class="profile me-2 me-xl-0">
         <a href="/profile">
-          <img class="profile-pfp" style="width: 2.5em;height:2.5em;" src="{{profilePic}}" alt="Profile Image">
+          <img
+            class="profile-pfp"
+            style="width: 100%;height:100%;"
+            src="{{profilePic}}"
+            alt="Profile Image"
+          />
         </a>
       </div>
     </div>
@@ -68,56 +89,50 @@
   </div>
 </div>
 <div class="popup" id="popup2">
-      <div class="choose">
-          <a href="./camera-post.html" class="camera"><i class="fa-solid fa-camera"></i></a>
-           <a  href="./video-post.html" class="video"><i class="fa-solid fa-video"></i></a>
-      </div>
-      <a href="#" class="exit" onclick="hide('popup2')">Exit</a>
-    </div>
+  <div class="choose">
+    <a href="./camera-post.html" class="camera"><i
+        class="fa-solid fa-camera"
+      ></i></a>
+    <a href="./video-post.html" class="video"><i
+        class="fa-solid fa-video"
+      ></i></a>
+  </div>
+  <a href="#" class="exit" onclick="hide('popup2')">Exit</a>
+</div>
 <!-- === Navbar End === -->
 <!-- MOBILE NAVBAR START -->
 <div class="navbar_mobile">
-<ul class="items">
-  <a href="#" class="au">
-    <li><i class="fa-solid fa-house"></i></li>
-  </a><a href="#" class="au">
-    <li><i class="fa-solid fa-bookmark"></i></li>
+  <ul class="items">
+    <a href="/" style="color:#000" class="au">
+      <li><i id="house" class="fa-solid fa-house"></i></li>
+    </a><a  href="/chatRoom?user=Phalicy" class="au">
+    <i class="fa-solid fa-message"></i> </a>
+  
+  </ul>
+  <a href="/post">
+    <button class="btn_createPost">
+      Upload
+    </button>
   </a>
-</ul>
-<a href="/post">
-  <button class="btn_createPost">
-    Create
-  </button>
-</a>
-<ul class="items">
-  <a href="#" class="au">
-    <li><i class="fa-solid fa-bell"></i></li>
-  </a><a href="#" class="au">
-    <li><i class="fa-solid fa-user"></i></li>
-  </a>
-  {{#if isAuth}}
-    <i class="fa-solid fa-arrow-right-from-bracket" onclick="logout()"></i>
-  {{/if}}
-</ul>
-  </div>
-  <!-- MOBILE NAVBAR END -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js "></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script>
-    async function logout(){
-      await axios.delete('/logout')
-      location.reload()
-    }
-  </script>
-  <script>
-  async function notify(){
-        let sw = await navigator.serviceWorker.ready
-        let push = await sw.pushManager.subscribe({
-            userVisibleOnly:true,
-            applicationServerKey:'BEPh6PvlCqQCb19uCpsuf0j8g2xqvzuIKmJbW8MdszGKkinfyorfldO0yR-uWO8olU5bk_09xKDvKiPBoszhHyY'
-        })
-        await axios.post('/asignNotification',{push:JSON.stringify(push)})
-  }
-  if($('#isAuth').attr('auth') == 'true')
-    notify()
+  <ul class="items">
+    <a href="#" class="au">
+      <li><i class="fa-solid fa-bell"></i></li>
+    </a><a href="/profile" class="au">
+      <li><i class="fa-solid fa-user"></i></li>
+    </a>
+
+  </ul>
+</div>
+<!-- MOBILE NAVBAR END -->
+<script
+  src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js "
+></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>
+  async function notify(){ let sw = await navigator.serviceWorker.ready let push
+  = await sw.pushManager.subscribe({ userVisibleOnly:true,
+  applicationServerKey:'BEPh6PvlCqQCb19uCpsuf0j8g2xqvzuIKmJbW8MdszGKkinfyorfldO0yR-uWO8olU5bk_09xKDvKiPBoszhHyY'
+  }) await axios.post('/asignNotification',{push:JSON.stringify(push)}) }
+  if($('#isAuth').attr('auth') == 'true') notify()
 </script>

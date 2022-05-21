@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/SingleSimha/InstaClone#readme",
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "mkdirp": "^1.0.4",
+    "nodemon": "^2.0.15",
+    "rimraf": "^3.0.2"
   },
   "dependencies": {
     "@digitalroute/email-verify": "^0.2.2",
