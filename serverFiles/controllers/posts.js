@@ -70,6 +70,11 @@ const profile = async(req,res)=>{
         if(query.user)
             userName = query.user
         let userObj = await getUser(userName)
+        let isFollowing = false
+        if(req.isAuthenticated() && query.user && await checkIfFollowing(await getUserName(req),query.user)){
+            isFollowing = true
+        }
+        userObj['isFollowing'] = isFollowing
         let snapshot = await userDB.doc(userName).collection('followers').get()
         let followers = snapshot.docs.map(doc=>{
         return doc
@@ -601,7 +606,7 @@ const getChatMembers = async(req,res)=>{
     }
 }
 const test = async (req,res,next)=>{
-    console.log(await req.session)
+    res.send(await checkIfFollowing('Pravith B A',"Phalicyy"))
 }
 
 // CUSTOM FUNCTIONS
@@ -730,5 +735,9 @@ async function getAllPostsFiltered(attr,element){
 }
 function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
+}
+async function checkIfFollowing(user,checkUser){
+    let followers = await userDB.doc(checkUser).collection('followers').get()
+    return (followers.docs.some(doc => doc.id == user))
 }
 module.exports = {admin,userDB,chatRoomDB,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute}

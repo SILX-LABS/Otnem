@@ -5,6 +5,7 @@
 {{> navBar profilePic =
 'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='}}
 {{/unless}}
+<noscript id="isAuth" auth="{{isAuth}}"></noscript>
 {{#with userObj}}
 {{!-- {{userObj}} --}}
 <style>
@@ -49,6 +50,19 @@
                   </div>
                 </a>
                 {{/if}}
+                {{#unless isMine}}
+                <noscript id="userName" name="{{userName}}"></noscript>
+                  {{#unless isFollowing}}
+                    <div class="followBtn" style="cursor: pointer;" onclick="follow()">
+                      <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                  {{/unless}}
+                  {{#if isFollowing}}
+                    <div class="unFollowBtn" style="cursor: pointer;" onclick="unFollow()">
+                      <i class="fa-solid fa-user-slash"></i>
+                    </div>
+                  {{/if}}
+                {{/unless}}
             </div>
           </div>
         </div>
@@ -79,7 +93,7 @@
               </div>
               <div class="name_time">
                 <div class="name">
-                  <h6 style="width: auto;height:1.3em;overflow: hidden !important;text-overflow: ellipsis;white-space: nowrap;text-align: end; margin-right:0.5em">{{userName}}</h6>
+                  <h6 style="width: auto;height:1.3em;overflow: hidden !important;text-overflow: ellipsis;white-space: nowrap;text-align: end; margin-right:0.5em">{{name}}</h6>
                   {{#if verified}}
                     <i class="fa-solid fa-circle-check"></i>
                   {{/if}}
@@ -115,3 +129,21 @@
     {{/unless}}
 
     {{/with}}
+
+<script>
+  $('.followBtn').click(async e=>{
+    if($('#isAuth').attr('auth') == "false")
+      return location.href = '/login'
+    await axios.post('/follow',{followUserName:$('#userName').attr('name')})
+    location.reload()
+  })
+  $('.unFollowBtn').click(async e=>{
+    if($('#isAuth').attr('auth') == "false")
+      return location.href = '/login'
+    await axios.post('/unFollow',{unFollowUserName:$('#userName').attr('name')})
+    location.reload()
+  })
+  async function follow(){
+    
+  }
+</script>
