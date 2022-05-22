@@ -88,6 +88,8 @@
         chats.data.chats.forEach(async chat => {
             await addUser(chat)
         })
+        $(`.${($('#data').attr('user')).replaceAll(' ','-')}-unread`).text('0')
+        $(`.${($('#data').attr('user')).replaceAll(' ','-')}-unread`).css('display','none')
         socket.on('notif', (res) => {
             if ($(`.${res.userName}`) && $('#data').attr('user') != res.userName) {
                 $(`.${res.userName}-unread`).css('display', 'block')
