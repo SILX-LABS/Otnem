@@ -91,12 +91,13 @@ const profile = async(req,res)=>{
         userObj['followers'] = followers.length
         userObj['following'] = following.length
         let posts = await getAllUserPosts(userName)
+        let myName = await getUserName(req)
         posts.forEach(post=>{
         post['name'] = userName
         post['profilePic'] = userObj.profilePic
         post['verified'] = userObj.verified
         post['isLiked']=false
-        if(post['likesArray'].includes(userName))post['isLiked']=true
+        if(post['likesArray'].includes(myName))post['isLiked']=true
         })
         userObj['posts'] = posts
         let isPost = false
