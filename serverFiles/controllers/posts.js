@@ -178,7 +178,7 @@ const chatPage = async(req,res,next)=>{
         if(!userName)
             return res.redirect('login')
         if(!await checkIfDocExists(userDB,user))
-            return res.send("F")
+            return res.send("User Doesnt exist")
         const user1 = await getUser(userName)
         const user2 = await getUser(user)
         return res.render('chatRoom',{userName:userName,profilePic:user1.profilePic,user:user,profilePic2:user2.profilePic})
@@ -577,17 +577,22 @@ const chatRoom = async(req,res)=>{
 const getChatMembers = async(req,res)=>{
     try{
         const userName = await getUserName(req)
-        let chats = await chatRoomDB.where('users','array-contains',`${userName}`).get()
-        if(!chats)
+        let chatsSnap = await chatRoomDB.where('users','array-contains',`${userName}`).get()
+        if(!chatsSnap)
             return res.send({chats:[]})
-        chats = await Promise.all(chats.docs.map(async doc=>{
+        let chats = []
+        let users = []
+        await Promise.all(chatsSnap.docs.map(async doc=>{
             let data = doc.data()
             data.users = data.users.filter(e=>e!==`${userName}`)
             data.users = data.users[0]
+            if(users.includes(data.users))
+                return await chatRoomDB.doc(doc.id).delete()
+            users.push(data.users)
             data['userData'] = await getUser(data.users)
             let unRead = ((await userDB.doc(userName).collection('unRead').doc(data.users).get()).data())
             data['unread'] = (unRead)?unRead.num:0
-            return {...data,...{id:doc.id}}
+            chats.push({...data,...{id:doc.id}})
         }))
         function compare( a, b ) {
             if ( a.time > b.time ){
@@ -604,6 +609,15 @@ const getChatMembers = async(req,res)=>{
     catch(err){
         console.log(err)
     }
+}
+const getUserApi = async(req,res)=>{
+    try{
+        if(await checkIfUserExists(req.query.user) && req.query.user)
+            return res.send(await getUser(req.query.user))
+        return res.send("No user found") 
+    }catch(err){
+        console.log(err)
+    }    
 }
 const test = async (req,res,next)=>{
     res.send(await checkIfFollowing('Pravith B A',"Phalicyy"))
@@ -690,23 +704,27 @@ async function getAllPosts(){
     let allUsers = userSnapshot.docs.map(doc=>{return doc.id})
     for(let user of allUsers){
         let snapshot = await userDB.doc(user).collection('posts').get()
-        let post = snapshot.docs.map(doc=>{
+        let post = await Promise.all(snapshot.docs.map(async doc=>{
             let data = doc.data()
             data['user'] = user
             data['postName'] = doc.id
+            data['likes'] = (await userDB.doc(user).collection('posts').doc(doc.id).collection('likes').get()).size
+            data['commentsQty'] = (await userDB.doc(user).collection('posts').doc(doc.id).collection('comments').get()).size
             return data
-        })
+        }))
         posts.push(...post)
     }
     return posts
 }
 async function getAllUserPosts(userName){
     let snapshot = await userDB.doc(userName).collection('posts').get()
-    let posts = snapshot.docs.map(doc=>{
+    let posts = await Promise.all(snapshot.docs.map(async doc=>{
         let data = doc.data()
-        data['id'] = doc.id
+        data['id'] = doc.id            
+        data['likes'] = (await userDB.doc(userName).collection('posts').doc(doc.id).collection('likes').get()).size
+        data['commentsQty'] = (await userDB.doc(userName).collection('posts').doc(doc.id).collection('comments').get()).size
         return data
-    })
+    }))
     return posts
 }
 async function checkIfDocExists(collectionRef,docName){
@@ -740,4 +758,4 @@ async function checkIfFollowing(user,checkUser){
     let followers = await userDB.doc(checkUser).collection('followers').get()
     return (followers.docs.some(doc => doc.id == user))
 }
-module.exports = {admin,userDB,chatRoomDB,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute}
+module.exports = {admin,userDB,chatRoomDB,getUserApi,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute}

@@ -50,8 +50,6 @@
     {{!-- Main Chat --}}
 
 </div>
-{{!-- <input type="text" name="l" id="ee">
-<button id="e">Add user</button> --}}
 
 <noscript id="data" user="" pfp=""></noscript>
 <noscript id="vars" user="{{userName}}" pfp="{{profilePic}}"></noscript>
@@ -77,14 +75,45 @@
         })
     }
     async function sumMain(chats) {
-        socket.emit('joinRoom', chats.data.chats[0].users)
-        $('.user-top-chat').click(e => { location.href = `/profile?user=${$('#data').attr('user')}` })
-        $('#data').attr('user', `${chats.data.chats[0].users}`)
-        $('#data').attr('pfp', `${chats.data.chats[0].userData.profilePic}`)
-        $('.chat-user-details .chat-name').text(`${chats.data.chats[0].users}`)
-        $('.user-top-chat .chat-pfp').attr('src', `${chats.data.chats[0].userData.profilePic}`)
+        let userr = (getUrlVars())['user']
+        if(getUrlVars() && userr && getUrlVars()['redirect'] && (document.querySelector(`.${userr.replaceAll(' ','-')}`))){
+            let userData = await axios.post(`/getUser?user=${userr}`)
+            userData = userData.data
+            if(typeof userData == 'object'){
+                $('#user-chat-c').html('')
+                $('#data').attr('user',`${userr}`)
+                $('#data').attr('pfp',`${userData.profilePic}`)
+                console.log(`${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`)
+                let chat = {"users":`${userr}`,'userData':userData}
+                chat['time'] = new Date()
+                console.log(userData)
+                socket.emit('joinRoom', userr)
+                await addUser(chat)
+                $('.user-top-chat').click(e => { location.href = `/profile?user=${$('#data').attr('user')}` })
+                $('#data').attr('user', `${chat.users}`)
+                $('#data').attr('pfp', `${chat.userData.profilePic}`)
+                $('.chat-user-details .chat-name').text(`${chat.users}`)
+                $('.user-top-chat .chat-pfp').attr('src', `${chat.userData.profilePic}`)
+            }
+            else{
+                socket.emit('joinRoom', chats.data.chats[0].users)
+                $('.user-top-chat').click(e => { location.href = `/profile?user=${$('#data').attr('user')}` })
+                $('#data').attr('user', `${chats.data.chats[0].users}`)
+                $('#data').attr('pfp', `${chats.data.chats[0].userData.profilePic}`)
+                $('.chat-user-details .chat-name').text(`${chats.data.chats[0].users}`)
+                $('.user-top-chat .chat-pfp').attr('src', `${chats.data.chats[0].userData.profilePic}`)
+                $('#user-chat-c').html('')
+            }
+        }else{
+            socket.emit('joinRoom', chats.data.chats[0].users)
+            $('.user-top-chat').click(e => { location.href = `/profile?user=${$('#data').attr('user')}` })
+            $('#data').attr('user', `${chats.data.chats[0].users}`)
+            $('#data').attr('pfp', `${chats.data.chats[0].userData.profilePic}`)
+            $('.chat-user-details .chat-name').text(`${chats.data.chats[0].users}`)
+            $('.user-top-chat .chat-pfp').attr('src', `${chats.data.chats[0].userData.profilePic}`)
+            $('#user-chat-c').html('')
+        }
         await showChat($('#data').attr('user'))
-        $('#user-chat-c').html('')
         chats.data.chats.forEach(async chat => {
             await addUser(chat)
         })
@@ -242,5 +271,16 @@
         document.querySelector('.chats').append(chatHolder)
         let objDiv = document.querySelector(".chats")
         objDiv.scrollTop = objDiv.scrollHeight
+    }
+    function getUrlVars(){
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for(var i = 0; i < hashes.length; i++)
+        {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
     }
 </script>
