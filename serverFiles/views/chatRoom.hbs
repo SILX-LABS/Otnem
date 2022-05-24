@@ -76,7 +76,8 @@
     }
     async function sumMain(chats) {
         let userr = (getUrlVars())['user']
-        if(getUrlVars() && getUrlVars()['redirect'] && !chats.data.chats.some(e=>e['users'] == userr)){
+        userr = userr.replaceAll('%',' ')
+        if(getUrlVars() && getUrlVars()['redirect'] && !chats.data.chats.some(e=>e['users'] == userr && userr != $('#vars').attr('user'))){
             let userData = await axios.post(`/getUser?user=${userr}`)
             userData = userData.data
             if(typeof userData == 'object'){
@@ -102,7 +103,7 @@
                 $('#user-chat-c').html('')
             }
         }
-        else if(chats.data.chats.some(e=>e['users'] == userr)){
+        else if(chats.data.chats.some(e=>e['users'] == userr) && userr != $('#vars').attr('user')){
             $('#user-chat-c').html('')
             let userData = await axios.post(`/getUser?user=${userr}`)
             userData = userData.data
