@@ -60,11 +60,7 @@
       <i class="fa-solid fa-magnifying-glass"></i>
     </a>
       {{#if isAuth}}
-        <i
-           id="logout"
-          class="fa-solid fa-arrow-right-from-bracket"
-          onclick="logout()"
-          style="cursor:pointer"
+        <i id="logout" class="fa-solid fa-arrow-right-from-bracket" onclick="axios.delete('/logout');location.href = `/login`" style="cursor:pointer"
         ></i>
       {{/if}}
       <div class="profile me-2 me-xl-0">
@@ -134,7 +130,14 @@
   let sw = await navigator.serviceWorker.ready 
   let push = await sw.pushManager.subscribe({ userVisibleOnly:true,
   applicationServerKey:'BEPh6PvlCqQCb19uCpsuf0j8g2xqvzuIKmJbW8MdszGKkinfyorfldO0yR-uWO8olU5bk_09xKDvKiPBoszhHyY'
-  }) 
+  })
+  window.onload($('#logout').click(logout()))
+  async function logout(){
+    console.log('lol')
+    await axios.delete('/logout')
+    location.href = '/login'
+  }
+  $('#logout').click(logout())
   await axios.post('/asignNotification',{push:JSON.stringify(push)}) }
   if($('#isAuth').attr('auth') == 'true') notify()
 </script>

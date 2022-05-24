@@ -39,19 +39,24 @@ cloudinary.config({
     api_secret: process.env.API_SECRET
 })
 const mainPage = async(req,res)=>{
-    const {attr,element} = await req.query
-    let userName = await getUserName(req)
-    let loggedIn = false
-    let userObj = {profilePic:""}
-    if(userName){
+    try{
+        const {attr,element} = await req.query
+        let userName = await getUserName(req)
+        let loggedIn = false
+        let userObj = {profilePic:""}
+        if(userName){
         userObj = await getUser(userName)
         loggedIn = true
+        }
+        let finalArray = await getAllPostsFiltered(attr,element)
+        let isPost = false
+        if(finalArray[0])
+            isPost = true
+        finalArray.forEach(post=>{(post['likesArray'].includes(userName))?post['isLiked']=true:post['isLiked']=false})
+        res.render('index',{isPost:isPost,len:finalArray.length,posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,isAuth:req.isAuthenticated()})
+    }catch(err){
+        console.log(err)
     }
-    let finalArray = await getAllPostsFiltered(attr,element)
-    let isPost = false
-    if(finalArray[0])
-        isPost = true
-    res.render('index',{isPost:isPost,len:finalArray.length,posts:finalArray,loggedIn:loggedIn,profilePic:userObj.profilePic,isAuth:req.isAuthenticated()})
 }
 const login = async(req,res)=>{
     res.render('login',{layout:'loginLayout'})
@@ -90,6 +95,8 @@ const profile = async(req,res)=>{
         post['name'] = userName
         post['profilePic'] = userObj.profilePic
         post['verified'] = userObj.verified
+        post['isLiked']=false
+        if(post['likesArray'].includes(userName))post['isLiked']=true
         })
         userObj['posts'] = posts
         let isPost = false
@@ -318,6 +325,11 @@ const postPreviewPage = async(req,res)=>{
         let commentsArray = []
         let postData = (await userDB.doc(query.user).collection('posts').doc(query.postNum).get()).data()
         let commentSnapshot = await userDB.doc(query.user).collection('posts').doc(query.postNum).collection('comments').get()
+        let likeSnap = (await userDB.doc(query.user).collection('posts').doc(query.postNum).collection('likes').get())
+        let likes  = likeSnap.size
+        let likesArray = likeSnap.docs.map(doc=>doc.data().user)
+        let isLiked = false
+        if(likesArray.includes(userName))isLiked=true
         if(!commentSnapshot.empty){
             isComment = true
             commentsArray = await Promise.all(commentSnapshot.docs.map(async doc=>{
@@ -341,7 +353,7 @@ const postPreviewPage = async(req,res)=>{
             postData['disc'] = "ERRRRRR"
             err = true
         }
-        res.render('viewPost',{layout:'indexLayout',verified:postUser.verified,isDeletable:isDeletable,posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,imgURL:postData.img,title:postData.title,disc:postData.disc,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})
+        res.render('viewPost',{layout:'indexLayout',isLiked,likes,commentsQty:commentSnapshot.size,verified:postUser.verified,isDeletable:isDeletable,posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,imgURL:postData.img,title:postData.title,disc:postData.disc,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})
         
     } catch (error) {
         console.log(error)
@@ -407,6 +419,8 @@ const registerPost= async(req,res)=>{
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too small"})
         if(body.name.length > 20)
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too large"})
+        if(body.name.includes('%'))
+            return res.render('register',{layout:'registerLayout',err:true,msg:"% sign cant be included sowwy"})
         validator.verify(body.email,async (err,response)=>{
             if(!response.success)
                 return res.render('register',{layout:'registerLayout',err:true,msg:"Email doesn't exist"})
@@ -752,7 +766,7 @@ async function getAllPosts(){
             data['postName'] = doc.id
             data['likes'] = (likesArr).size
             data['commentsQty'] = (await userDB.doc(user).collection('posts').doc(doc.id).collection('comments').get()).size
-            data['likesArray'] = likesArr.docs.map(doc=>{doc.user})
+            data['likesArray'] = likesArr.docs.map(doc=>doc.data().user)
             return data
         }))
         posts.push(...post)
@@ -763,8 +777,10 @@ async function getAllUserPosts(userName){
     let snapshot = await userDB.doc(userName).collection('posts').get()
     let posts = await Promise.all(snapshot.docs.map(async doc=>{
         let data = doc.data()
-        data['id'] = doc.id            
-        data['likes'] = (await userDB.doc(userName).collection('posts').doc(doc.id).collection('likes').get()).size
+        data['id'] = doc.id
+        let likeSnap = await userDB.doc(userName).collection('posts').doc(doc.id).collection('likes').get()      
+        data['likes'] = (likeSnap).size
+        data['likesArray'] = likeSnap.docs.map(doc=>doc.data().user)
         data['commentsQty'] = (await userDB.doc(userName).collection('posts').doc(doc.id).collection('comments').get()).size
         return data
     }))
