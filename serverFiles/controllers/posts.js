@@ -619,6 +619,47 @@ const getUserApi = async(req,res)=>{
         console.log(err)
     }    
 }
+const addLike = async(req,res)=>{
+    try{
+        const userName = await getUserName(req)
+        const {user,postNum} = await req.body
+        if((await userDB.doc(user).collection('posts').doc(postNum).collection('likes').where('user','==',userName).get()).docs[0])
+            return res.send({success:false,msg:"User already liked"})
+        await userDB.doc(user).collection('posts').doc(postNum).collection('likes').add({user:userName})
+        return res.send({success:true,msg:"Like Added"})
+    }catch(err){
+        console.log(err)
+    }
+}
+const removeLike = async(req,res)=>{
+    try{
+        const userName = await getUserName(req)
+        const {user,postNum} = await req.body
+        let likeDoc = (await userDB.doc(user).collection('posts').doc(postNum).collection('likes').where('user','==',userName).get()).docs[0]
+        if(!likeDoc)
+            return res.send({success:false,msg:"User didn't like"})
+        await userDB.doc(user).collection('posts').doc(postNum).collection('likes').doc(likeDoc.id).delete()
+        return res.send({success:true,msg:"Like Removed"})
+    }catch(err){
+        console.log(err)
+    }
+}
+const getLikes = async(req,res)=>{
+    try{
+        const {postNum,user} = await req.query
+        let likeSnap = await userDB.doc(user).collection('posts').doc(postNum).collection('likes').get()
+        if(likeSnap.size == 0){
+            return res.send([])
+        }
+        return res.send(likeSnap.docs.map(doc=>{
+            let data = doc.data()
+            data['id'] = doc.id
+            return data
+        }))
+    }catch(err){
+        console.log(err)
+    }
+}
 const test = async (req,res,next)=>{
     res.send(await checkIfFollowing('Pravith B A',"Phalicyy"))
 }
@@ -706,10 +747,12 @@ async function getAllPosts(){
         let snapshot = await userDB.doc(user).collection('posts').get()
         let post = await Promise.all(snapshot.docs.map(async doc=>{
             let data = doc.data()
+            let likesArr = await userDB.doc(user).collection('posts').doc(doc.id).collection('likes').get()
             data['user'] = user
             data['postName'] = doc.id
-            data['likes'] = (await userDB.doc(user).collection('posts').doc(doc.id).collection('likes').get()).size
+            data['likes'] = (likesArr).size
             data['commentsQty'] = (await userDB.doc(user).collection('posts').doc(doc.id).collection('comments').get()).size
+            data['likesArray'] = likesArr.docs.map(doc=>{doc.user})
             return data
         }))
         posts.push(...post)
@@ -758,4 +801,4 @@ async function checkIfFollowing(user,checkUser){
     let followers = await userDB.doc(checkUser).collection('followers').get()
     return (followers.docs.some(doc => doc.id == user))
 }
-module.exports = {admin,userDB,chatRoomDB,getUserApi,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute}
+module.exports = {admin,userDB,chatRoomDB,addLike,removeLike,getLikes,getUserApi,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute}

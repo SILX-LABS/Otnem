@@ -69,31 +69,28 @@
             if ((await axios.get(`/checkUser?user=${$('#s-user').val()}`)).data && e.keyCode == 13) {
                 $('#data').attr('user', $('#s-user').val())
                 socket.emit('joinRoom', $('#s-user').val())
-                $('#user-chat-c').prepend($(`.${$('#data').attr('user')}`))
+                $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
                 location.reload()
             }
         })
     }
     async function sumMain(chats) {
         let userr = (getUrlVars())['user']
-        if(getUrlVars() && userr && getUrlVars()['redirect'] && (document.querySelector(`.${userr.replaceAll(' ','-')}`))){
+        if(getUrlVars() && getUrlVars()['redirect'] && !chats.data.chats.some(e=>e['users'] == userr)){
             let userData = await axios.post(`/getUser?user=${userr}`)
             userData = userData.data
             if(typeof userData == 'object'){
                 $('#user-chat-c').html('')
                 $('#data').attr('user',`${userr}`)
                 $('#data').attr('pfp',`${userData.profilePic}`)
-                console.log(`${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`)
                 let chat = {"users":`${userr}`,'userData':userData}
                 chat['time'] = new Date()
-                console.log(userData)
                 socket.emit('joinRoom', userr)
                 await addUser(chat)
                 $('.user-top-chat').click(e => { location.href = `/profile?user=${$('#data').attr('user')}` })
-                $('#data').attr('user', `${chat.users}`)
-                $('#data').attr('pfp', `${chat.userData.profilePic}`)
                 $('.chat-user-details .chat-name').text(`${chat.users}`)
                 $('.user-top-chat .chat-pfp').attr('src', `${chat.userData.profilePic}`)
+                $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
             }
             else{
                 socket.emit('joinRoom', chats.data.chats[0].users)
@@ -104,7 +101,19 @@
                 $('.user-top-chat .chat-pfp').attr('src', `${chats.data.chats[0].userData.profilePic}`)
                 $('#user-chat-c').html('')
             }
-        }else{
+        }
+        else if(chats.data.chats.some(e=>e['users'] == userr)){
+            $('#user-chat-c').html('')
+            let userData = await axios.post(`/getUser?user=${userr}`)
+            userData = userData.data
+            $('#data').attr('user',`${userr}`)
+            $('#data').attr('pfp',`${userData.profilePic}`)
+            socket.emit('joinRoom', userr)
+            $('.user-top-chat').click(e => { location.href = `/profile?user=${$('#data').attr('user')}` })
+            $('.chat-user-details .chat-name').text(`${userr}`)
+            $('.user-top-chat .chat-pfp').attr('src', `${userData.profilePic}`)
+        }
+        else{
             socket.emit('joinRoom', chats.data.chats[0].users)
             $('.user-top-chat').click(e => { location.href = `/profile?user=${$('#data').attr('user')}` })
             $('#data').attr('user', `${chats.data.chats[0].users}`)
@@ -113,21 +122,36 @@
             $('.user-top-chat .chat-pfp').attr('src', `${chats.data.chats[0].userData.profilePic}`)
             $('#user-chat-c').html('')
         }
+        window.history.pushState({}, document.title, `${((window.location.pathname).split('?')[0])}?user=${$('#data').attr('user')}`)
         await showChat($('#data').attr('user'))
         chats.data.chats.forEach(async chat => {
             await addUser(chat)
         })
         $(`.${($('#data').attr('user')).replaceAll(' ','-')}-unread`).text('0')
         $(`.${($('#data').attr('user')).replaceAll(' ','-')}-unread`).css('display','none')
-        socket.on('notif', (res) => {
-            if ($(`.${res.userName}`) && $('#data').attr('user') != res.userName) {
-                $(`.${res.userName}-unread`).css('display', 'block')
-                let unReadNum = $(`.${res.userName}-unread`).text()
-                $(`.${res.userName}-unread`).text(`${Number(unReadNum) + 1}`)
-                $('#user-chat-c').prepend($(`.${res.userName}`))
+        socket.on('notif', async(res) => {
+            let userClass = res.userName.replaceAll(' ','-')
+            if (!document.querySelector(`.${userClass}`)) {
+                let userData = await axios.post(`/getUser?user=${res.userName}`)
+                userData = userData.data
+                userData['time'] = new Date()
+                let chat = {"users":res.userName,"userData":userData}
+                addUser(chat)
+                if(res.userName != $('#data').attr('user')){
+                    $(`.${userClass}-unread`).css('display', 'block')
+                    let unReadNum = $(`.${userClass}-unread`).text()
+                    $(`.${userClass}-unread`).text(`${Number($(`.${userClass}-unread`).text()) + 1}`)
+                }
             }
+            else if(document.querySelector(`.${userClass}`) != null){
+                if(res.userName != $('#data').attr('user')){
+                    $(`.${userClass}-unread`).text(Number($(`.${userClass}-unread`).text())+1)
+                    $(`.${userClass}-unread`).css('display',"block")
+                }
+            }
+            $('#user-chat-c').prepend($(`.${userClass}`))
         })
-        socket.on('message', (res) => {
+        socket.on('message', async(res) => {
             addMsg(res.msg, res.userName, res.time)
         })
         $('.sub-chat').click(async e => {
@@ -141,14 +165,14 @@
             if (e.keyCode == 13 && $('#chat-msg').val() != '') {
                 socket.emit('chatMsg', $('#data').attr('user'), $('#chat-msg').val())
                 $('#chat-msg').val('')
-                $('#user-chat-c').prepend($(`.${$('#data').attr('user')}`))
+                $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
             }
         })
         $('#s-user').keyup(async e => {
             if ((await axios.get(`/checkUser?user=${$('#s-user').val()}`)).data && e.keyCode == 13) {
                 $('#data').attr('user', $('#s-user').val())
                 socket.emit('joinRoom', $('#s-user').val())
-                $('#user-chat-c').prepend($(`.${$('#data').attr('user')}`))
+                $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
                 location.reload()
             }
         })
@@ -195,6 +219,7 @@
             await showChat(chat.users)
         })
         document.querySelector('#user-chat-c').append(userC)
+        $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
     }
     async function showChat(user) {
         let { data } = await axios.get(`/chats?user=${$('#data').attr('user')}`)
