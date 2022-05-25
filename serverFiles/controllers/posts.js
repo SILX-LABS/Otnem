@@ -422,7 +422,7 @@ const registerPost= async(req,res)=>{
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too large"})
         if(body.name.includes('%'))
             return res.render('register',{layout:'registerLayout',err:true,msg:"% sign cant be included sowwy"})
-        validator.verify(body.email,async (err,response){
+        validator.verify(body.email,async (err,response)){
             let users = userSnapshot.docs.map(doc=>{
             if(doc.data().name)
                 return doc.data()
