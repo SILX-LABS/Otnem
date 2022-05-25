@@ -442,7 +442,7 @@ const registerPost= async(req,res)=>{
             email:body.email,
             password:hashedPasswrod,
             image:'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4=',
-            paypal:"none",
+            paypal:"www.paypal.com/",
             banner:"http://localhost:1000/assets/img/grid.jpg"
             }
             let docref = await unVerifiedDB.add(userInfoObj)
