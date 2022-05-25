@@ -443,6 +443,7 @@ const registerPost= async(req,res)=>{
             password:hashedPasswrod,
             image:'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4=',
             paypal:"none",
+            banner:"http://localhost:1000/assets/img/grid.jpg"
             }
             let docref = await unVerifiedDB.add(userInfoObj)
             let transporter = emailer.createTransport({
@@ -538,7 +539,7 @@ const changeCredentials = async(req,res)=>{
                     return res.send({success:false,msg:'File not found'})
                 let buffer = req.file.buffer
                 let cldstrm =  cloudinary.uploader.upload_stream({
-                    folder:`${userName}/`,
+                    public_id:`${userName}/profilePic`,
                     height: 500, width: 500, crop: "scale",
                 },async(err,response)=>{
                     let URL = response.secure_url;
@@ -546,11 +547,27 @@ const changeCredentials = async(req,res)=>{
                     return res.send({success:true,msg:"Changed"})
                 })
                 return streamify.createReadStream(buffer).pipe(cldstrm)
-            case 'account':
-                let {newPaypal} = await req.body
-                await userDB.doc(userName).update({paypal:newPaypal})
+            case "banner":
+                if(!req.file)
+                    return res.send({success:false,msg:'File not found'})
+                    let bufferB = req.file.buffer
+                    let cldstrmB =  cloudinary.uploader.upload_stream({
+                        public_id:`${userName}/banner`,
+                        height: 400, width: 1200, crop: "scale",
+                    },async(err,response)=>{
+                        let URL = response.secure_url;
+                        await userDB.doc(userName).update({banner:URL})
+                        return res.send({success:true,msg:"Changed"})
+                    })
+                return streamify.createReadStream(bufferB).pipe(cldstrmB)
+                case 'account':
+                let {newPaypal,bio} = await req.body
+                if(newPaypal.length != 0)
+                    await userDB.doc(userName).update({paypal:newPaypal})
+                if(bio.length != 0)
+                    await userDB.doc(userName).set({bio:bio},{merge:true})
                 return res.send({success:true,msg:"Changed"})
-            default:return res.send({success:false,msg:"No lol"}) 
+            default:return res.send({success:false,msg:"No lol"}).status(400)
         }
     }
     catch(err){
@@ -738,13 +755,14 @@ async function getUser(userName,showPassword){
                 "paypal":'none'
             }
         }
-        const {email,name,image,password} = userData
+        const {email,name,image,password,banner} = userData
         let userObject = {
             "userName":name,
             "userEmail":email,
             "profilePic":image,
             "verified":userData.verified,
-            "paypal":userData.paypal
+            "paypal":userData.paypal,
+            "banner":banner
         }
         if(showPassword)
             userObject["password"] = password

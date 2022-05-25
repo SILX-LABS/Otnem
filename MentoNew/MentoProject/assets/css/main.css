@@ -1416,6 +1416,24 @@ textarea:focus {
 .pfp-file-inp:active > .fa-camera {
   color: #21df44;
 }
+.banner-file-inp {
+  height: 20em;
+  width: 60em;
+  display: grid;
+  place-items: center;
+  border: 0.3em solid #23ee48;
+  border-radius: 1em;
+  cursor: pointer;
+  margin: 1em 0;
+}
+.banner-file-inp:focus,
+.banner-file-inp:active {
+  border-color: #21df44;
+}
+.banner-file-inp:focus,
+.banner-file-inp:active > .fa-camera {
+  color: #21df44;
+}
 .fa-camera {
   font-size: 4em;
   color: #23f649;
