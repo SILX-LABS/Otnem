@@ -263,7 +263,8 @@ const uploadFile = async(req,res)=>{
         let buffer = await req.file.buffer
         let cldUploadStream = cloudinary.uploader.upload_stream({
             folder:`${userName}/posts/`,
-            height: 500, width: 500, crop: "scale",
+            // height: 500, width: 500, 
+            crop: "scale",
             },async(err,response)=>{
                 let imageName = (response.public_id.split('/'))[((response.public_id.split('/'))).length-1]
                 if (err) return res.send(err)
