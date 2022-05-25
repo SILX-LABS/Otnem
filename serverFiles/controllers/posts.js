@@ -539,7 +539,8 @@ const changeCredentials = async(req,res)=>{
                 let buffer = req.file.buffer
                 let cldstrm =  cloudinary.uploader.upload_stream({
                     public_id:`${userName}/profilePic`,
-                    height: 500, width: 500, crop: "scale",
+                    // height: 500, width: 500, 
+                    crop: "scale",
                 },async(err,response)=>{
                     let URL = response.secure_url;
                     await userDB.doc(userName).update({image:URL})
@@ -552,7 +553,8 @@ const changeCredentials = async(req,res)=>{
                     let bufferB = req.file.buffer
                     let cldstrmB =  cloudinary.uploader.upload_stream({
                         public_id:`${userName}/banner`,
-                        height: 400, width: 1200, crop: "scale",
+                        // height: 400, width: 1200, 
+                        crop: "scale",
                     },async(err,response)=>{
                         let URL = response.secure_url;
                         await userDB.doc(userName).update({banner:URL})
