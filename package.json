@@ -5,7 +5,8 @@
   "main": "/serverFiles/app.js",
   "scripts": {
     "test": "nodemon serverFiles/app.js",
-    "start": "node serverFiles/app.js"
+    "start": "node serverFiles/app.js",
+    "build": "node serverFiles/app.js"
   },
   "repository": {
     "type": "git",
