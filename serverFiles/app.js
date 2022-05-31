@@ -118,6 +118,6 @@ io.on('connection',async socket=>{
         }
     })
 })
-server.listen(1000,()=>{
+server.listen(PORT,()=>{
     console.log(`Listning on http://localhost:${PORT}`)
 })
