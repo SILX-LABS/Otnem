@@ -14,19 +14,20 @@
     align-items: center;
     width: 100%;
   }
-  @media screen and (max-width: 991px)  {
-    .navbar__  {
-      display:none;
+
+  @media screen and (max-width: 991px) {
+    .navbar__ {
+      display: none;
     }
   }
 
   #house {
-  color:#D1DBDF;
-}
+    color: #D1DBDF;
+  }
 </style>
 <div class="posts_cards">
   <div class="container-fluid px-0 px-lg-3">
-    <div class="grid_postsx row">
+    <div class="grid_postsx row justify-content-center align-items-center  " style="gap: 3.5rem;">
       <div class="col-12 col-lg-6 px-0 px-lg-3">
         <div class="post_boxx" data-type="art">
           <div class="index_image">
@@ -45,35 +46,28 @@
                     d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
                 </svg> </div> --}}
               {{#unless isDeletable}}
-              <div class="item hire" onclick="location.href = `/chatRoom?user={{postUser}}&redirect=true`"><i class="fa-solid fa-user-group"></i></div>
+              <div class="item hire" onclick="location.href = `/chatRoom?user={{postUser}}&redirect=true`"><i
+                  class="fa-solid fa-user-group"></i></div>
               {{/unless}}
               <div class="item donate"><i class="fa-solid fa-money-bill"></i></div>
               {{#if isLiked}}
-                <div class="item star" id="{{postNum}}-id" onclick="removeLike()">
-                  <i style="color: red;" class="fa-solid fa-heart-broken"></i>
-                </div>
+              <div class="item star" id="{{postNum}}-id" onclick="removeLike()">
+                <i style="color: red;" class="fa-solid fa-heart-broken"></i>
+              </div>
               {{/if}}
               {{#unless isLiked}}
-                <div class="item star" id="{{postNum}}-id" onclick="addLike()">
-                  <i style="color: red;" class="fa-solid fa-heart"></i>
-                </div>
+              <div class="item star" id="{{postNum}}-id" onclick="addLike()">
+                <i style="color: red;" class="fa-solid fa-heart"></i>
+              </div>
               {{/unless}}
             </div>
           </div>
           <div class="bottom">
             <div class="UserDetails" style="cursor:pointer"
               onclick="window.location.href = '/profile?user={{postUser}}'">
-              <div class="UserImage">
-                <img src="{{posterProfilePic}}" alt="User Profile Image">
-              </div>
+           
               <div class="name_time">
-                <div class="name">
-                  <h6>{{postUser}}</h6>
-                  {{#if verified}}
-                  <i class="fa-solid fa-circle-check"></i>
-                  {{/if}}
-                </div>
-                <h6>{{date}}</h6>
+           
               </div>
             </div>
             <div class="title_of_post">
@@ -93,49 +87,81 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-lg-6">
-        <div class="cardxx" data-type="art">
-          <div class="topx py-2">
-            <h2>Opinions</h2>
-          </div>
-            <div class="des">
-                <p>{{disc}} </p>
-            </div>
-          <div class="comments_container">
-            <div class="comment_c">
-              {{#each commentsArray}}
-              <div class="comment_item">
-                <div class="d-flex flex-warp align-items-center justify-content-between pe-3r">
-                  <div class="item_d d-flex align-items-center gap-1">
-                    <div class="img_container">
-                      {{#if verified}}
-                      <i class="fa-solid fa-circle-check verified_user"></i>
-                      {{/if}}
-                      <img src="{{profilePic}}" onclick="window.location.href = '/profile?user={{user}}'">
+   
+          <div class="col-12 col-lg-4 ps-0 ps-lg-4 h-100 " style="right: 0;" >
+        <div class="row" >
+          <div class="col-12">
+            <div class="cardxx p-3">
+                <div class="d-flex flex-row align-items-center">
+                    <div class="profile_image d-flex align-items-center justify-content-center rounded-circle overflow-hidden ">
+                      <img class="w-100 h-100 fit_obj" src="{{profilePic}}" alt="">
                     </div>
-                    <div class="username_post" onclick="window.location.href = '/profile?user={{user}}'">{{user}}</div>
-                  </div>
-                  <div class="items_tools">
-                    {{#if own}}
-                    <i class="fa-solid fa-trash-can delete_comment_button text-danger me-3" title="Delete Comment"
-                      onclick="deleteComment('{{commentNum}}','{{user}}')"></i>
-                    {{/if}}
-                  </div>
+                    <div class="text_protex ms-2">
+                      <div class="protex_name d-flex align-items-center gap-1">
+                        <h4 class="mb-0">{{postUser}}</h4>
+                        {{#if verified}}
+
+                        <i class="fa-solid fa-circle-check verified_user"></i>
+                                          {{/if}}
+
+                      </div>
+                      <b class="protex_date">{{date}}</b>
+                    </div>
                 </div>
-                <div class="comment_post">
-                  {{content}}</div>
-              </div>
-              {{/each}}
             </div>
           </div>
-          <div class="comment_Entering">
-            <textarea name="comment" class="comment_input" id="comment-inp" rows="1"
-              placeholder="Enter your Opinions"></textarea>
-            <button type="submit" class="py-3" id="sub-btn-cmnt"
-              onclick="comment('{{postNum}}','{{postUser}}')">Comment</button>
+          <div class="col-12">
+            <div class="cardxx mt-4" data-type="art">
+              <div class="topx py-2">
+                <h2>Opinions</h2>
+              </div>
+              <div class="des px-3 ">
+                <p>{{disc}} </p>
+              </div>
+              <div class="comments_container">
+                <div class="comment_c">
+                  {{#each commentsArray}}
+                  <div class="comment_item">
+                    <div class="d-flex flex-warp align-items-center justify-content-between pe-3r">
+                      <div class="item_d d-flex align-items-center gap-1">
+                        <div class="img_container">
+                          {{#if verified}}
+                          <i class="fa-solid fa-circle-check verified_user"></i>
+                          {{/if}}
+                          <img src="{{profilePic}}" onclick="window.location.href = '/profile?user={{user}}'">
+                        </div>
+                        <div class="username_post" onclick="window.location.href = '/profile?user={{user}}'">{{user}}
+                        </div>
+                      </div>
+                      <div class="items_tools">
+                        {{#if own}}
+                        <i class="fa-solid fa-trash-can delete_comment_button text-danger me-3" title="Delete Comment"
+                          onclick="deleteComment('{{commentNum}}','{{user}}')"></i>
+                        {{/if}}
+                      </div>
+                    </div>
+                    <div class="comment_post">
+                      {{content}}</div>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+            
+                <div class="flex-grow-0 py-3 px-4 border-top">
+                <div class="inp-f">
+                    <input name="comment" class="comment_input" id="comment-inp" rows="1"
+                  placeholder="Enter your Opinions"></input>
+                <button type="submit" class="sub-chat" onclick="comment('{{postNum}}','{{postUser}}')"> Send</button>
+                </div>
+           
+              </div>
+            </div>
           </div>
         </div>
       </div>
+     
+
+
 
     </div>
   </div>
@@ -172,21 +198,21 @@
     location.reload()
     console.log(commentNum, postNum, postUser)
   }
-  async function addLike(){
+  async function addLike() {
     let postNum = $("#data").attr('postNum')
     let user = $("#data").attr('postUser')
-    if(!$('#loggedIn').attr('isAuth'))
+    if (!$('#loggedIn').attr('isAuth'))
       location.href = '/login'
-    console.log(user,postNum)
-    await axios.post('/addLike',{user,postNum})
+    console.log(user, postNum)
+    await axios.post('/addLike', { user, postNum })
     location.href = `/postPreview?postNum=${postNum}&&user=${user}`
   }
-  async function removeLike(){
+  async function removeLike() {
     let postNum = $("#data").attr('postNum')
     let user = $("#data").attr('postUser')
-    if(!$('#loggedIn').attr('isAuth'))
+    if (!$('#loggedIn').attr('isAuth'))
       location.href = '/login'
-    await axios.post('/removeLike',{user,postNum})
+    await axios.post('/removeLike', { user, postNum })
     location.href = `/postPreview?postNum=${postNum}&&user=${user}`
   }
 </script>

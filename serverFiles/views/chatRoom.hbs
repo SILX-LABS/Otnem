@@ -5,24 +5,34 @@
     .navbar__  {
       display:none;
     }
+    .navbar_mobile {
+        display: none;
+        
+    }
+    body {
+      padding-bottom: 0;
+    }
   }
 </style>
-<div class="Container_Chating">
-    <div class="row">
-        <div class="col-12 col-lg-3 pe-0 d-none d-lg-block">
+
+<div class="container p-0">
+    <div class="card">
+         <div class="row g-0">
+        <div class="col-12 col-lg-5 col-xl-3 border-right bg-white" style="border-bottom: 1px solid rgb(224, 224, 224);border-right: 1px solid rgb(224, 224, 224)">
             <div class="top-chat">
                 <div class="d-flex flex-column gap-2 py-3 ps-4 pe-5 w-100">
-                    <h1 class="m-0">Messages</h1>
-                    <input type="text" name="s-user" id="s-user" placeholder="Search user..." class="search-user">
+                        <h1 class="m-0">Messages</h1>
+  
+                    <input type="text" name="s-user" id="s-user" placeholder="Search user..." class="form-control my-3" style="border-radius: 50px;">
                 </div>
             </div>
             <div id="user-chat-c">
                 <div class="user-chat">No Users</div>
             </div>
         </div>
-        <div class="col-12 col-lg-9 ps-0 pe-0 pe-lg-2 position-relative r_line">
-            <div id="chat-c">
-                <div class="user-top-chat" onclick="">
+        <div class="col-12 col-lg-7 col-xl-9">
+            <div id="chat-messages p-4">
+                <div class="user-top-chat" style=" border-bottom: 1px solid rgb(224, 224, 224); border-top: 1px solid rgb(224, 224, 224);" onclick="">
                     <div class="d-flex">
 
                     </div>
@@ -37,14 +47,15 @@
                 </div>
                 <div class="chats">
                 </div>
-                <div class="inp-c">
+                <div class="flex-grow-0 py-3 px-4 border-top">
                     <div class="inp-f">
                         <input type="text" placeholder="Write a message..." name="msg" id="chat-msg">
-                        <button class="sub-chat"><i class="fa fa-send"></i></button>
+                        <button class="sub-chat">Send</button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     {{!-- Main Chat --}}

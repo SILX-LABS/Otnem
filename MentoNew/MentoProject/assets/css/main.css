@@ -38,7 +38,7 @@
 
 body {
   overflow-x: hidden;
-  background: #f0eef6;
+  background: #F0EEF6;
   font-family: "Inter", sans-serif;
   padding-top: var(--navHight);
 }
@@ -727,6 +727,7 @@ section {
   border-radius: 50px;
   height: 460px;
   position: relative;
+  cursor: pointer;
 }
 
 .post-info {
@@ -735,7 +736,6 @@ section {
   justify-content: center;
   align-items: center;
   width: 100%;
-  border-bottom: 2px solid #ececec;
 }
 .topx h2 {
   font-weight: bold;
@@ -743,7 +743,7 @@ section {
 .grid_postsx .post_boxx {
   overflow: hidden;
   border-radius: 50px;
-  height: 70vh;
+  height: 80vh;
   width: 100%;
   position: relative;
 }
@@ -772,15 +772,11 @@ section {
   border: 1px solid #23f649;
   background-color: #23f649;
   color: white;
-  width: 100%;
   border-radius: 1.2em;
 
   cursor: pointer;
 }
-#sub-btn-cmnt:hover {
-  background-color: transparent;
-  color: #23f649;
-}
+
 .topx {
   height: 60px;
   width: 100%;
@@ -901,6 +897,13 @@ section {
   transition: 300ms all ease-in-out;
 }
 
+#chat-messages {
+  display: flex;
+  flex-direction: column;
+  max-height: 800px;
+  overflow-y: scroll;
+}
+
 .grid_posts .post_box .bottom .UserImage,
 .grid_posts .post_box .bottom .name_time,
 .grid_posts .post_box .bottom .UserImage,
@@ -1001,16 +1004,7 @@ section {
   }
 }
 
-.card {
-  height: 150px;
-  width: 500px;
-  background-color: #fff;
-  padding: 23px;
-  align-items: flex-start;
-  justify-content: space-between;
-  border-radius: 40px;
-  display: flex;
-}
+
 /* Progressbar */
 .progressbar {
   position: absolute;
@@ -1182,6 +1176,7 @@ section {
 @media screen and (max-width: 991px) {
   .grid_posts {
     margin: 0;
+    gap: 1rem;
   }
   .grid_postsx {
     margin: 0;
@@ -1237,8 +1232,9 @@ textarea:focus {
 .user-top-chat {
   cursor: pointer;
   border-bottom: 1px solid rgb(224, 224, 224);
-  height: 3em;
-  margin-top: 1em;
+  background-color: #fff;
+  height: 3.5em;
+  padding: 10px;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
@@ -1311,7 +1307,7 @@ textarea:focus {
   position: relative;
   gap: 0.5em;
   padding-bottom: 0.5em;
-  background-color: rgb(246, 246, 246);
+  background-color: #fff;
   max-height: 60vh;
 }
 .mine-h {
@@ -1340,15 +1336,22 @@ textarea:focus {
   background: #00ba7c;
   text-align: right;
 }
+
 .inp-c {
   width: 100%;
   height: 3em;
   display: grid;
   place-items: center;
-  background-color: rgb(246, 246, 246);
+  background-color: #fff;
+}
+.inp-cc {
+  width: 100%;
+  height: 3em;
+  display: grid;
+  place-items: center;
 }
 .sub-chat {
-  font-size: 1em;
+  font-size: 1.2em;
   color: #23ee48;
   width: fit-content;
   height: fit-content;
@@ -1379,7 +1382,6 @@ textarea:focus {
   height: 3em;
 }
 .top-chat {
-  padding-bottom: 1em;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1418,7 +1420,7 @@ textarea:focus {
 }
 .banner-file-inp {
   height: 20em;
-  width: 60em;
+  width: 100%;
   display: grid;
   place-items: center;
   border: 0.3em solid #23ee48;
@@ -1459,7 +1461,6 @@ textarea:focus {
 }
 
 .comments_container {
-  border-bottom: 1px solid #ececec;
   overflow-y: auto;
   min-height: 50vh;
 }
@@ -1471,6 +1472,18 @@ textarea:focus {
   height: 19em;
   background: none;
   flex-direction: column;
+}
+.profile_image {
+  width: 40px;
+  height: 40px;
+}
+
+.fit_obj {
+  object-fit:cover
+}
+
+.verified_user {
+  color:#22E2FC;
 }
 
 .comments_container .comment_item {
@@ -1529,14 +1542,24 @@ textarea:focus {
   height: 6.7em;
 }
 .comment_input {
-  outline: none;
-  padding: 0.5em;
+  background-color: #F0EEF6;
   border: none;
-  resize: none;
+  outline: none;
   width: 100%;
-  /* height: 4rem; */
+  padding: 0.9rem 0.8em;
+  border-radius: 0.75rem;
+  font-size: 1rem;
 }
 
+.comment_Entering {
+  border-radius: 0.5em;
+    padding: 0 0.4em;
+    width: 100%;
+    /* height: 2em; */
+    display: flex;
+    position: relative;
+    align-items: center;
+}
 .post__name {
   color: #fff;
 }
@@ -1551,6 +1574,7 @@ textarea:focus {
   font-weight: bolder;
   margin: 0;
 }
+
 @media screen and (max-width: 991px) {
   .grid_postsx .post_boxx {
     overflow: hidden;
@@ -1616,6 +1640,7 @@ textarea:focus {
   .user-top-chat {
     height: initial;
     padding: 0 1rem;
+    border-bottom: 1px solid rgb(224, 224, 224);
     margin-top: 0;
     border: none;
     padding: 0.4rem 0.3rem;

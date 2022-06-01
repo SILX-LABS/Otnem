@@ -3,13 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "/serverFiles/app.js",
-  "engines": {
-    "node": "16.x"
-  },
   "scripts": {
     "test": "nodemon serverFiles/app.js",
-    "start": "node serverFiles/app.js",
-    "build": "node serverFiles/app.js"
+    "start": "node serverFiles/app.js"
   },
   "repository": {
     "type": "git",

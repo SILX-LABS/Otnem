@@ -10,7 +10,9 @@ const session = require('express-session')
 const flash = require('express-flash')
 const socketio = require('socket.io')
 const http = require('http')
-const {chatRoomDB, userDB, checkIfDocExists } = require("./controllers/posts")
+const { test, chatPage, chatRoomDB, userDB, checkIfDocExists } = require("./controllers/posts")
+const { response } = require("express")
+var cookie = require("cookie")
 const FieldValue = require('firebase-admin').firestore.FieldValue
 const app = express()
 const server = http.createServer(app)
@@ -116,6 +118,6 @@ io.on('connection',async socket=>{
         }
     })
 })
-server.listen(PORT,()=>{
+server.listen(1000,()=>{
     console.log(`Listning on http://localhost:${PORT}`)
 })

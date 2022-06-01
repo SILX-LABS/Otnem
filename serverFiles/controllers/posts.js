@@ -263,8 +263,7 @@ const uploadFile = async(req,res)=>{
         let buffer = await req.file.buffer
         let cldUploadStream = cloudinary.uploader.upload_stream({
             folder:`${userName}/posts/`,
-            // height: 500, width: 500, 
-            crop: "scale",
+            height: 500, width: 500, crop: "scale",
             },async(err,response)=>{
                 let imageName = (response.public_id.split('/'))[((response.public_id.split('/'))).length-1]
                 if (err) return res.send(err)
@@ -423,7 +422,7 @@ const registerPost= async(req,res)=>{
             return res.render('register',{layout:'registerLayout',err:true,msg:"Username not length too large"})
         if(body.name.includes('%'))
             return res.render('register',{layout:'registerLayout',err:true,msg:"% sign cant be included sowwy"})
-        validator.verify(body.email,async (err,response)=>{
+        validator.verify(body.email,async (err,response) => {
             let users = userSnapshot.docs.map(doc=>{
             if(doc.data().name)
                 return doc.data()
@@ -539,8 +538,7 @@ const changeCredentials = async(req,res)=>{
                 let buffer = req.file.buffer
                 let cldstrm =  cloudinary.uploader.upload_stream({
                     public_id:`${userName}/profilePic`,
-                    // height: 500, width: 500, 
-                    crop: "scale",
+                    height: 500, width: 500, crop: "scale",
                 },async(err,response)=>{
                     let URL = response.secure_url;
                     await userDB.doc(userName).update({image:URL})
@@ -553,8 +551,7 @@ const changeCredentials = async(req,res)=>{
                     let bufferB = req.file.buffer
                     let cldstrmB =  cloudinary.uploader.upload_stream({
                         public_id:`${userName}/banner`,
-                        // height: 400, width: 1200, 
-                        crop: "scale",
+                        height: 400, width: 1200, crop: "scale",
                     },async(err,response)=>{
                         let URL = response.secure_url;
                         await userDB.doc(userName).update({banner:URL})

@@ -1,5 +1,19 @@
+
 {{> navBar profilePic = profilePic isAuth = true}}
 <!-- === Items Links Selector Start === -->
+<style>
+	  @media screen and (max-width: 991px)  {
+    .navbar__  {
+      display:none;
+    }
+  }
+  .nav-link {
+	  color: #000;
+  }
+  .nav-link:hover{
+	  color: #23F649;
+  }
+</style>
     </div>
     <!-- === Items Links Selector End === -->
     <section>
@@ -20,30 +34,41 @@
 					</div>
 					<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
 						<div style="cursor: pointer;" class="nav-link active" id="account-tab" data-toggle="pill" role="tab" aria-controls="account" aria-selected="true">
-							<i class="fa fa-home text-center mr-1"></i> 
+							<i class="fa fa-home text-center mr-1" ></i> 
 							Account
+						</div>
+							<div style="cursor: pointer;" class="nav-link" id="banner-tab" data-toggle="pill" role="tab" aria-controls="banner" aria-selected="false">
+							<i class="fa-solid fa-user mr-1"></i> 
+							Banner
 						</div>
 						<div style="cursor: pointer;" class="nav-link" id="password-tab" data-toggle="pill" role="tab" aria-controls="password" aria-selected="false">
 							<i class="fa fa-key text-center mr-1"></i> 
 							Password
 						</div>
-						<div style="cursor: pointer;" class="nav-link" id="banner-tab" data-toggle="pill" role="tab" aria-controls="banner" aria-selected="false">
-							<i class="fa fa-key text-center mr-1"></i> 
-							Banner
-						</div>
+					
 
 					</div>
 				</div>
 				<div class="tab-content p-4 p-md-5" id="v-pills-tabContent">
 					<div class="tab-pane acc-set fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
-						<h3 class="mb-4">Paypal Settings</h3>
+						<h3 class="mb-4">Account Settings</h3>
             			<h1 class="err err-pay"></h1>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
+								<label>Name</label>
+								<input type="text" class="form-control inp-paypal" placeholder="Enter your Name" >
+								</div>
+							</div>
+							<div class="col-md-6">
+									<div class="form-group">
 								<label>Paypal</label>
 								<input type="text" class="form-control inp-paypal" placeholder="{{paypal}}" value="{{paypal}}">
 								</div>
+							</div>
+							<div class="col-md-6">
+							
+							
 								<div class="form-group">
 								<label>Bio</label>
 								<textarea type="text" class="form-control inp-bio" placeholder="Bio" value="{{bio}}" style="resize: none;"></textarea>
@@ -68,7 +93,7 @@
 						</div>
 					</div>
 					<div class="tab-pane acc-set fade " id="banner" role="tabpanel" aria-labelledby="account-tab">
-						<h3 class="mb-4">Banner Settings</h3>
+						<h3 class="mb-4">Change Banner </h3>
             			<h1 class="err err-banner"></h1>
 						<div class="row banner-row" >
 							<input type="file" name="banner" id="banner-inp" style="display: none;" >
