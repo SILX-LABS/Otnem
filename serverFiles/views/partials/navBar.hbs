@@ -46,7 +46,7 @@
 
     <!-- Navbar Icons Section -->
     <div class="navbar_section">
-      <a href="/chatRoom?user=Pravith B A" class="au">
+      <a href="/chatRoom?user={{userName}}" class="au">
         <i class="fa-solid fa-envelope" id="Emails"></i>
       </a>
       {{! <a href="#" class="au">
@@ -67,7 +67,8 @@
         <a href="/profile">
           <img
             class="profile-pfp"
-            style="width: 100%;height:100%;"
+            {{!-- width='3em' height='3.5em' --}}
+            style="width: 3em;height:3.5em;object-fit: fill;"
             src="{{profilePic}}"
             alt="Profile Image"
           />

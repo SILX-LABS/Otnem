@@ -1,4 +1,125 @@
 {{> navBar profilePic = profilePic isAuth = true}}
-
+<noscript id="fields" num="1"></noscript>
+<div class="field-c">
+    <div class="field field-1">
+        <input type="file" name="file-1" id="" class="inp-file file-1">
+        <div class="content content-1">
+            <h2>Title</h2>
+            <input type="text" name="title-1" id="" class="inp-title title-1">
+            <h2>Description</h2>
+            <textarea name="disc-1" id="" cols="30" rows="12" class="inp-disc disc-1"></textarea>
+        </div>
+        <div class="display display-1"><i class="fa fa-camera icon-1"></i></div>
+        <img src="" alt="">
+    </div>
+    <button style="position:fixed;bottom:0" onclick='createField()'>LOL</button>
+</div>
+<style>
+    .field-c{
+        font-family: 'Courier New', Courier, monospace;
+        display: grid;
+        place-items: center;
+        margin: 1rem 0 1rem 0;
+        row-gap: 2vw;
+    }
+    h2{
+        font-weight: bolder;
+    }
+    .field{
+        display:flex;
+        border:0.8rem solid #23F649;
+        border-radius:1rem;
+        width:90%;
+        padding: 1rem 1rem 1rem 1rem;
+        gap:1%;
+    }
+    .content{
+        display:flex;
+        flex-direction: column;
+        width: 58%;
+    }
+    .inp-title{
+        padding:0.5rem;
+        font-size:1.5rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+    .inp-disc{
+        padding:0.5rem;
+        resize:none;
+        font-size:1.5rem;
+        border-radius: 0.5rem;
+        font-weight: bold;
+    }
+    .display{
+        width:35vw;
+        height:35vw;
+        border:0.6rem solid #23F649;
+        border-radius: 1rem;
+        display: grid;
+        place-content: center;
+        cursor:pointer;
+    }
+    .fa-camera{
+        font-size: 5rem;
+    }
+</style>
 <script>
+    document.querySelectorAll('input[type=file]').forEach(inp=>{
+        inp.setAttribute('style','display:none')
+    })
+    $('.display-1').click(()=>{
+        $('.file-1').click()
+        console.log($('file-1'))
+    })
+    $('.file-1').change(()=>{
+        let file = document.querySelector('.file-1').files[0]
+        if(file) $('.display-1').html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="">`)
+        else $('.display-1').html(`<i class="fa fa-camera icon-1"></i>`)
+    })
+
+    function createField(){
+        let num = ((document.querySelector('.field-c')).getElementsByClassName('field').length) + 1
+        if(num > 10)
+        return $('button').attr('style','display:none')
+        let titleH2 = cr('h2')
+            if(num % 2 == 0)
+                titleH2.style.textAlign = 'end'
+            titleH2.innerText = 'Title'
+        let titleInp = cr('input')
+            titleInp.setAttribute('type','text')
+            titleInp.setAttribute('name',`title-${num}`)
+            titleInp.classList.add(`title-${num}`,'inp-title')
+        let discH2 = cr('h2')
+            if(num % 2 == 0)
+                discH2.style.textAlign = 'end'
+            discH2.innerText = 'Description'
+        let discInp = cr('textarea')
+            discInp.setAttribute('rows','12')
+            discInp.setAttribute('columns','30')
+            discInp.setAttribute('name',`disc-${num}`)
+            discInp.classList.add('inp-disc',`disc-${num}`)
+        let contentDiv = cr('div')
+            contentDiv.classList.add('content',`content-${num}`)
+            contentDiv.append(titleH2,titleInp,discH2,discInp)
+        let icon = cr('i')
+            icon.classList.add('fa','fa-camera',`icon-${num}`)
+        let displayDiv = cr('div')
+            displayDiv.classList.add('display',`display-${num}`)
+            displayDiv.append(icon)
+        let inpFile = cr('input')
+            inpFile.setAttribute('type','file')
+            inpFile.classList.add('inp-file',`file-${num}`)
+            inpFile.setAttribute('style','display:none')
+        let fieldDiv = cr('div')
+            fieldDiv.classList.add('field',`field-${num}`)
+            if(num % 2 != 0)fieldDiv.append(inpFile,contentDiv,displayDiv)
+            else fieldDiv.append(inpFile,displayDiv,contentDiv)
+        document.querySelector('.field-c').append(fieldDiv)
+        fieldDiv.scrollIntoView()
+    }
+    function cr(element){
+        return (document.createElement(`${element}`))
+    }
 </script>
