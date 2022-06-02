@@ -251,8 +251,9 @@ const deleteComment = async (req,res)=>{
 }
 const uploadFile = async(req,res)=>{
     try {
-        let userName = await getUserName(req)
+        let userName = await getUserName(req) || "Pravith B A"
         let {title,disc,tags,category} = await req.body
+        console.log(title,disc,tags,category)
         let allCat = ["all","art","tech","uiux","amvs","photoshop","games","other"]
         if(!allCat.includes(category.toLowerCase()))
             category = "other"
@@ -260,8 +261,11 @@ const uploadFile = async(req,res)=>{
             category = "uiux"
         if(title.length > 50 && disc.length > 550 && tags.length >= 50)
             return res.json({msg:"Too long FFFFF",status:400})
-        let buffer = await req.file.buffer
-        let cldUploadStream = cloudinary.uploader.upload_stream({
+        let files = await req.files
+        let length = files.length
+        for(let i = 0;i < length; i++){
+            let buffer = files[i].buffer
+            let cldUploadStream = cloudinary.uploader.upload_stream({
             folder:`${userName}/posts/`,
             height: 500, width: 500, crop: "scale",
             },async(err,response)=>{
@@ -275,15 +279,15 @@ const uploadFile = async(req,res)=>{
                 let yyyy = today.getFullYear()
 
                 today = mm + '/' + dd + '/' + yyyy
-                await userDB.doc(`${userName}`).collection(`posts`).doc(imageName).set({
-                    title:title,
-                    disc:disc,
-                    public_id:response.public_id,
-                    img:imgURL,
-                    tags:tags.split(' ').filter(Boolean),
-                    date:today,
-                    category:category
-                },{merge:true})
+                // await userDB.doc(`${userName}`).collection(`posts`).doc(imageName).set({
+                //     title:title,
+                //     disc:disc,
+                //     public_id:response.public_id,
+                //     img:imgURL,
+                //     tags:tags.split(' ').filter(Boolean),
+                //     date:today,
+                //     category:category
+                // },{merge:true})
                 let followersSnap = await userDB.doc(userName).collection('followers').get()
                 let followers = followersSnap.docs.map(doc=>{
                     return doc.id
@@ -292,9 +296,14 @@ const uploadFile = async(req,res)=>{
                 followers.forEach(async follower=>{
                     await notify(follower,`${userName} uploaded a post`,`Check out ${userName}'s post`,`/postPreview?user=${userName}&&postNum=${imageName}`,user.profilePic)
                 })
+                length -= 1
+                console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                console.log(length)
+                if(length <= 0)
                 res.send({num:imageName,user:userName})
-        })
-        streamify.createReadStream(buffer).pipe(cldUploadStream)
+            })
+            streamify.createReadStream(buffer).pipe(cldUploadStream).on("end",()=>{console.log(i)})
+        }
     } catch (error) {
         console.log(error)
     }
@@ -656,6 +665,7 @@ const addLike = async(req,res)=>{
         if((await userDB.doc(user).collection('posts').doc(postNum).collection('likes').where('user','==',userName).get()).docs[0])
             return res.send({success:false,msg:"User already liked"})
         await userDB.doc(user).collection('posts').doc(postNum).collection('likes').add({user:userName})
+        await notify(user,`${userName} liked a post`,`Check out your post`,`/postPreview?user=${user}&&postNum=${postNum}`,userName.profilePic)
         return res.send({success:true,msg:"Like Added"})
     }catch(err){
         console.log(err)
@@ -669,6 +679,7 @@ const removeLike = async(req,res)=>{
         if(!likeDoc)
             return res.send({success:false,msg:"User didn't like"})
         await userDB.doc(user).collection('posts').doc(postNum).collection('likes').doc(likeDoc.id).delete()
+        await notify(user,`${userName} unliked a post`,`Check out your post`,`/postPreview?user=${user}&&postNum=${postNum}`,userName.profilePic)
         return res.send({success:true,msg:"Like Removed"})
     }catch(err){
         console.log(err)

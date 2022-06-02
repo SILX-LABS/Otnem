@@ -24,6 +24,7 @@
     $('#post-btn').click(async()=>{
         let formData = new FormData()
         formData.append("upload_file",document.querySelector('#hidden-inp-file-post').files[0],"upload_file")
+        formData.append("upload_file",document.querySelector('#hidden-inp-file-post').files[0],"upload_file")
         formData.append("title",document.querySelector('#title-inp-post').value)
         formData.append("disc",document.querySelector('#disc-inp-post').value)
         formData.append("tags",(document.querySelector('#tag-inp-post').value).toLowerCase())
