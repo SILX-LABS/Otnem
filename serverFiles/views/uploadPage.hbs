@@ -12,9 +12,48 @@
         <div class="display display-1"><i class="fa fa-camera icon-1"></i></div>
         <img src="" alt="">
     </div>
-    <button style="position:fixed;bottom:0" onclick='createField()'>LOL</button>
+    <div id="btn-c">
+        <button id="add-field" class="btn" style="margin: 0 0 0 0;" onclick='createField()'>Add Field <i class="fa fa-plus"></i></button>
+        <button id="post-btn" disabled onclick="post()" class="btn">Post</button>
+    </div>
 </div>
 <style>
+    #btn-c{
+        display:grid;
+        grid-auto-flow: column;
+        gap:2em;
+    }
+    .btn{
+        display: grid;
+        place-items: center;
+        grid-auto-flow: column;
+        gap:0.4em;
+        padding:0.3em;
+        background-color: transparent;
+        border:0.1em solid #23F649;
+        color:#4cca63;
+        font-weight: bold;
+        font-size:1.5em;
+        border-radius: 0.4em;
+        transition: all 300ms;
+        width:9em;
+    }
+    .btn:disabled{
+        background-color: transparent;
+        cursor: not-allowed;
+        border-color: grey;
+        color: grey;
+        font-style: oblique;
+    }
+    .btn:hover{
+        background-color: #23F649;
+        color:white;
+    }
+    .btn:active{
+        background-color: #1fe243;
+        border-color:#1fe243;
+        color:white;
+    }
     .field-c{
         font-family: 'Courier New', Courier, monospace;
         display: grid;
@@ -58,7 +97,7 @@
         border:0.6rem solid #23F649;
         border-radius: 1rem;
         display: grid;
-        place-content: center;
+        place-items: center;
         cursor:pointer;
     }
     .fa-camera{
@@ -75,14 +114,32 @@
     })
     $('.file-1').change(()=>{
         let file = document.querySelector('.file-1').files[0]
-        if(file) $('.display-1').html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="">`)
+        if(file) $('.display-1').html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="" style="height:30vw;width:100%;object-fit:scale-down">`)
         else $('.display-1').html(`<i class="fa fa-camera icon-1"></i>`)
+        checkIfEnablePostBtn()
     })
-
+    Array.from(document.querySelectorAll('.inp-title')).forEach(t=>t.addEventListener('keyup',e=>checkIfEnablePostBtn()))
+    async function post(){
+        let formData = new FormData()
+        let titleArray = Array.from(document.querySelectorAll('.inp-title').values())
+        titleArray.forEach((e,i)=>formData.append(`title_${i+1}`,e.value))
+        let discArray = Array.from(document.querySelectorAll('.inp-disc'))
+        discArray.forEach((e,i)=>formData.append(`disc_${i+1}`,e.value))
+        let fileArray = Array.from(document.querySelectorAll('.inp-file'))
+        fileArray = fileArray.forEach((e,i)=>{if(e.files[0])formData.append(`upload_file`,e.files[0],`upload_file_${i+1}`)})
+        let res = await axios.post('/upload', formData)
+        console.log(res)
+    }
+    function checkIfEnablePostBtn(){
+        if(Array.from(document.querySelectorAll('.inp-title')).some(e=>e.value.replaceAll(' ','') == '' || e.value.replaceAll(' ','').length < 5 || e.value.replaceAll(' ','').length > 50) || Array.from(document.querySelectorAll('.inp-file')).some(e=>!e.files[0]))
+            $('#post-btn').prop('disabled',true)
+            
+        else
+            $('#post-btn').prop('disabled',false)
+    }
     function createField(){
-        let num = ((document.querySelector('.field-c')).getElementsByClassName('field').length) + 1
-        if(num > 10)
-        return $('button').attr('style','display:none')
+        let num = ((document.querySelector('.field-c')).getElementsByClassName('field').length + 1)
+        if(num > 9)$('#add-field').attr('style','display:none')
         let titleH2 = cr('h2')
             if(num % 2 == 0)
                 titleH2.style.textAlign = 'end'
@@ -91,6 +148,7 @@
             titleInp.setAttribute('type','text')
             titleInp.setAttribute('name',`title-${num}`)
             titleInp.classList.add(`title-${num}`,'inp-title')
+            titleInp.addEventListener('keyup',e=>checkIfEnablePostBtn())
         let discH2 = cr('h2')
             if(num % 2 == 0)
                 discH2.style.textAlign = 'end'
@@ -116,8 +174,27 @@
             fieldDiv.classList.add('field',`field-${num}`)
             if(num % 2 != 0)fieldDiv.append(inpFile,contentDiv,displayDiv)
             else fieldDiv.append(inpFile,displayDiv,contentDiv)
-        document.querySelector('.field-c').append(fieldDiv)
+        let deleteBtn = cr('i')
+            deleteBtn.classList.add('fa','fa-trash-can',`del-${num}`)
+            deleteBtn.setAttribute('style','cursor:pointer;color:red;')
+            deleteBtn.addEventListener('click',e=>{
+                fieldDiv.remove()
+                deleteBtn.remove()
+                $('#btn-c').attr('style','display:grid')
+            })
+        document.querySelector('.field-c').append(fieldDiv,deleteBtn)
+        document.querySelector('.field-c').append(document.querySelector("#btn-c"))
+        displayDiv.addEventListener("click",()=>{
+            inpFile.click()
+        })
+        inpFile.addEventListener('change',()=>{
+            let file = inpFile.files[0]
+            if(file) $(`.display-${num}`).html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="" style="height:30vw;width:100%;object-fit:scale-down">`)
+            else $(`.display-${num}`).html(`<i class="fa fa-camera icon-1"></i>`)
+            checkIfEnablePostBtn()
+        })
         fieldDiv.scrollIntoView()
+        checkIfEnablePostBtn()
     }
     function cr(element){
         return (document.createElement(`${element}`))

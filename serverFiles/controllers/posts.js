@@ -7,7 +7,7 @@ const webPush = require('web-push')
 const passport = require('passport')
 const bcrypt = require('bcrypt')
 const emailer = require('nodemailer')
-const emailCheck = require('email-existence')
+const smjs = require('smpljavascript')
 const validator = require('@digitalroute/email-verify')
 
 webPush.setVapidDetails('mailto:pravithba10@gmail.com', process.env.PUBLIC_KEY,process.env.PRIVATE_KEY)
@@ -252,18 +252,35 @@ const deleteComment = async (req,res)=>{
 const uploadFile = async(req,res)=>{
     try {
         let userName = await getUserName(req) || "Pravith B A"
-        let {title,disc,tags,category} = await req.body
-        console.log(title,disc,tags,category)
+        // let {title,disc,tags,category} = await req.body
+        let body = await req.body
+        let titleArr = []
+        let discArr = []
+        let category = "lol"
+        for(k in body){
+            if(k.startsWith('title'))
+                titleArr.splice(Number(k.charAt(k.length - 1)),0,body[k])
+            if(k.startsWith('disc'))
+                discArr.splice(Number(k.charAt(k.length - 1)),0,body[k])
+        }
         let allCat = ["all","art","tech","uiux","amvs","photoshop","games","other"]
         if(!allCat.includes(category.toLowerCase()))
             category = "other"
         if(category.toLowerCase() == 'ui/ux')
             category = "uiux"
-        if(title.length > 50 && disc.length > 550 && tags.length >= 50)
-            return res.json({msg:"Too long FFFFF",status:400})
+        if(!titleArr.some(title=>title.length < 50) && !discArr.some(disc=>disc.length < 550))
+            return res.json({success:false,msg:"Too long FFFFF"}).status(400)
         let files = await req.files
         let length = files.length
+        let today = new Date();
+        let dd = String(today.getDate()).padStart(2, '0')
+        let mm = String(today.getMonth() + 1).padStart(2, '0')
+        let yyyy = today.getFullYear()
+        today = mm + '/' + dd + '/' + yyyy
+        let publicIdArr = []
+        let imgURLArr = []
         for(let i = 0;i < length; i++){
+            console.log(i)
             let buffer = files[i].buffer
             let cldUploadStream = cloudinary.uploader.upload_stream({
             folder:`${userName}/posts/`,
@@ -273,12 +290,8 @@ const uploadFile = async(req,res)=>{
                 if (err) return res.send(err)
                 let imgURL = response.secure_url
                 await userDB.doc(`${userName}`).set({exists:true},{merge:true})
-                let today = new Date();
-                let dd = String(today.getDate()).padStart(2, '0')
-                let mm = String(today.getMonth() + 1).padStart(2, '0')
-                let yyyy = today.getFullYear()
-
-                today = mm + '/' + dd + '/' + yyyy
+                publicIdArr.splice(i,0,response.public_id)
+                imgURLArr.splice(i,0,imgURL)
                 // await userDB.doc(`${userName}`).collection(`posts`).doc(imageName).set({
                 //     title:title,
                 //     disc:disc,
@@ -299,8 +312,18 @@ const uploadFile = async(req,res)=>{
                 length -= 1
                 console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
                 console.log(length)
-                if(length <= 0)
-                res.send({num:imageName,user:userName})
+                if(length <= 0){
+                    let finalObj = {
+                        titleArr,
+                        discArr,
+                        publicIdArr,
+                        imgURLArr,
+                        date:today
+                    }
+                    let id = smjs.randomUniqIdGen(20)
+                    await userDB.doc(`${userName}`).collection(`posts`).doc(imageName).set(finalObj)
+                    res.send({num:id,user:userName})
+                }
             })
             streamify.createReadStream(buffer).pipe(cldUploadStream).on("end",()=>{console.log(i)})
         }

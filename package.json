@@ -13,6 +13,9 @@
   },
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=0.10.3 <0.12"
+  },
   "bugs": {
     "url": "https://github.com/SingleSimha/InstaClone/issues"
   },
@@ -40,6 +43,7 @@
     "open": "^8.4.0",
     "passport": "^0.5.2",
     "passport-local": "^1.0.0",
+    "smpljavascript": "^1.1.11",
     "socket.io": "^4.5.0",
     "streamifier": "^0.1.1",
     "web-push": "^3.4.5"
