@@ -64,15 +64,9 @@
         ></i>
       {{/if}}
       <div class="profile me-2 me-xl-0">
-        <a href="/profile">
-          <img
-            class="profile-pfp"
-            {{!-- width='3em' height='3.5em' --}}
-            style="width: 3em;height:3em;object-fit: fill;"
-            src="{{profilePic}}"
-            alt="Profile Image"
-          />
-        </a>
+        <div class="UserImage" style="width: 2.7em;cursor:pointer" onclick="location.href = '/profile'">
+          <img src="{{profilePic}}" style="width: 100%;height:100%;" alt="User Profile Image">
+        </div>
       </div>
     </div>
     <!-- Navbar Post Button -->

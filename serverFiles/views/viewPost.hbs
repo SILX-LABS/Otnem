@@ -27,6 +27,11 @@
 </style>
 <div class="posts_cards">
   <div class="container-fluid px-0 px-lg-3">
+    {{#each fields}}
+      Title : {{title}} <br>
+      Disc : {{disc}} <br>
+      <img src='{{img}}'> <br>
+    {{/each}}
     <div class="grid_postsx row justify-content-center align-items-center  " style="gap: 3.5rem;">
       <div class="col-12 col-lg-6 px-0 px-lg-3">
         <div class="post_boxx" data-type="art">
@@ -65,9 +70,7 @@
           <div class="bottom">
             <div class="UserDetails" style="cursor:pointer"
               onclick="window.location.href = '/profile?user={{postUser}}'">
-           
               <div class="name_time">
-           
               </div>
             </div>
             <div class="title_of_post">
@@ -174,36 +177,30 @@
     location.reload()
   }
   async function comment(postNum, postUser) {
-    console.log($('#comment-inp').val())
     let comment = $('#comment-inp').val()
     let res = await axios.post('/comment', {
       comment: comment,
       postNum: postNum,
       postUser: postUser
     })
-    console.log(res)
     if (res.data.startsWith('<!DOCTYPE html>'))
       location.href = '/login'
     else
       location.reload()
   }
   async function deleteComment(commentNum, commentUser) {
-    console.log("START")
     let postNum = $("#data").attr('postNum')
     let postUser = $("#data").attr('postUser')
     let res = await axios.delete('/deleteComment', { data: { commentNum: commentNum, postNum: postNum, postUser: postUser, commentUser: commentUser } })
-    console.log(res)
     if (typeof res.data == 'string' && res.data.startsWith('<!DOCTYPE html>'))
       location.href = '/login'
     location.reload()
-    console.log(commentNum, postNum, postUser)
   }
   async function addLike() {
     let postNum = $("#data").attr('postNum')
     let user = $("#data").attr('postUser')
     if (!$('#loggedIn').attr('isAuth'))
       location.href = '/login'
-    console.log(user, postNum)
     await axios.post('/addLike', { user, postNum })
     location.href = `/postPreview?postNum=${postNum}&&user=${user}`
   }

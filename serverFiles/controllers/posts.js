@@ -182,7 +182,6 @@ const chatPage = async(req,res,next)=>{
     try{        
         const {user} = await req.query
         let userName = await getUserName(req)
-        console.log()
         if(!userName)
             return res.redirect('login')
         if(!await checkIfDocExists(userDB,user))
@@ -280,7 +279,6 @@ const uploadFile = async(req,res)=>{
         let publicIdArr = []
         let imgURLArr = []
         for(let i = 0;i < length; i++){
-            console.log(i)
             let buffer = files[i].buffer
             let cldUploadStream = cloudinary.uploader.upload_stream({
             folder:`${userName}/posts/`,
@@ -310,22 +308,21 @@ const uploadFile = async(req,res)=>{
                     await notify(follower,`${userName} uploaded a post`,`Check out ${userName}'s post`,`/postPreview?user=${userName}&&postNum=${imageName}`,user.profilePic)
                 })
                 length -= 1
-                console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-                console.log(length)
                 if(length <= 0){
                     let finalObj = {
                         titleArr,
                         discArr,
                         publicIdArr,
                         imgURLArr,
-                        date:today
+                        date:today,
+                        category:"other",
                     }
-                    let id = smjs.randomUniqIdGen(20)
-                    await userDB.doc(`${userName}`).collection(`posts`).doc(imageName).set(finalObj)
+                    let id = smjs.randomUniqIdGen(40)
+                    await userDB.doc(`${userName}`).collection(`posts`).doc(id).set(finalObj)
                     res.send({num:id,user:userName})
                 }
             })
-            streamify.createReadStream(buffer).pipe(cldUploadStream).on("end",()=>{console.log(i)})
+            streamify.createReadStream(buffer).pipe(cldUploadStream)
         }
     } catch (error) {
         console.log(error)
@@ -386,7 +383,14 @@ const postPreviewPage = async(req,res)=>{
             postData['disc'] = "ERRRRRR"
             err = true
         }
-        res.render('viewPost',{layout:'indexLayout',isLiked,likes,commentsQty:commentSnapshot.size,verified:postUser.verified,isDeletable:isDeletable,posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,imgURL:postData.img,title:postData.title,disc:postData.disc,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})
+        postData['fields'] = postData.titleArr.map((e,i)=>{
+            let field = {}
+            field['title'] = e
+            field['disc'] = postData.discArr[i]
+            field['img'] = postData.imgURLArr[i]
+            return field
+        })
+        res.render('viewPost',{layout:'indexLayout',isLiked,likes,commentsQty:commentSnapshot.size,verified:postUser.verified,isDeletable:isDeletable,posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,fields:postData.fields,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})
         
     } catch (error) {
         console.log(error)
@@ -812,12 +816,21 @@ async function getAllPosts(){
         let snapshot = await userDB.doc(user).collection('posts').get()
         let post = await Promise.all(snapshot.docs.map(async doc=>{
             let data = doc.data()
+            data['title'] = data.titleArr[0]
+            data['img'] = data.imgURLArr[0]
             let likesArr = await userDB.doc(user).collection('posts').doc(doc.id).collection('likes').get()
             data['user'] = user
             data['postName'] = doc.id
             data['likes'] = (likesArr).size
             data['commentsQty'] = (await userDB.doc(user).collection('posts').doc(doc.id).collection('comments').get()).size
             data['likesArray'] = likesArr.docs.map(doc=>doc.data().user)
+            data['fields'] = data.titleArr.map((e,i)=>{
+                let field = {}
+                field['title'] = e
+                field['disc'] = data.discArr[i]
+                field['img'] = data.imgURLArr[i]
+                return field
+            })
             return data
         }))
         posts.push(...post)
@@ -828,11 +841,20 @@ async function getAllUserPosts(userName){
     let snapshot = await userDB.doc(userName).collection('posts').get()
     let posts = await Promise.all(snapshot.docs.map(async doc=>{
         let data = doc.data()
+        data['title'] = data.titleArr[0]
+        data['img'] = data.imgURLArr[0]
         data['id'] = doc.id
         let likeSnap = await userDB.doc(userName).collection('posts').doc(doc.id).collection('likes').get()      
         data['likes'] = (likeSnap).size
         data['likesArray'] = likeSnap.docs.map(doc=>doc.data().user)
         data['commentsQty'] = (await userDB.doc(userName).collection('posts').doc(doc.id).collection('comments').get()).size
+        data['fields'] = titleArr.map((e,i)=>{
+            let field = {}
+            field['title'] = e
+            field['disc'] = data.discArr[i]
+            field['img'] = data.imgURLArr[i]
+            return field
+        })
         return data
     }))
     return posts
