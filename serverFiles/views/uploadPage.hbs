@@ -128,7 +128,8 @@
         let fileArray = Array.from(document.querySelectorAll('.inp-file'))
         fileArray = fileArray.forEach((e,i)=>{if(e.files[0])formData.append(`upload_file`,e.files[0],`upload_file_${i+1}`)})
         let res = await axios.post('/upload', formData)
-        console.log(res)
+        if(res.data.success)
+            location.href = `/postPreview?user=${res.data.user}&&postNum=${res.data.num}`
     }
     function checkIfEnablePostBtn(){
         if(Array.from(document.querySelectorAll('.inp-title')).some(e=>e.value.replaceAll(' ','') == '' || e.value.replaceAll(' ','').length < 5 || e.value.replaceAll(' ','').length > 50) || Array.from(document.querySelectorAll('.inp-file')).some(e=>!e.files[0]))

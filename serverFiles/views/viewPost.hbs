@@ -27,16 +27,17 @@
 </style>
 <div class="posts_cards">
   <div class="container-fluid px-0 px-lg-3">
-    {{#each fields}}
+    {{!-- {{#each fields}}
       Title : {{title}} <br>
       Disc : {{disc}} <br>
       <img src='{{img}}'> <br>
-    {{/each}}
+    {{/each}} --}}
     <div class="grid_postsx row justify-content-center align-items-center  " style="gap: 3.5rem;">
+    {{#each fields}}
       <div class="col-12 col-lg-6 px-0 px-lg-3">
         <div class="post_boxx" data-type="art">
           <div class="index_image">
-            <img src="{{imgURL}}" alt="">
+            <img src="{{img}}" alt="">
           </div>
           <div class="top">
             <div class="items">
@@ -82,15 +83,15 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="post-info">
-          <div>
-            <h2></h2>
-            <p>{{likes}} Likes | {{commentsQty}} Comments</p>
-          </div>
+      </div>
+    {{/each}}
+      </div>
+      <div class="post-info">
+        <div>
+          <h2></h2>
+          <p>{{likes}} Likes | {{commentsQty}} Comments</p>
         </div>
       </div>
-   
           <div class="col-12 col-lg-4 ps-0 ps-lg-4 h-100 " style="right: 0;" >
         <div class="row" >
           <div class="col-12">
@@ -162,8 +163,6 @@
           </div>
         </div>
       </div>
-     
-
 
 
     </div>

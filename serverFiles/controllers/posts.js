@@ -319,7 +319,7 @@ const uploadFile = async(req,res)=>{
                     }
                     let id = smjs.randomUniqIdGen(40)
                     await userDB.doc(`${userName}`).collection(`posts`).doc(id).set(finalObj)
-                    res.send({num:id,user:userName})
+                    res.send({success:true,num:id,user:userName}).status(200)
                 }
             })
             streamify.createReadStream(buffer).pipe(cldUploadStream)
@@ -848,7 +848,7 @@ async function getAllUserPosts(userName){
         data['likes'] = (likeSnap).size
         data['likesArray'] = likeSnap.docs.map(doc=>doc.data().user)
         data['commentsQty'] = (await userDB.doc(userName).collection('posts').doc(doc.id).collection('comments').get()).size
-        data['fields'] = titleArr.map((e,i)=>{
+        data['fields'] = data.titleArr.map((e,i)=>{
             let field = {}
             field['title'] = e
             field['disc'] = data.discArr[i]
