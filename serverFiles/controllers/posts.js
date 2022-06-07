@@ -38,6 +38,9 @@ cloudinary.config({
     api_key: process.env.API_KEY, 
     api_secret: process.env.API_SECRET
 })
+const redPage = (req,res)=>{
+    return res.render('redirectPage')
+}
 const mainPage = async(req,res)=>{
     try{
         const {attr,element} = await req.query
@@ -497,7 +500,7 @@ const registerPost= async(req,res)=>{
                 text:`The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}`,
                 html:`<h1>Mento</h1><br><h3>The verifiation link is ${process.env.VERIFY_LINK}?id=${docref.id}</h3>`
             })
-            return res.redirect('login')
+            return res.redirect('redPage')
         })
     }
     catch(err){
@@ -893,4 +896,4 @@ async function checkIfFollowing(user,checkUser){
     let followers = await userDB.doc(checkUser).collection('followers').get()
     return (followers.docs.some(doc => doc.id == user))
 }
-module.exports = {admin,userDB,chatRoomDB,addLike,removeLike,getLikes,getUserApi,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute}
+module.exports = {admin,userDB,chatRoomDB,addLike,removeLike,getLikes,getUserApi,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute,redPage}
