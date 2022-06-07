@@ -143,6 +143,8 @@
 
 </div>
 <script>
+	  newPageTitle = 'Settings | Otnem - Share your project with the world';
+document.querySelector('title').textContent = newPageTitle;
 	$('.btn-account').click(async e=>{
 		let res = await axios.post('/changeCred',{cred:'account',newPaypal:$('.inp-paypal').val(),bio:$('.inp-bio').val()})
 		if(res.data.success)

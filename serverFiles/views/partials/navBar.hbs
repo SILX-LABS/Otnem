@@ -1,4 +1,14 @@
-<!-- === Navbar Start === -->
+<style>
+  .profile {
+    display: none ;
+  }
+    @media screen and (max-width: 991px)  {
+     .UserImage {
+       display: none;
+     }
+   
+  }
+</style><!-- === Navbar Start === -->
 <div class="navbar__">
   <noscript auth="{{isAuth}}" id="isAuth"></noscript>
   <div class="navbar__elements">
@@ -6,7 +16,7 @@
     <div class="logo_company">
       <a href="/" class="au">
 
-        <h3>Mento</h3>
+        <h3>Otnem</h3>
 
       </a>
       <!-- <img src="" alt=""> -->
@@ -18,17 +28,15 @@
           <li class="active">Home</li>
         </a>
         <a href="#" class="au">
-          <li>Books</li>
+          <li>Community</li>
         </a>
         <a href="#" class="au">
-          <li>Jobs</li>
+          <li>Find a Partner</li>
         </a>
         <a href="#" class="au">
           <li>Support</li>
         </a>
-        <a href="../how.hbs" class="au">
-          <li>How it Works</li>
-        </a>
+      
       </ul>
     </div>
     <!-- Navbar Search Bar -->
@@ -94,9 +102,9 @@
 <!-- MOBILE NAVBAR START -->
 <div class="navbar_mobile">
   <ul class="items">
-    <a href="/" style="color:#000" class="au">
+    <a href="/"  class="au">
       <li><i id="house" class="fa-solid fa-house"></i></li>
-    </a><a  href="/chatRoom?user=Pravith B A" class="au">
+    </a><a  href="/chatRoom?user=Pravith B A" id="chat" class="au">
     <i class="fa-solid fa-message"></i> </a>
   
   </ul>
@@ -106,9 +114,9 @@
     </button>
   </a>
   <ul class="items">
-    <a href="#" class="au">
+    <a href="/notifications" id="noti" class="au">
       <li><i class="fa-solid fa-bell"></i></li>
-    </a><a href="/profile" class="au">
+    </a><a href="/profile" id="profile" class="au">
       <li><i class="fa-solid fa-user"></i></li>
     </a>
 

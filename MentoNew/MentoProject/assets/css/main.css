@@ -12,7 +12,7 @@
   --DarkColor: #1c243c;
   --BlackColor: #121212;
   /* Strings */
-  --navHight: 85px;
+  --navHight: 75px;
   --navHightMobile: 125px;
   --secPading: 30px;
   --secMargin: 20px;
@@ -142,6 +142,11 @@ body {
 .description textarea {
   height: 100%;
   width: 100%;
+}
+.desc {
+  width: 100%;
+  height: auto;
+  overflow: scroll;
 }
 .pick-image {
   width: 100%;
@@ -654,7 +659,6 @@ section {
 
 .posts_cards {
   position: relative;
-  margin: var(--secMargin);
 }
 
 
@@ -663,12 +667,12 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(282px, 1fr));
   gap: 1.4rem;
+  margin: 0 1rem;
   margin-top: 20px;
 }
 
 .grid_postsx {
   display: flex;
-  margin-top: 20px;
   /* justify-content: center;
   align-items: center;
   flex-wrap: wrap;
@@ -731,9 +735,10 @@ section {
 }
 
 .post-info {
-  height: 80px;
+  height: 52px;
   display: flex;
   justify-content: center;
+  font-size: 20px;
   align-items: center;
   width: 100%;
 }
@@ -741,9 +746,9 @@ section {
   font-weight: bold;
 }
 .grid_postsx .post_boxx {
-  overflow: hidden;
-  border-radius: 50px;
-  height: 80vh;
+  overflow-y: scroll;
+  height: 95vh;
+  overflow-x:hidden;
   width: 100%;
   position: relative;
 }
@@ -803,7 +808,7 @@ section {
   align-items: stretch;
 }
 .grid_postsx .post_boxx .index_image {
-  height: 100%;
+  height: 500px;
   display: flex;
   justify-content: center;
   align-items: stretch;
@@ -982,16 +987,7 @@ section {
   transition: 300ms all ease-in-out;
 }
 .grid_postsx .post_boxx::before {
-  content: "";
-  position: absolute;
-  bottom: -100%;
-  left: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to bottom, transparent, #121212 120%);
-  z-index: 0;
-  transition: 300ms all ease-in-out;
+
 }
 @media screen and (max-width: 991px) {
   .grid_posts .post_box::before {
@@ -1362,6 +1358,7 @@ textarea:focus {
   border-radius: 0.5em;
   padding: 0 0.4em;
   width: 100%;
+  gap: 1rem;
   /* height: 2em; */
   display: flex;
   position: relative;
@@ -1462,7 +1459,7 @@ textarea:focus {
 
 .comments_container {
   overflow-y: auto;
-  min-height: 50vh;
+  min-height: 56vh;
 }
 
 .comments_container .comment_c {
@@ -1577,8 +1574,7 @@ textarea:focus {
 
 @media screen and (max-width: 991px) {
   .grid_postsx .post_boxx {
-    overflow: hidden;
-    height: 65vh;
+    height: 100%;
     width: 100%;
     position: relative;
     border-radius: 0;

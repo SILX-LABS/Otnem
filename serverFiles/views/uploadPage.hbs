@@ -1,27 +1,104 @@
 {{> navBar profilePic = profilePic isAuth = true}}
+
 <noscript id="fields" num="1"></noscript>
-<div class="field-c">
-    <div class="field field-1">
-        <input type="file" name="file-1" id="" class="inp-file file-1">
+ <div class="top d-lg-none d-flex">
+    <div class="container bg-white">
+      <div class="row justify-content-between">
+        <div class="col-5" style="margin-left:20px;font-size:40px">
+            <button onclick="history.back()" style="background: none;border:none">  <i class="fa-solid fa-arrow-left"></i></button>
+       
+        </div>
+        <div class="col-5" style="display: flex;justify-content: end;align-items: center;font-size: 25px;font-weight:bold;margin-right:25px" >
+          Upload Project
+        </div>
+      </div>
+    </div>
+</div>
+<div class="container field-c p-lg-5 p-0 mt-lg-1 "  >
+   
+    <div class=" bor field field-1 bg-white gap-5 g-0 p-4"   >
+       <div class="col-md-12 col-xs-12">
+        <div class="row " style="row-gap: 2rem;" >
+            <div class="col-12 col-lg-6 col-xl-6">        
+              <input type="file" name="file-1" id="" class="inp-file file-1">
         <div class="content content-1">
             <h2>Title</h2>
             <input type="text" name="title-1" id="" class="inp-title title-1">
             <h2>Description</h2>
             <textarea name="disc-1" id="" cols="30" rows="12" class="inp-disc disc-1"></textarea>
         </div>
-        <div class="display display-1"><i class="fa fa-camera icon-1"></i></div>
-        <img src="" alt="">
+            </div>
+            <div class="col-12 col-lg-6 col-xl-6">
+                <div class="display  display-1"><i class="fa fa-camera icon-1"></i></div>
+            <img src="" alt="">
+            </div>
+            </div>
+       </div>
     </div>
     <div id="btn-c">
         <button id="add-field" class="btn" style="margin: 0 0 0 0;" onclick='createField()'>Add Field <i class="fa fa-plus"></i></button>
         <button id="post-btn" disabled onclick="post()" class="btn">Post</button>
     </div>
+  
 </div>
 <style>
+     @media screen and (max-width: 991px)  {
+    .navbar__  {
+      display:none;
+     
+    }
+    
+    .field-c  {
+        margin-top: 100px;
+    }
+    .top {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    height: var(--navHight);
+    z-index: 120;
+     }
+    .bor {
+        border-radius:0px    ;
+    }
+     
+      .navbar_mobile {
+        display: none;
+        
+    }
+ 
+  }
+
+
+ 
+  .field-c{
+        display: grid;
+        row-gap: 5vw;
+    }
+     .field{
+        display:flex;
+        background-color: #fff;
+        padding: 2rem;
+        border-radius:3rem;
+        gap:1.4rem;
+    }
+    .bor {
+        border-radius: 3rem;
+        border: none;
+     
+    }
     #btn-c{
-        display:grid;
-        grid-auto-flow: column;
-        gap:2em;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       margin-top: 1rem;
+       gap: 5rem;
     }
     .btn{
         display: grid;
@@ -34,15 +111,18 @@
         color:#4cca63;
         font-weight: bold;
         font-size:1.5em;
-        border-radius: 0.4em;
+        border-radius: 50rem;
         transition: all 300ms;
         width:9em;
     }
+  
+   
     .btn:disabled{
         background-color: transparent;
         cursor: not-allowed;
-        border-color: grey;
-        color: grey;
+        border-color: black;
+        border-radius: 50rem;
+        color: black;
         font-style: oblique;
     }
     .btn:hover{
@@ -54,48 +134,38 @@
         border-color:#1fe243;
         color:white;
     }
-    .field-c{
-        font-family: 'Courier New', Courier, monospace;
-        display: grid;
-        place-items: center;
-        margin: 1rem 0 1rem 0;
-        row-gap: 2vw;
-    }
+   
     h2{
         font-weight: bolder;
     }
-    .field{
-        display:flex;
-        border:0.8rem solid #23F649;
-        border-radius:1rem;
-        width:90%;
-        padding: 1rem 1rem 1rem 1rem;
-        gap:1%;
-    }
+  
     .content{
         display:flex;
         flex-direction: column;
-        width: 58%;
+        width: 100%;
     }
     .inp-title{
-        padding:0.5rem;
+        padding:1rem;
         font-size:1.5rem;
-        border-radius: 0.5rem;
+        border-radius: 2rem;
+        border: 1.5px solid rgba(22, 24, 35, 0.12);
         margin-bottom: 0.5rem;
         font-weight: bold;
     }
     .inp-disc{
-        padding:0.5rem;
+        padding:1rem;
         resize:none;
+        border: 1.5px solid rgba(22, 24, 35, 0.12);
         font-size:1.5rem;
-        border-radius: 0.5rem;
+        color: #757575;
+        border-radius: 2rem;
         font-weight: bold;
     }
     .display{
-        width:35vw;
-        height:35vw;
-        border:0.6rem solid #23F649;
-        border-radius: 1rem;
+        width:100%;
+        height:100%;
+        border:2px solid #23F649;
+        border-radius: 5rem;
         display: grid;
         place-items: center;
         cursor:pointer;
@@ -105,6 +175,8 @@
     }
 </style>
 <script>
+    newPageTitle = 'Upload Project | Otnem - Share your project with the world';
+  document.querySelector('title').textContent = newPageTitle;
     document.querySelectorAll('input[type=file]').forEach(inp=>{
         inp.setAttribute('style','display:none')
     })
@@ -114,12 +186,13 @@
     })
     $('.file-1').change(()=>{
         let file = document.querySelector('.file-1').files[0]
-        if(file) $('.display-1').html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="" style="height:30vw;width:100%;object-fit:scale-down">`)
+        if(file) $('.display-1').html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="" style="height:fit-content\;width:100%;object-fit:scale-down">`)
         else $('.display-1').html(`<i class="fa fa-camera icon-1"></i>`)
         checkIfEnablePostBtn()
     })
     Array.from(document.querySelectorAll('.inp-title')).forEach(t=>t.addEventListener('keyup',e=>checkIfEnablePostBtn()))
     async function post(){
+      
         let formData = new FormData()
         let titleArray = Array.from(document.querySelectorAll('.inp-title').values())
         titleArray.forEach((e,i)=>formData.append(`title_${i+1}`,e.value))
@@ -173,24 +246,53 @@
             inpFile.setAttribute('style','display:none')
         let fieldDiv = cr('div')
             fieldDiv.classList.add('field',`field-${num}`)
-            if(num % 2 != 0)fieldDiv.append(inpFile,contentDiv,displayDiv)
-            else fieldDiv.append(inpFile,displayDiv,contentDiv)
+
+            //inpFile,contentDiv,displayDiv
+            //inpFile,contentDiv,displayDiv
+       
+         let col1  = cr('div')
+         col1.classList.add('col-12','col-lg-6','col-xl-6')
+         col1.append(inpFile,contentDiv)
+        let col2 = cr('div')
+         col2.classList.add('col-12', 'col-lg-6' ,'col-xl-6')
+        col2.append(displayDiv)
+
+        let row  = cr('div')
+            row.classList.add('row')
+            row.setAttribute('style','row-gap:2rem')
+            row.append(col1,col2)
+            let filetest = cr('div')
+            filetest.classList.add('col-md-12' ,'col-xs-12' )
+            filetest.append(row)    
+            if(num % 2 != 0)fieldDiv.append(filetest)
+            else fieldDiv.append(filetest)
+        let kl = cr('div')
+     
         let deleteBtn = cr('i')
             deleteBtn.classList.add('fa','fa-trash-can',`del-${num}`)
-            deleteBtn.setAttribute('style','cursor:pointer;color:red;')
+            deleteBtn.setAttribute('style','cursor:pointer;color:white;')
             deleteBtn.addEventListener('click',e=>{
                 fieldDiv.remove()
                 deleteBtn.remove()
-                $('#btn-c').attr('style','display:grid')
             })
-        document.querySelector('.field-c').append(fieldDiv,deleteBtn)
+        kl.classList.add('delete')
+         kl.setAttribute('style','cursor:pointer;color:white;')
+
+           kl.addEventListener('click',e=>{
+                fieldDiv.remove()
+                kl.remove()
+                deleteBtn.remove()
+            })
+         kl.append(deleteBtn)
+         
+        document.querySelector('.field-c').append(fieldDiv,kl)
         document.querySelector('.field-c').append(document.querySelector("#btn-c"))
         displayDiv.addEventListener("click",()=>{
             inpFile.click()
         })
         inpFile.addEventListener('change',()=>{
             let file = inpFile.files[0]
-            if(file) $(`.display-${num}`).html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="" style="height:30vw;width:100%;object-fit:scale-down">`)
+            if(file) $(`.display-${num}`).html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="" style="height:fit-content;width:100%;object-fit:scale-down">`)
             else $(`.display-${num}`).html(`<i class="fa fa-camera icon-1"></i>`)
             checkIfEnablePostBtn()
         })

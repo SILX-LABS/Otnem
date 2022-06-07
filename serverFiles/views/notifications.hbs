@@ -1,11 +1,26 @@
 {{> navBar profilePic = profilePic isAuth = true}}
     <!-- === Items Links Selector Start === -->
+    <style>
+        @media screen and (max-width: 991px) {
+    .navbar__ {
+      display: none;
+    }
+   
+
+
+#noti {
+  color: #000;
+}
+
+  }
+ 
+    </style>
     <div class="container-fluid">
 
     <!-- === Items Links Selector End === -->
     <div class="posts_cards">
-      <div class="container-fluid">
-          <h2>Notification</h2>
+      <div class="container-fluid p-3">
+          <h2>Notification's</h2>
         <div class="grid_postsx" style="flex-wrap:wrap;">
         {{#each notifications}}
             <div class="card" onclick="window.location.href='{{link}}'" style="cursor: pointer;">
@@ -26,5 +41,6 @@
     </div>
 </div>
 <script>
-
+   newPageTitle = 'Notification | Otnem - Share your project with the world';
+document.querySelector('title').textContent = newPageTitle;
   </script>

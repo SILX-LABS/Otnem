@@ -12,6 +12,9 @@
     body {
       padding-bottom: 0;
     }
+    #chat {
+        color: #000;
+    }
   }
 </style>
 
@@ -66,6 +69,8 @@
 <noscript id="vars" user="{{userName}}" pfp="{{profilePic}}"></noscript>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+     newPageTitle = 'Messages  | Otnem - Share your project with the world';
+document.querySelector('title').textContent = newPageTitle;
     const socket = io()
     $('#chat-msg').focus()
     main()

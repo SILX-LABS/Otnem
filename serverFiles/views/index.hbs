@@ -4,6 +4,16 @@
 {{#unless loggedIn}}
 {{> navBar profilePic = 'https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4='}}
 {{/unless}}
+   <style>
+      @media screen and (max-width: 991px) {
+
+
+#house {
+  color: #000
+}
+
+  }
+  </style>
 <!-- === Items Links Selector Start === -->
 <div class="container-fluid">
       <div class="Selector_Links">
@@ -98,6 +108,8 @@
   </div>
 </div>
 <script>
+    newPageTitle = 'Feed Page | Otnem - Share your project with the world';
+document.querySelector('title').textContent = newPageTitle;
   $('.SC_Item').each(function(i,obj){
     if(!getUrlVars()['attr']&&!getUrlVars()['element']){
       if($(this).attr('data-type').toLowerCase() == 'all')
