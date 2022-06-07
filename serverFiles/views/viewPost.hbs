@@ -19,14 +19,12 @@
     .navbar__ {
       display: none;
     }
-   
   }
- 
 
- .back {
-   height: 56px;
-   background-color: #fff;
- }
+.back {
+  height: 56px;
+  background-color: #fff;
+}
 
   #house {
     color: #D1DBDF;
@@ -34,15 +32,13 @@
 </style>
 
 <div class="posts_cards">
- <div class="top d-lg-none d-flex">
+<div class="top d-lg-none d-flex">
     <div class="container bg-white">
       <div class="row justify-content-between">
         <div class="col-5" style="margin-left:20px;font-size:40px">
             <button onclick="history.back()" style="background: none;border:none">  <i class="fa-solid fa-arrow-left"></i></button>
-       
         </div>
         <div class="col-5" style="display: flex;justify-content: end;align-items: center;font-size: 25px;font-weight:bold;margin-right:25px" >
-         
         </div>
       </div>
     </div>
@@ -60,16 +56,16 @@
 
       <div class="col-12 col-lg-6 bg-white p-3">
         <div class="post_boxx px-0 px-lg-3" data-type="art">
-                     {{#each fields}}
+          {{#each fields}}
 
           <h2>{{title}}</h2>
 
           <div class="index_image">
-            <img src="{{img}}" alt="">
+            <img src="{{img}}" style="object-fit: scale-down;" alt="">
           </div>
           <br>
           <div class="desc">
-                      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a typeLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a typeLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a typeLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a typeLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a typeLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a typeLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a typeLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a typeLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a typeLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type</p>
+                      <p>{{disc}}</p>
 
           </div>
           <div class="top">
@@ -111,7 +107,7 @@
               <div class="post_title">
                 <div class="post__name">
                   <h5 title="Post Nmae">
-                 </h5>
+                </h5>
                 </div>
               </div>
             </div>
@@ -121,7 +117,7 @@
         
 
       </div>
-         <div class="col-12 col-lg-4  vh-100 " style="background:#fff" >
+        <div class="col-12 col-lg-4  vh-100 " style="background:#fff" >
         <div class="row" >
           <div class="col-12">
             <div class="cardxx p-3">
@@ -144,7 +140,7 @@
             </div>
           </div>
           <div class="col-12">
-             <div class="post-info">
+            <div class="post-info">
         <div>
           <h2></h2>
           <p>{{likes}} Likes | {{commentsQty}} Comments</p>
@@ -156,16 +152,12 @@
               <div class="topx py-2">
                 <h2>Opinions</h2>
               </div>
-              <div class="des px-3 ">
-                <p>{{disc}} </p>
-              </div>
                   <div class="flex-grow-0 py-3 px-3 ">
                 <div class="inp-f">
                     <input name="comment" class="comment_input" id="comment-inp" rows="1"
                   placeholder="Enter your Opinions"></input>
                 <button type="submit" class="sub-chat" onclick="comment('{{postNum}}','{{postUser}}')"> Send</button>
                 </div>
-           
               </div>
               <div class="comments_container">
                 <div class="comment_c">
@@ -195,17 +187,11 @@
                   {{/each}}
                 </div>
               </div>
-            
-            
             </div>
           </div>
         </div>
       </div>
       </div>
-   
-     
-       
-
     </div>
   </div>
 </div>

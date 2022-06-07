@@ -180,14 +180,14 @@ const uploadPostPage = async(req,res)=>{
 }
 const chatPage = async(req,res,next)=>{
     try{        
-        const {user} = await req.query
+        let {user} = await req.query
         let userName = await getUserName(req)
         if(!userName)
             return res.redirect('login')
         if(!await checkIfDocExists(userDB,user))
-            return res.send("User Doesnt exist")
+            user = userName 
         const user1 = await getUser(userName)
-        const user2 = await getUser(user)
+        let user2 = await getUser(user)
         return res.render('chatRoom',{userName:userName,profilePic:user1.profilePic,user:user,profilePic2:user2.profilePic})
     }
     catch(err){
@@ -282,7 +282,6 @@ const uploadFile = async(req,res)=>{
             let buffer = files[i].buffer
             let cldUploadStream = cloudinary.uploader.upload_stream({
             folder:`${userName}/posts/`,
-            height: 500, width: 500, crop: "scale",
             },async(err,response)=>{
                 let imageName = (response.public_id.split('/'))[((response.public_id.split('/'))).length-1]
                 if (err) return res.send(err)
@@ -388,6 +387,10 @@ const postPreviewPage = async(req,res)=>{
             field['title'] = e
             field['disc'] = postData.discArr[i]
             field['img'] = postData.imgURLArr[i]
+            field['isLiked'] = isLiked
+            field['isDeletable'] = isDeletable
+            field['postNum'] = query.postNum
+            field['postUser'] = postUser.userName
             return field
         })
         res.render('viewPost',{layout:'indexLayout',isLiked,likes,commentsQty:commentSnapshot.size,verified:postUser.verified,isDeletable:isDeletable,posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,fields:postData.fields,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})

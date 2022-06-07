@@ -56,21 +56,21 @@
     <div class="grid_posts" >
         {{#each posts}}
     <div class="full_post" style="height: 100%;">
-        <div class="post_box" data-type="art">
-          <div class="index_image">
-              <img src="{{img}}" alt="Image Not Available" onclick="window.location.href = '/postPreview?postNum={{postName}}&&user={{userName}}'">
+        <div class="post_box" data-type="art" onclick="window.location.href = '/postPreview?postNum={{postName}}&&user={{userName}}'">
+          <div class="index_image" >
+              <img src="{{img}}" style="object-fit: scale-down;" width="100%" height="100%" alt="Image Not Available">
           </div>
           <div class="top">
               <div class="items">
-                <div class="item sned" onclick="location.href = `/chatRoom?user={{userName}}&redirect=true`">   <i class="fa-solid fa-envelope"></i> </div>
+                <div class="item sned" style="z-index: 2;" onclick="location.href = `/chatRoom?user={{userName}}&redirect=true`">   <i class="fa-solid fa-envelope"></i> </div>
 
                 {{#if isLiked}}
-                  <div class="item star" id="{{postName}}-id" postNum="{{postName}}" user="{{userName}}" onclick="removeLike('{{user}}','{{postName}}')">
+                  <div class="item star" style="z-index: 2;" id="{{postName}}-id" postNum="{{postName}}" user="{{userName}}" onclick="removeLike('{{user}}','{{postName}}')">
                     <i style="color: red;" class="fa-solid fa-heart-broken"></i>
                   </div>
                 {{/if}}
                 {{#unless isLiked}}
-                  <div class="item star" id="{{postName}}-id" postNum="{{postName}}" user="{{userName}}" onclick="addLike('{{user}}','{{postName}}')">
+                  <div class="item star" style="z-index: 2;" id="{{postName}}-id" postNum="{{postName}}" user="{{userName}}" onclick="addLike('{{user}}','{{postName}}')">
                     <i style="color: red;" class="fa-solid fa-heart"></i>
                   </div>
                 {{/unless}}
