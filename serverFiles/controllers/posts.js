@@ -691,6 +691,9 @@ const getUserApi = async(req,res)=>{
         console.log(err)
     }    
 }
+const getAllUsersApi = async(req,res)=>{
+    res.send(await getAllUsers())
+}
 const addLike = async(req,res)=>{
     try{
         const userName = await getUserName(req)
@@ -896,4 +899,14 @@ async function checkIfFollowing(user,checkUser){
     let followers = await userDB.doc(checkUser).collection('followers').get()
     return (followers.docs.some(doc => doc.id == user))
 }
-module.exports = {admin,userDB,chatRoomDB,addLike,removeLike,getLikes,getUserApi,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute,redPage}
+async function getAllUsers(){
+    try {
+        let users = await userDB.get() 
+        users = users.docs.map(doc=>doc.id)
+        return users
+    } 
+    catch (err) {
+        console.log(err)
+    }
+}
+module.exports = {admin,userDB,chatRoomDB,addLike,removeLike,getLikes,getUserApi,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute,redPage,getAllUsersApi}

@@ -10,23 +10,53 @@
         
     }
     body {
-      padding-bottom: 0;
+        padding-bottom: 0;
     }
     #chat {
         color: #000;
     }
-  }
+}
+    #s-user:focus + #sc, #sc:focus + #sc{
+        display:grid;
+        visibility: visible;
+    }
+    #sc{
+        display: grid;
+        visibility: visible;
+        place-items: center;
+        width: 16.5vw;
+        border:0.2em solid black;
+        border-radius: 1em;
+        background-color: white;
+        margin-top: -0.8em;
+    }
+    .search-sug{
+        text-align: center;
+        width: 100%;
+        cursor: pointer;
+        padding: 0.2em 0;
+        font-weight: 450;
+        transition:all 200ms;
+        background:none;
+        border:none;
+    }
+    .search-sug:hover{
+        color:rgb(26, 243, 30)
+    }
 </style>
 
 <div class="container p-0">
     <div class="card">
-         <div class="row g-0">
+        <div class="row g-0">
         <div class="col-12 col-lg-5 col-xl-3 border-right bg-white" style="border-bottom: 1px solid rgb(224, 224, 224);border-right: 1px solid rgb(224, 224, 224)">
             <div class="top-chat">
                 <div class="d-flex flex-column gap-2 py-3 ps-4 pe-5 w-100">
                         <h1 class="m-0">Messages</h1>
-  
-                    <input type="text" name="s-user" id="s-user" placeholder="Search user..." class="form-control my-3" style="border-radius: 50px;">
+                    <div>
+                        <input type="text" name="s-user" id="s-user" placeholder="Search user..." class="form-control my-3" style="border-radius: 50px;">
+                        <div id="sc" style="position: absolute;z-index: 1;">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="user-chat-c">
@@ -37,7 +67,6 @@
             <div id="chat-messages p-4">
                 <div class="user-top-chat" style=" border-bottom: 1px solid rgb(224, 224, 224); border-top: 1px solid rgb(224, 224, 224);" onclick="">
                     <div class="d-flex">
-
                     </div>
                     <img class="chat-pfp"
                         src="https://media.istockphoto.com/vectors/anonymity-concept-icon-in-neon-line-style-vector-id1259924572?k=20&m=1259924572&s=612x612&w=0&h=Xeii8p8hOLrH84PO4LJgse5VT7YSdkQY_LeZOjy-QD4="
@@ -60,37 +89,57 @@
         </div>
     </div>
     </div>
-
-    {{!-- Main Chat --}}
-
 </div>
 
 <noscript id="data" user="" pfp=""></noscript>
 <noscript id="vars" user="{{userName}}" pfp="{{profilePic}}"></noscript>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-     newPageTitle = 'Messages  | Otnem - Share your project with the world';
+    newPageTitle = 'Messages  | Otnem - Share your project with the world';
 document.querySelector('title').textContent = newPageTitle;
     const socket = io()
     $('#chat-msg').focus()
     main()
+    function showSearch(arr){
+        $('#sc').html('')
+        arr = arr.slice(0,5)
+        arr = arr.map(element=>{
+            let button = document.createElement('button')
+            button.classList.add('search-sug')
+            button.innerText = element
+            button.addEventListener('click',()=>{
+                $('#data').attr('user', element)
+                socket.emit('joinRoom', element)
+                $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
+                location.reload()
+            })
+            return button
+        })
+        document.querySelector('#sc').append(...arr)
+    }
     async function main() {
         let chats = await axios.get('/chatMem')
+        let allUsers = (await axios.get('/getAllUsers')).data.filter(e=>e != $('#vars').attr('user'))
+        $('#s-user').keyup(async e => {
+            if(e.keyCode == 13 && (await axios.get(`/checkUser?user=${$('#s-user').val()}`)).data) {
+                    $('#data').attr('user', $('#s-user').val())
+                    socket.emit('joinRoom', $('#s-user').val())
+                    $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
+                    location.reload()
+            }
+            if($('#s-user').val().replaceAll(' ','') != '')
+                showSearch((allUsers.filter(element=>element.toLowerCase().replaceAll(' ','').includes($('#s-user').val().toLowerCase().replaceAll(' ','')))))
+            else
+                $('#sc').html('')
+        })
         if (chats.data.chats[0])
             return sumMain(chats)
         socket.on('notif', (res) => {
             location.reload()
         })
-        $('#s-user').keyup(async e => {
-            if ((await axios.get(`/checkUser?user=${$('#s-user').val()}`)).data && e.keyCode == 13) {
-                $('#data').attr('user', $('#s-user').val())
-                socket.emit('joinRoom', $('#s-user').val())
-                $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
-                location.reload()
-            }
-        })
     }
     async function sumMain(chats) {
+        let allUsers = (await axios.get('/getAllUsers')).data.filter(e=>e != $('#vars').attr('user'))
         let userr = (getUrlVars())['user']
         userr = userr.replaceAll('%',' ')
         if(getUrlVars() && getUrlVars()['redirect'] && !chats.data.chats.some(e=>e['users'] == userr && userr != $('#vars').attr('user'))){
@@ -186,12 +235,16 @@ document.querySelector('title').textContent = newPageTitle;
             }
         })
         $('#s-user').keyup(async e => {
-            if ((await axios.get(`/checkUser?user=${$('#s-user').val()}`)).data && e.keyCode == 13) {
-                $('#data').attr('user', $('#s-user').val())
-                socket.emit('joinRoom', $('#s-user').val())
-                $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
-                location.reload()
+            if (e.keyCode == 13 && (await axios.get(`/checkUser?user=${$('#s-user').val()}`)).data) {
+                    $('#data').attr('user', $('#s-user').val())
+                    socket.emit('joinRoom', $('#s-user').val())
+                    $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
+                    location.reload()
             }
+            if($('#s-user').val().replaceAll(' ','') != '')
+                showSearch((allUsers.filter(element=>element.toLowerCase().replaceAll(' ','').includes($('#s-user').val().toLowerCase().replaceAll(' ','')))))
+            else
+                $('#sc').html('')
         })
         $(`${chats.data.chats[0].users}-unread`).css('display', 'none')
         $(`${chats.data.chats[0].users}-unread`).text('0')
