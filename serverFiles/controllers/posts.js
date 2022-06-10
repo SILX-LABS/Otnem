@@ -113,7 +113,6 @@ const profile = async(req,res)=>{
         let userPfp = ''
         if(req.isAuthenticated())
             userPfp = (await getUser(await getUserName(req))).profilePic
-        console.log(userObj)
         res.render('profile',{layout:'profileLayout',userObj:userObj,profilePic:userPfp,isAuth:req.isAuthenticated()})
     }catch(err){
         console.log(err)
