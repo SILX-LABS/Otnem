@@ -113,6 +113,7 @@ const profile = async(req,res)=>{
         let userPfp = ''
         if(req.isAuthenticated())
             userPfp = (await getUser(await getUserName(req))).profilePic
+        console.log(userObj)
         res.render('profile',{layout:'profileLayout',userObj:userObj,profilePic:userPfp,isAuth:req.isAuthenticated()})
     }catch(err){
         console.log(err)
@@ -158,7 +159,7 @@ const searchPage = async(req,res)=>{
                 if(query.element.length <= 0)
                     return res.render('searchPosts',{msg:"Search element empty",success:false})
                 let titleData = allPosts.map(e=>{
-                    if(e.title.includes(query.element))
+                    if(e.titleArr[0].includes(query.element))
                         return e
                 })
                 titleData = titleData.filter(e=>e!==undefined)
@@ -254,11 +255,10 @@ const deleteComment = async (req,res)=>{
 const uploadFile = async(req,res)=>{
     try {
         let userName = await getUserName(req) || "Pravith B A"
-        // let {title,disc,tags,category} = await req.body
         let body = await req.body
         let titleArr = []
         let discArr = []
-        let category = "lol"
+        let category = body.category
         for(k in body){
             if(k.startsWith('title'))
                 titleArr.splice(Number(k.charAt(k.length - 1)),0,body[k])
@@ -281,6 +281,7 @@ const uploadFile = async(req,res)=>{
         today = mm + '/' + dd + '/' + yyyy
         let publicIdArr = []
         let imgURLArr = []
+        let tags = body.tags
         for(let i = 0;i < length; i++){
             let buffer = files[i].buffer
             let cldUploadStream = cloudinary.uploader.upload_stream({
@@ -292,15 +293,6 @@ const uploadFile = async(req,res)=>{
                 await userDB.doc(`${userName}`).set({exists:true},{merge:true})
                 publicIdArr.splice(i,0,response.public_id)
                 imgURLArr.splice(i,0,imgURL)
-                // await userDB.doc(`${userName}`).collection(`posts`).doc(imageName).set({
-                //     title:title,
-                //     disc:disc,
-                //     public_id:response.public_id,
-                //     img:imgURL,
-                //     tags:tags.split(' ').filter(Boolean),
-                //     date:today,
-                //     category:category
-                // },{merge:true})
                 let followersSnap = await userDB.doc(userName).collection('followers').get()
                 let followers = followersSnap.docs.map(doc=>{
                     return doc.id
@@ -317,7 +309,8 @@ const uploadFile = async(req,res)=>{
                         publicIdArr,
                         imgURLArr,
                         date:today,
-                        category:"other",
+                        category:category,
+                        tags:tags||"none",
                     }
                     let id = smjs.randomUniqIdGen(40)
                     await userDB.doc(`${userName}`).collection(`posts`).doc(id).set(finalObj)

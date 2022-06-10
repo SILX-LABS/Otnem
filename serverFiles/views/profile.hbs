@@ -23,7 +23,6 @@
     }
   }
 .navbar_mobile {
-   
     color: #d1dbdf;
   
 }
@@ -46,9 +45,14 @@
           <div class="user">
             <div class="pd-left">
               <div class="pd-row">
-                <img src="{{profilePic}}" class="pd-image" alt="Profile Image">
-                <div>
+                <img src="{{profilePic}}" class="pd-image" alt="Profile Image" style="object-fit: cover;width: 5em;height: 5em;">
+              <div>
+                  <div style="display: grid;grid-auto-flow: column;place-items:center;">
                   <h3>{{userName}}</h3>
+                  {{#if verified}}
+                    <i style="color: rgb(0, 191, 255); margin-bottom:0.5em;" class="fa-solid fa-circle-check"></i>
+                  {{/if}}
+                  </div>
                   <p>{{followers}} Followers | {{following}} Following</p>
                 </div>
               </div>
@@ -168,7 +172,6 @@ document.querySelector('title').textContent = newPageTitle;
   async function addLike(user,postNum){
     if(!$('#loggedIn').attr('isAuth'))
       location.href = '/login'
-    console.log(user,postNum)
     await axios.post('/addLike',{user,postNum})
     location.href = `/postPreview?postNum=${postNum}&&user=${user}`
   }
