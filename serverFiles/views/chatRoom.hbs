@@ -1,9 +1,9 @@
-{{> navBar profilePic = profilePic isAuth = true}}
-<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
-<style>
-  @media screen and (max-width: 991px)  {
+    {{> navBar profilePic = profilePic isAuth = true}}
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+    <style>
+    @media screen and (max-width: 991px)  {
     .navbar__  {
-      display:none;
+        display:none;
     }
     .navbar_mobile {
         display: none;
@@ -15,10 +15,10 @@
     #chat {
         color: #000;
     }
-}
- 
+    }
+
     #sc{
-   
+
         visibility: hidden;
         text-align: start;
         padding: 0.7rem 1rem;
@@ -27,7 +27,7 @@
         background-color: white;
         
     }
-       #s-user:focus + #sc, #sc:focus + #sc{
+        #s-user:focus + #sc, #sc:focus + #sc{
 
         visibility: visible;
     }
@@ -44,20 +44,19 @@
     .search-sug:hover{
         color:rgb(26, 243, 30)
     }
-</style>
+    </style>
 
-<div class="container p-0">
+    <div class="container p-0">
     <div class="card">
         <div class="row g-0">
         <div class="col-12 col-lg-5 col-xl-3 border-right bg-white" style="border-bottom: 1px solid rgb(224, 224, 224);border-right: 1px solid rgb(224, 224, 224)">
             <div class="top-chat">
                 <div class="d-flex flex-column gap-2 py-3 ps-4 pe-5 w-100">
-              
+                
                         <h1 class="m-0">Messages</h1>
                     <div class=" d-flex flex-column gap-2 py-2 ps-2 w-100">
                         <input type="text" name="s-user" id="s-user" placeholder="Search user..." class="form-control my-3" style="border-radius: 50px;">
-                              <div id="sc" style="position: relative;z-index: 1;">
-                        </div>
+                            <div id="sc" style="position: absolute;margin-top: 3.5em;z-index: 1;"></div>
                     </div>
                 </div>
             </div>
@@ -91,14 +90,14 @@
         </div>
     </div>
     </div>
-</div>
+    </div>
 
-<noscript id="data" user="" pfp=""></noscript>
-<noscript id="vars" user="{{userName}}" pfp="{{profilePic}}"></noscript>
-<script src="/socket.io/socket.io.js"></script>
-<script>
+    <noscript id="data" user="" pfp=""></noscript>
+    <noscript id="vars" user="{{userName}}" pfp="{{profilePic}}"></noscript>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
     newPageTitle = 'Messages  | Otnem - Share your project with the world';
-document.querySelector('title').textContent = newPageTitle;
+    document.querySelector('title').textContent = newPageTitle;
     const socket = io()
     $('#chat-msg').focus()
     main()
@@ -143,6 +142,7 @@ document.querySelector('title').textContent = newPageTitle;
     async function sumMain(chats) {
         let allUsers = (await axios.get('/getAllUsers')).data.filter(e=>e != $('#vars').attr('user'))
         let userr = (getUrlVars())['user']
+        if(userr)
         userr = userr.replaceAll('%',' ')
         if(getUrlVars() && getUrlVars()['redirect'] && !chats.data.chats.some(e=>e['users'] == userr && userr != $('#vars').attr('user'))){
             let userData = await axios.post(`/getUser?user=${userr}`)
@@ -380,4 +380,4 @@ document.querySelector('title').textContent = newPageTitle;
         }
         return vars;
     }
-</script>
+    </script>

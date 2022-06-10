@@ -1,15 +1,42 @@
-<style>
+  <style>
   .profile {
     display: none ;
   }
     @media screen and (max-width: 991px)  {
-     .UserImage {
-       display: none;
-     }
-   
+      .UserImage {
+        display: none;
+      }
+    
   }
-</style><!-- === Navbar Start === -->
-<div class="navbar__">
+    #sc-n{
+    
+        visibility: hidden;
+        text-align: start;
+        padding: 0.7rem 1rem;
+        border:1px solid #DBE0E4;
+        border-radius: 1em;
+        background-color: white;
+        
+    }
+        #s-user-n:focus + #sc-n, #sc-n:focus + #sc-n{
+
+        visibility: visible;
+    }
+    .search-sug-n{
+        text-align: start;
+        width: 100%;
+        cursor: pointer;
+        padding: 0.2em 0;
+        font-weight: 450;
+        transition:all 200ms;
+        background:none;
+        border:none;
+    }
+    .search-sug-n:hover{
+        color:rgb(26, 243, 30)
+    }
+  </style><!-- === Navbar Start === -->
+  <div class="navbar__">
   <noscript auth="{{isAuth}}" id="isAuth"></noscript>
   <div class="navbar__elements">
     <!-- Navbar Logo -->
@@ -43,11 +70,14 @@
     <form action="" class="navbar_Form mx-3 mx-xl-0">
       <div class="Navbar_SearchBar">
         <input
-          id="SearchBar"
+          id="s-user-n"
           type="text"
-          placeholder="Search .."
-          onkeypress="if(event['key'] == 'Enter')location.href=`/?attr=search&&element=${this.value}`;if(event['key'] == 'Enter')event.preventDefault()"
+          placeholder="Search User"
+          onkeypress=""
+          autocomplete="off"
         />
+        <div id="sc-n" style="position: absolute;margin:7em 3.5em 0 0;z-index: 1;"></div>
+
         <i class="fa-solid fa-xmark" id="ExitOfSearch"></i>
       </div>
     </form>
@@ -57,9 +87,6 @@
       <a href="/chatRoom?user={{userName}}" class="au">
         <i class="fa-solid fa-envelope" id="Emails"></i>
       </a>
-      {{! <a href="#" class="au">
-        <i class="fa-solid fa-magnifying-glass" id="Search"></i>
-      </a> }}
       
       <a href="/notifications" class="au">
         <i class="fa-solid fa-bell" id="Notification"></i>
@@ -86,8 +113,8 @@
       </a>
     </div>
   </div>
-</div>
-<div class="popup" id="popup2">
+  </div>
+  <div class="popup" id="popup2">
   <div class="choose">
     <a href="./camera-post.html" class="camera"><i
         class="fa-solid fa-camera"
@@ -97,16 +124,16 @@
       ></i></a>
   </div>
   <a href="#" class="exit" onclick="hide('popup2')">Exit</a>
-</div>
-<!-- === Navbar End === -->
-<!-- MOBILE NAVBAR START -->
-<div class="navbar_mobile">
+  </div>
+  <!-- === Navbar End === -->
+  <!-- MOBILE NAVBAR START -->
+  <div class="navbar_mobile">
   <ul class="items">
     <a href="/"  class="au">
       <li><i id="house" class="fa-solid fa-house"></i></li>
     </a><a  href="/chatRoom?user=Pravith B A" id="chat" class="au">
     <i class="fa-solid fa-message"></i> </a>
-  
+
   </ul>
   <a href="/post">
     <button class="btn_createPost">
@@ -121,14 +148,14 @@
     </a>
 
   </ul>
-</div>
-<!-- MOBILE NAVBAR END -->
-<script
+  </div>
+  <!-- MOBILE NAVBAR END -->
+  <script
   src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js "
-></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  ></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
-<script>
+  <script>
   async function notify(){ 
   let sw = await navigator.serviceWorker.ready 
   let push = await sw.pushManager.subscribe({ userVisibleOnly:true,
@@ -143,4 +170,32 @@
   $('#logout').click(logout())
   await axios.post('/asignNotification',{push:JSON.stringify(push)}) }
   if($('#isAuth').attr('auth') == 'true') notify()
-</script>
+  async function mainN(){
+    let allUsers = (await axios.get('/getAllUsers')).data.filter(e=>e != $('#vars').attr('user'))
+    $('#s-user-n').keyup(async e => {
+      if(e.keyCode == 13 && (await axios.get(`/checkUser?user=${$('#s-user-n').val()}`)).data) {
+        location.href = `/profile?user=${$('#s-user-n').val()}`
+      }
+      if($('#s-user-n').val().replaceAll(' ','') != '')
+        showSearchN((allUsers.filter(element=>element.toLowerCase().replaceAll(' ','').includes($('#s-user-n').val().toLowerCase().replaceAll(' ','')))))
+      else
+        $('#sc-n').html('')
+    })
+  }
+  mainN()
+    function showSearchN(arr){
+        $('#sc-n').html('')
+        arr = arr.slice(0,5)
+        arr = arr.map(element=>{
+            let button = document.createElement('div')
+            button.classList.add('search-sug-n')
+            button.innerText = element
+            button.addEventListener('click',()=>{
+              location.href = `/profile?user=${element}`
+              console.log(`/profile?user=${button}`)
+            })
+            return button
+        })
+        document.querySelector('#sc-n').append(...arr)
+    }
+  </script>
