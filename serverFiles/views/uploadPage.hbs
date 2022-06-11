@@ -24,6 +24,8 @@
             <input type="text" name="title-1" id="" placeholder="Please Enter your project title " class="inp-title title-1">
 
                 <div class=" mt-3">
+                  <input type="text" name="tags" id="tags" placeholder="Tags">
+
                         <select name="cars" id="opts" class="inp-opt title-1cat-inp-post">
                             <option value="volvo">All</option>
                             <option value="volvo">Art</option>
@@ -34,7 +36,6 @@
                             <option value="volvo">Games</option>
                             <option value="volvo">Other</option>
                         </select>
-                        <input type="text" name="tags" id="tags" placeholder="Tags">
                 </div>
             <h2>Description</h2>
             <textarea name="disc-1" id="" cols="30" rows="12" placeholder="Describe your project" class="inp-disc disc-1"></textarea>
@@ -162,7 +163,7 @@
     .inp-opt{
         padding:1rem;
         font-size:1.5rem;
-        border-radius: 0.2rem;
+        border-radius: 50px;
         border: 1.5px solid rgba(22, 24, 35, 0.12);
         margin-bottom: 0.5rem;
         font-weight: bold;
@@ -191,7 +192,7 @@
     })
     $('.file-1').change(()=>{
         let file = document.querySelector('.file-1').files[0]
-        if(file) $('.display-1').html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="" style="height:100%;width:100%;object-fit:scale-down">`)
+        if(file) $('.display-1').html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="" style="height:100%;width:100%;border-radius:5rem;object-fit:scale-down">`)
         else $('.display-1').html(`<i class="fa fa-camera icon-1"></i>`)
         checkIfEnablePostBtn()
     })

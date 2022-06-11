@@ -45,12 +45,12 @@
           <div class="user">
             <div class="pd-left">
               <div class="pd-row">
-                <img src="{{profilePic}}" class="pd-image" alt="Profile Image" style="object-fit: cover;width: 5em;height: 5em;">
+                <img src="{{profilePic}}" class="pd-image" alt="Profile Image" style="object-fit: cover;width: 5em;height: 5em;border: 1px solid #DBDBDB;">
               <div>
-                  <div style="display: grid;grid-auto-flow: column;place-items:center;">
-                  <h3>{{userName}}</h3>
+                  <div style="display:flex;gap:1rem;place-items:center;">
+                  <h3 style="margin-bottom: 0;">{{userName}}</h3>
                   {{#if verified}}
-                    <i style="color: rgb(0, 191, 255); margin-bottom:0.5em;" class="fa-solid fa-circle-check"></i>
+                    <i style="color: rgb(0, 191, 255); font-size:24px" class="fa-solid fa-circle-check"></i>
                   {{/if}}
                   </div>
                   <p>{{followers}} Followers | {{following}} Following</p>

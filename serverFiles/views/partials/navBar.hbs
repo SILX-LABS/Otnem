@@ -9,8 +9,7 @@
     
   }
     #sc-n{
-    
-        visibility: hidden;
+        visibility: hidden;   
         text-align: start;
         padding: 0.7rem 1rem;
         border:1px solid #DBE0E4;
@@ -76,9 +75,8 @@
           onkeypress=""
           autocomplete="off"
         />
-        <div id="sc-n" style="position: absolute;margin:7em 3.5em 0 0;z-index: 1;"></div>
+        <div id="sc-n" style="position: absolute;margin-top: 3.5em;z-index: 1;"></div>
 
-        <i class="fa-solid fa-xmark" id="ExitOfSearch"></i>
       </div>
     </form>
 
@@ -91,9 +89,7 @@
       <a href="/notifications" class="au">
         <i class="fa-solid fa-bell" id="Notification"></i>
       </a>
-        <a class="au" href="/search"  id="searchx">
-      <i class="fa-solid fa-magnifying-glass"></i>
-    </a>
+      
       {{#if isAuth}}
         <i id="logout" class="fa-solid fa-arrow-right-from-bracket" onclick="axios.delete('/logout');location.href = `/login`" style="cursor:pointer"
         ></i>
