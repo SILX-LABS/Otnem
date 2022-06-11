@@ -116,17 +116,14 @@
             <div class="cardxx p-3">
                 <div class="d-flex flex-row align-items-center">
                     <div class="profile_image d-flex align-items-center justify-content-center rounded-circle overflow-hidden ">
-                      <img class="w-100 h-100 fit_obj"   onclick="window.location.href = '/profile?user={{user}}'"  src="{{profilePic}}" alt="">
-          
+                      <img class="w-100 h-100 fit_obj"   onclick="window.location.href = '/profile?user={{postUser}}'"  src="{{posterProfilePic}}" alt="">
                     </div>
                     <div class="text_protex ms-2">
                       <div class="protex_name d-flex align-items-center gap-1">
                         <h4 class="mb-0"  onclick="window.location.href = '/profile?user={{user}}'">{{postUser}}</h4>
                         {{#if verified}}
-
                         <i class="fa-solid fa-circle-check verified_user"></i>
                                           {{/if}}
-
                       </div>
                       <b class="protex_date">{{date}}</b>
                     </div>

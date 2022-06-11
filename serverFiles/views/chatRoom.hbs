@@ -12,10 +12,23 @@
     body {
         padding-bottom: 0;
     }
-    #chat {
+    #chat-messages{
+        max-height: 99.5vh;
+    }
+    #chat{
+        color:#000;
+    }
+    .chats{
         color: #000;
+        max-height: 100vh;
     }
+    #back{
+        display: block !important;
     }
+    .non-chat-c{
+        display: none;
+    }
+}
 
     #sc{
 
@@ -27,7 +40,7 @@
         background-color: white;
         
     }
-        #s-user:focus + #sc, #sc:focus + #sc{
+    #s-user:focus + #sc, #sc:focus + #sc{
 
         visibility: visible;
     }
@@ -45,11 +58,23 @@
         color:rgb(26, 243, 30)
     }
     </style>
-
+    <div style="display:none;
+        position:fixed;
+        right:0;
+        margin-top:0.5em;
+        margin-right:0.5em;
+        font-size: 1.3em; 
+        width:2em; height:2em; 
+        border-radius: 50%;
+        z-index: 1;
+        background-color: white;
+        text-align: center;
+        line-height: 1.9em;" id="back">
+    <i class="fa fa-bars"></i></div>
     <div class="container p-0">
     <div class="card">
         <div class="row g-0">
-        <div class="col-12 col-lg-5 col-xl-3 border-right bg-white" style="border-bottom: 1px solid rgb(224, 224, 224);border-right: 1px solid rgb(224, 224, 224)">
+        <div class="col-12 col-lg-5 col-xl-3 border-right bg-white non-chat-c" style="border-bottom: 1px solid rgb(224, 224, 224);border-right: 1px solid rgb(224, 224, 224)">
             <div class="top-chat">
                 <div class="d-flex flex-column gap-2 py-3 ps-4 pe-5 w-100">
                 
@@ -65,7 +90,7 @@
             </div>
         </div>
         <div class="col-12 col-lg-7 col-xl-9">
-            <div id="chat-messages p-4">
+            <div id="chat-messages">
                 <div class="user-top-chat" style=" border-bottom: 1px solid rgb(224, 224, 224); border-top: 1px solid rgb(224, 224, 224);" onclick="">
                     <div class="d-flex">
                     </div>
@@ -96,6 +121,11 @@
     <noscript id="vars" user="{{userName}}" pfp="{{profilePic}}"></noscript>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+    $('#back').click(e=>{
+        $('#chat-messages').attr('style','display:none')
+        $('#back').attr('style','display:none;visibility:hidden;height:0')
+        $('.non-chat-c').attr('style','display:block')
+    })
     newPageTitle = 'Messages  | Otnem - Share your project with the world';
     document.querySelector('title').textContent = newPageTitle;
     const socket = io()
@@ -287,11 +317,26 @@
             $('.chat-user-details .chat-name').text(`${chat.users}`)
             unRead.style = 'display:none'
             unRead.innerText = '0'
-            $('#chat-msg').focus()
             await showChat(chat.users)
+            if(screen.width < 991){
+                    $('#chat-messages').attr('style','')
+                    $('#back').attr('style',`display:none;
+                                            position:fixed;
+                                            right:0;
+                                            margin-top:0.5em;
+                                            margin-right:0.5em;
+                                            font-size: 1.3em; 
+                                            width:2em; height:2em; 
+                                            border-radius: 50%;
+                                            z-index: 1;
+                                            background-color: white;
+                                            text-align: center;
+                                            line-height: 1.9em;`)
+                    $('.non-chat-c').attr('style','')
+            }
         })
-        document.querySelector('#user-chat-c').append(userC)
-        $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
+            document.querySelector('#user-chat-c').append(userC)
+            $('#user-chat-c').prepend($(`.${$('#data').attr('user').replaceAll(' ','-')}`))
     }
     async function showChat(user) {
         let { data } = await axios.get(`/chats?user=${$('#data').attr('user')}`)
