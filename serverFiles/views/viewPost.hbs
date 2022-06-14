@@ -29,6 +29,7 @@
   #house {
     color: #D1DBDF;
   }
+  
 </style>
 
 <div class="posts_cards">
@@ -69,18 +70,18 @@
           <div class="top">
             <div class="items">
               {{#if isDeletable}}
-              <div class="item edit bg-danger bg-gradient"
+              <div class="item delI"
                 onclick='axios.delete(`/deletePost`,{data:{postNum:"{{postNum}}"}});location.href = "/profile"'><i
-                  class="fa-solid fa-trash-can" style="color: white;"></i></div>
+                  class="fa-solid fa-trash-can"></i></div>
               {{/if}}
               {{#unless isDeletable}}
-              <div class="item hire" onclick="location.href = `/chatRoom?user={{postUser}}&redirect=true`"><i
+              <div class="item sned" onclick="location.href = `/chatRoom?user={{postUser}}&redirect=true`"><i
                   class="fas fa-comment"></i></div>
+                  {{#if paypal}}
+                  <div class="item donate" onclick="
+                      location.href = 'https://www.paypal.com/webscr?cmd=_xclick&item_name=Donation&amount=&currency_code=USD&business={{paypal}}'"><i class="fa-solid fa-money-bill"></i></div>
+                  {{/if}}
               {{/unless}}
-              {{#if paypal}}
-              <div class="item donate" onclick="
-                  location.href = 'https://www.paypal.com/webscr?cmd=_xclick&item_name=Donation&amount=&currency_code=USD&business={{paypal}}'"><i class="fa-solid fa-money-bill"></i></div>
-              {{/if}}
               {{#if isLiked}}
               <div class="item star" id="{{postNum}}-id" onclick="removeLike()">
                 <i style="color: red;" class="fa-solid fa-heart-broken"></i>

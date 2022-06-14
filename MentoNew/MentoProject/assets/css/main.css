@@ -1158,8 +1158,18 @@ section {
 .grid_postsx .post_boxx .bottom .name_time h6 {
   margin: 0;
 }
-.star {
-  color: #ffeb00;
+.star:hover , .star:hover > i, .delI:hover, .delI:hover > i{
+  color:white !important;
+  background-color: red !important;
+}
+.star,  .delI{
+  color:red;
+  background-color: white;
+  transition:all 200ms ;
+}
+.sned:hover,.sned:hover > i, .donate:hover, .donate:hover >i{  
+  color:white !important;
+  background-color: black !important;
 }
 .edit {
   color: #000;
@@ -1641,4 +1651,8 @@ textarea:focus {
     border: none;
     padding: 0.4rem 0.3rem;
   }
+}
+#like:hover{
+  background-color: white;
+  color:red;
 }

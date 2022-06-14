@@ -98,16 +98,16 @@
           </div>
           <div class="top">
               <div class="items">
-                <div class="item sned" onclick="location.href = `/chatRoom?user={{userName}}&redirect=true`" style="z-index: 2;">   <i class="fas fa-comment"></i> </div>
+                <div class="item sned" onclick="location.href = `/chatRoom?user={{name}}&redirect=true`" style="z-index: 2;">   <i class="fas fa-comment"></i> </div>
 
                 {{#if isLiked}}
-                  <div class="item star" id="{{postName}}-id" postNum="{{postName}}" user="{{userName}}" onclick="removeLike('{{user}}','{{postName}}')">
-                    <i style="color: red;" class="fa-solid fa-heart-broken"></i>
+                  <div class="item star" style="z-index: 2;" id="{{id}}-id" postNum="{{id}}" user="{{name}}" onclick="removeLike('{{name}}','{{id}}')">
+                    <i class="fa-solid fa-heart-broken"></i>
                   </div>
                 {{/if}}
                 {{#unless isLiked}}
-                  <div class="item star" id="{{postName}}-id" postNum="{{postName}}" user="{{userName}}" onclick="addLike('{{user}}','{{postName}}')">
-                    <i style="color: red;" class="fa-solid fa-heart"></i>
+                  <div class="item star" style="z-index: 2;" id="{{id}}-id" postNum="{{id}}" user="{{name}}" onclick="addLike('{{name}}','{{id}}')">
+                    <i class="fa-solid fa-heart"></i>
                   </div>
                 {{/unless}}
               </div>
@@ -155,6 +155,21 @@
 
     {{/with}}
 
+<style>
+  
+.star:hover , .star:hover > i{
+  color:white !important;
+  background-color: red !important;
+}
+.star{
+  color:red;
+  transition:all 200ms ;
+}
+.sned:hover,.sned:hover > i{  
+  color:white !important;
+  background-color: black !important;
+}
+</style>
 <script>
   newPageTitle = 'Profile | Otnem - Share your project with the world';
 document.querySelector('title').textContent = newPageTitle;
@@ -171,13 +186,13 @@ document.querySelector('title').textContent = newPageTitle;
     location.reload()
   })
   async function addLike(user,postNum){
-    if(!$('#loggedIn').attr('isAuth'))
+    if($('#isAuth').attr('isAuth') === '')
       location.href = '/login'
     await axios.post('/addLike',{user,postNum})
     location.href = `/postPreview?postNum=${postNum}&&user=${user}`
   }
   async function removeLike(user,postNum){
-    if(!$('#loggedIn').attr('isAuth'))
+    if($('#isAuth').attr('isAuth') === '')
       location.href = '/login'
     await axios.post('/removeLike',{user,postNum})
     location.href = `/postPreview?postNum=${postNum}&&user=${user}`

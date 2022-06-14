@@ -66,12 +66,12 @@
                 <div class="item sned" style="z-index: 2;" onclick="location.href = `/chatRoom?user={{userName}}&redirect=true`">   <i class="fas fa-comment"></i> </div>
                 {{#if isLiked}}
                   <div class="item star" style="z-index: 2;" id="{{postName}}-id" postNum="{{postName}}" user="{{userName}}" onclick="removeLike('{{user}}','{{postName}}')">
-                    <i style="color: red;" class="fa-solid fa-heart-broken"></i>
+                    <i class="fa-solid fa-heart-broken"></i>
                   </div>
                 {{/if}}
                 {{#unless isLiked}}
                   <div class="item star" style="z-index: 2;" id="{{postName}}-id" postNum="{{postName}}" user="{{userName}}" onclick="addLike('{{user}}','{{postName}}')">
-                    <i style="color: red;" class="fa-solid fa-heart"></i>
+                    <i class="fa-solid fa-heart"></i>
                   </div>
                 {{/unless}}
               </div>
