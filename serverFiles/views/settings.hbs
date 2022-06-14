@@ -205,7 +205,7 @@ document.querySelector('title').textContent = newPageTitle;
 	$('#pfp-inp').change(function(){
 		let file = this.files[0]
 		if(file)
-			$('.pfp-file-inp').html(`<img src='${URL.createObjectURL(file)}' alt='Img Not available' srcset='' style="width:90%;height:90%;border-radius:0.5em">`)
+			$('.pfp-file-inp').html(`<img src='${URL.createObjectURL(file)}' alt='Img Not available' srcset='' style="width:90%;height:30em;border-radius:0.5em">`)
 		else
 			$('.pfp-file-inp').html('<i class="fa fa-camera pfp-icon"></i>')
 	})
@@ -231,6 +231,8 @@ document.querySelector('title').textContent = newPageTitle;
 	function sel(option){
 		switch(option){
 			case 'pfp':
+				$('#banner').removeClass('show','active').css('display','none')
+				$('#banner-tab').removeClass('active')
 				$('#account').removeClass('show','active').css('display','none')
 				$('#password').removeClass('show','active').css('display','none')
 				$('#pfp').addClass('show','active').css('display','block')

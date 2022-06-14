@@ -208,9 +208,12 @@ const deletePost = async(req,res)=>{
         let postData = (await userDB.doc(userName).collection('posts').doc(postNum).get()).data()
         if(!postData)
             return res.send('Post not found')
-        let {public_id} = postData
+        let {publicIdArr} = postData
+        publicIdArr.forEach(public_id=>{
+            cloudinary.uploader.destroy(public_id)
+        })
         await userDB.doc(userName).collection('posts').doc(postNum).delete()
-        cloudinary.uploader.destroy(public_id)
+
     }catch(err){
         console.log(err)
     }

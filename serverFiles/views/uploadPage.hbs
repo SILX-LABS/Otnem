@@ -1,7 +1,7 @@
-{{> navBar profilePic = profilePic isAuth = true}}
+    {{> navBar profilePic = profilePic isAuth = true}}
 
-<noscript id="fields" num="1"></noscript>
-<div class="top d-lg-none d-flex">
+    <noscript id="fields" num="1"></noscript>
+    <div class="top d-lg-none d-flex">
     <div class="container bg-white">
     <div class="row justify-content-between">
         <div class="col-5" style="margin-left:20px;font-size:40px">
@@ -12,8 +12,8 @@
         </div>
     </div>
     </div>
-</div>
-<div class="container field-c p-lg-5 p-0 mt-lg-1 "  >
+    </div>
+    <div class="container field-c p-lg-5 p-0 mt-lg-1 "  >
     <div class=" bor field field-1 bg-white gap-5 g-0 p-4"   >
     <div class="col-md-12 col-xs-12">
         <div class="row " style="row-gap: 2rem;" >
@@ -24,7 +24,7 @@
             <input type="text" name="title-1" id="" placeholder="Please Enter your project title " class="inp-title title-1">
 
                 <div class=" mt-3">
-                  <input type="text" name="tags" id="tags" placeholder="Tags">
+                    <input type="text" name="tags" id="tags" placeholder="Tags">
 
                         <select name="cars" id="opts" class="inp-opt title-1cat-inp-post">
                             <option value="volvo">All</option>
@@ -48,11 +48,15 @@
     </div>
     </div>
     <div id="btn-c">
+        <div class="delete btn" style="cursor:pointer;color:rgb(255, 255, 255);background: rgb(255, 43, 43);">Delete</div>
         <button id="add-field" class="btn" style="margin: 0 0 0 0;" onclick='createField()'>Add Field <i class="fa fa-plus"></i></button>
         <button id="post-btn" disabled onclick="post()" class="btn">Post</button>
     </div>
-</div>
-<style>
+    </div>
+    <style>
+    *{
+        font-family: 'Helvetica';
+    }
     @media screen and (max-width: 991px)  {
     .navbar__  {
     display:none;
@@ -89,19 +93,20 @@
         display:flex;
         background-color: #fff;
         padding: 2rem;
-        border-radius:3rem;
+        border-radius:0.1em;
         gap:1.4rem;
     }
     .bor {
-        border-radius: 3rem;
+        border-radius: 1rem;
         border: none;
-    
+
     }
     #btn-c{
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 5rem;
+        
     }
     .btn{
         display: grid;
@@ -114,7 +119,7 @@
         color:#4cca63;
         font-weight: bold;
         font-size:1.5em;
-        border-radius: 50rem;
+        border-radius: 0.5em;
         transition: all 300ms;
         width:9em;
     }
@@ -122,7 +127,7 @@
         background-color: transparent;
         cursor: not-allowed;
         border-color: black;
-        border-radius: 50rem;
+        border-radius: 0.5em;
         color: black;
         font-style: oblique;
     }
@@ -146,7 +151,7 @@
     .inp-title,#tags{
         padding:1rem;
         font-size:1.5rem;
-        border-radius: 2rem;
+        border-radius: 0.5em;
         border: 1.5px solid rgba(22, 24, 35, 0.12);
         margin-bottom: 0.5rem;
         font-weight: bold;
@@ -157,13 +162,13 @@
         border: 1.5px solid rgba(22, 24, 35, 0.12);
         font-size:1.5rem;
         color: #757575;
-        border-radius: 2rem;
+        border-radius: 0.5em;
         font-weight: bold;
     }
     .inp-opt{
         padding:1rem;
         font-size:1.5rem;
-        border-radius: 50px;
+        border-radius: 0.1em;
         border: 1.5px solid rgba(22, 24, 35, 0.12);
         margin-bottom: 0.5rem;
         font-weight: bold;
@@ -171,8 +176,9 @@
     .display{
         width:100%;
         height:100%;
+        padding: 0.1em;
         border:2px solid #23F649;
-        border-radius: 5rem;
+        border-radius: 0.1em;
         display: grid;
         place-items: center;
         cursor:pointer;
@@ -180,8 +186,8 @@
     .fa-camera{
         font-size: 5rem;
     }
-</style>
-<script>
+    </style>
+    <script>
     newPageTitle = 'Upload Project | Otnem - Share your project with the world';
     document.querySelector('title').textContent = newPageTitle;
     document.querySelectorAll('input[type=file]').forEach(inp=>{
@@ -192,9 +198,18 @@
     })
     $('.file-1').change(()=>{
         let file = document.querySelector('.file-1').files[0]
-        if(file) $('.display-1').html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="" style="height:100%;width:100%;border-radius:5rem;object-fit:scale-down">`)
+        if(file) $('.display-1').html(`<img src="${URL.createObjectURL(file)}" class="icon-1" alt="" style="height:8em;width:100%;object-fit:scale-down">`)
         else $('.display-1').html(`<i class="fa fa-camera icon-1"></i>`)
         checkIfEnablePostBtn()
+    })
+    $('.delete').click(e=>{
+        let fields = Array.from(document.querySelector('.field-c').children)
+        fields = fields.filter(e=>Array.from(e.classList).includes('field'))
+        fields[fields.length-2].scrollIntoView(false)
+        setTimeout((e=>{
+            fields[fields.length-1].remove()
+            deleteVis()
+        }),400)
     })
     Array.from(document.querySelectorAll('.inp-title')).forEach(t=>t.addEventListener('keyup',e=>checkIfEnablePostBtn()))
     async function post(){
@@ -256,9 +271,6 @@
             inpFile.setAttribute('style','display:none')
         let fieldDiv = cr('div')
             fieldDiv.classList.add('field',`field-${num}`)
-
-            //inpFile,contentDiv,displayDiv
-            //inpFile,contentDiv,displayDiv
         let col1  = cr('div')
         col1.classList.add('col-12','col-lg-6','col-xl-6')
         col1.append(inpFile,contentDiv)
@@ -275,25 +287,7 @@
             filetest.append(row)    
             if(num % 2 != 0)fieldDiv.append(filetest)
             else fieldDiv.append(filetest)
-        let kl = cr('div')
-        let deleteBtn = cr('i')
-            deleteBtn.classList.add('fa','fa-trash-can',`del-${num}`)
-            deleteBtn.setAttribute('style','cursor:pointer;color:white;')
-            deleteBtn.addEventListener('click',e=>{
-                fieldDiv.remove()
-                deleteBtn.remove()
-            })
-        kl.classList.add('delete')
-        kl.setAttribute('style','cursor:pointer;color:white;')
-
-        kl.addEventListener('click',e=>{
-                fieldDiv.remove()
-                kl.remove()
-                deleteBtn.remove()
-            })
-        kl.append(deleteBtn)
-        
-        document.querySelector('.field-c').append(fieldDiv,kl)
+        document.querySelector('.field-c').append(fieldDiv)
         document.querySelector('.field-c').append(document.querySelector("#btn-c"))
         displayDiv.addEventListener("click",()=>{
             inpFile.click()
@@ -304,10 +298,21 @@
             else $(`.display-${num}`).html(`<i class="fa fa-camera icon-1"></i>`)
             checkIfEnablePostBtn()
         })
-        fieldDiv.scrollIntoView()
+        fieldDiv.scrollIntoView(false)
         checkIfEnablePostBtn()
+        deleteVis()
     }
     function cr(element){
         return (document.createElement(`${element}`))
     }
-</script>
+    function deleteVis(){
+        let fields = Array.from(document.querySelector('.field-c').children)
+        fields = fields.filter(e=>Array.from(e.classList).includes('field'))
+        if(!fields[1])
+            $('.delete').attr('style',`${$('.delete').attr};display:none;`)
+        else
+            $('.delete').attr('style',`${$('.delete').attr}`)
+        return fields
+    }
+    deleteVis()
+    </script>

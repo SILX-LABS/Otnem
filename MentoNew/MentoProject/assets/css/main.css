@@ -1055,20 +1055,14 @@ section {
   transition: 0.3s;
 }
 .delete {
-  height: 90px;
-  width: 90px;
-  margin-left: 20px;
-  justify-content: center;
-  font-size: 30px;
-  align-items: center;
-
-  margin-top: 10px;
-  display: flex;
-  border-radius: 50px;
-  background-color: #ea0e0f;
-  color: #fff;
+  background-color: white !important;
+  border-color: #ea0e0f !important;
+  color: #ea0e0f !important;
 }
-
+.delete:hover{
+  background-color: #ea0e0f !important;
+  color: white !important;
+}
 .btn:hover {
   box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--primary-color);
 }
