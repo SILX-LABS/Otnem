@@ -55,12 +55,6 @@
             			<h1 class="err err-pay"></h1>
 						<div class="row">
 							<div class="col-md-6">
-								<div class="form-group">
-								<label>Name</label>
-								<input type="text" class="form-control inp-paypal" placeholder="Enter your Name" >
-								</div>
-							</div>
-							<div class="col-md-6">
 									<div class="form-group">
 								<label>Paypal</label>
 								<input type="text" class="form-control inp-paypal" placeholder="{{paypal}}" value="{{paypal}}">
@@ -143,8 +137,8 @@
 
 </div>
 <script>
-	  newPageTitle = 'Settings | Otnem - Share your project with the world';
-document.querySelector('title').textContent = newPageTitle;
+	newPageTitle = 'Settings | Otnem - Share your project with the world';
+	document.querySelector('title').textContent = newPageTitle;
 	$('.btn-account').click(async e=>{
 		let res = await axios.post('/changeCred',{cred:'account',newPaypal:$('.inp-paypal').val(),bio:$('.inp-bio').val()})
 		if(res.data.success)

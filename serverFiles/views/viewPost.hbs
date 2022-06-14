@@ -75,9 +75,12 @@
               {{/if}}
               {{#unless isDeletable}}
               <div class="item hire" onclick="location.href = `/chatRoom?user={{postUser}}&redirect=true`"><i
-                  class="fa-solid fa-user-group"></i></div>
+                  class="fas fa-comment"></i></div>
               {{/unless}}
-              <div class="item donate"><i class="fa-solid fa-money-bill"></i></div>
+              {{#if paypal}}
+              <div class="item donate" onclick="
+                  location.href = 'https://www.paypal.com/webscr?cmd=_xclick&item_name=Donation&amount=&currency_code=USD&business={{paypal}}'"><i class="fa-solid fa-money-bill"></i></div>
+              {{/if}}
               {{#if isLiked}}
               <div class="item star" id="{{postNum}}-id" onclick="removeLike()">
                 <i style="color: red;" class="fa-solid fa-heart-broken"></i>
@@ -145,9 +148,9 @@
               </div>
                   <div class="flex-grow-0 py-3 px-3 ">
                 <div class="inp-f">
-                    <input name="comment" class="comment_input" id="comment-inp" rows="1"
+                    <input name="comment" class="comment_input" id="comment-inp" rows="1" onkeyup="if(event.key === 'Enter') comment('{{postNum}}','{{postUser}}')"
                   placeholder="Enter your Opinions"></input>
-                <button type="submit" class="sub-chat" onclick="comment('{{postNum}}','{{postUser}}')"> Send</button>
+                <button type="submit" class="sub-chat" onclick="comment('{{postNum}}','{{postUser}}')" > Send</button>
                 </div>
               </div>
               <div class="comments_container">
@@ -186,11 +189,11 @@
     </div>
   </div>
 </div>
-<noscript id="data" postNum="{{postNum}}" postUser="{{postUser}}"></noscript>
+<noscript id="data" postNum="{{postNum}}" postUser="{{postUser}}" paypal="{{paypal}}"></noscript>
 
 <script>
     newPageTitle = 'View post | Otnem - Share your project with the world';
-document.querySelector('title').textContent = newPageTitle;
+    document.querySelector('title').textContent = newPageTitle;
   async function deletePost(postNum) {
     await axios.delete(`/deletePost`, { data: { postNum: postNum } })
     location.reload()

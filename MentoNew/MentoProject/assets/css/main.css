@@ -1055,7 +1055,6 @@ section {
   transition: 0.3s;
 }
 .delete {
-  background-color: white !important;
   border-color: #ea0e0f !important;
   color: #ea0e0f !important;
 }

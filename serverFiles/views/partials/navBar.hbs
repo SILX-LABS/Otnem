@@ -51,16 +51,16 @@
     <div class="navbar_links">
       <ul>
         <a href="/" class="au">
-          <li class="active">Home</li>
+          <li id="home">Home</li>
         </a>
-        <a href="#" class="au">
-          <li>Community</li>
+        <a href="/construction" class="au">
+          <li id="community">Community</li>
         </a>
-        <a href="#" class="au">
-          <li>Find a Partner</li>
+        <a href="/construction" class="au">
+          <li id="fine">Find a Partner</li>
         </a>
-        <a href="#" class="au">
-          <li>Support</li>
+        <a href="/construction" class="au">
+          <li id="support">Support</li>
         </a>
       
       </ul>
@@ -152,6 +152,7 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
   <script>
+  navbarActiveSel()
   async function notify(){ 
   let sw = await navigator.serviceWorker.ready 
   let push = await sw.pushManager.subscribe({ userVisibleOnly:true,
@@ -194,4 +195,15 @@
         })
         document.querySelector('#sc-n').append(...arr)
     }
+  function navbarActiveSel(){
+    let pathName = (new URL(window.location.href)).pathname
+    remClasses()
+    if(pathName === '/'){
+      $('#home').addClass('active')
+    }
+    function remClasses(){
+      Array.from(document.querySelector('.navbar_links').children).forEach(e=>e.classList.remove('active'))
+    }
+  }
+  //https://www.paypal.com/webscr?cmd=_xclick&item_name=Purpose%20of%20payment%20goes%20here&amount=&currency_code=USD&business=somereceiver@emaildomain.com
   </script>

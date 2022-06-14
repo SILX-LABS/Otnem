@@ -91,13 +91,14 @@
     <div class="grid_posts mt-5 " >
         {{#each posts}}
     <div class="full_post" style="height: 100%;">
-        <div class="post_box" data-type="art" onclick="window.location.href = '/postPreview?postNum={{id}}&&user={{name}}'">
+      <div style="width:21.5em;height:24em;position:absolute;z-index: 2;margin-left:0;border-radius:3em 3em 0 0 ;cursor:pointer;" onclick="window.location.href = '/postPreview?postNum={{id}}&&user={{name}}'"></div>
+        <div class="post_box" data-type="art" >
           <div class="index_image">
               <img style="object-fit: scale-down;" src="{{img}}" alt="Image Not Available">
           </div>
           <div class="top">
               <div class="items">
-                <div class="item sned" onclick="location.href = `/chatRoom?user={{userName}}&redirect=true`">   <i class="fa-solid fa-envelope"></i> </div>
+                <div class="item sned" onclick="location.href = `/chatRoom?user={{userName}}&redirect=true`" style="z-index: 2;">   <i class="fas fa-comment"></i> </div>
 
                 {{#if isLiked}}
                   <div class="item star" id="{{postName}}-id" postNum="{{postName}}" user="{{userName}}" onclick="removeLike('{{user}}','{{postName}}')">

@@ -342,6 +342,7 @@ const postPreviewPage = async(req,res)=>{
         return res.send({success:false})
         let postUser = await getUser(query.user)
         let profilePic = ""
+        let paypal = postUser.paypal
         if(req.isAuthenticated()){
             let user = await getUser(userName)
             profilePic = user.profilePic
@@ -389,6 +390,7 @@ const postPreviewPage = async(req,res)=>{
             field['isDeletable'] = isDeletable
             field['postNum'] = query.postNum
             field['postUser'] = postUser.userName
+            field['paypal'] = paypal
             return field
         })
         res.render('viewPost',{layout:'indexLayout',isLiked,likes,commentsQty:commentSnapshot.size,verified:postUser.verified,isDeletable:isDeletable,posterProfilePic:postUser.profilePic,date:postData.date,postUser:query.user,commentsArray:commentsArray,isComment:isComment,tags:postData.tags,fields:postData.fields,err:err,postNum:query.postNum,isAuth:req.isAuthenticated(),profilePic:profilePic})
@@ -735,7 +737,9 @@ const getLikes = async(req,res)=>{
 const test = async (req,res,next)=>{
     res.send(await checkIfFollowing('Pravith B A',"Phalicyy"))
 }
-
+const pageUnderConstruction= (req,res)=>{
+    res.render('pageUnderConstruction')
+}
 // CUSTOM FUNCTIONS
 async function notify(userName,title,disc,link,image){
     try{
@@ -904,4 +908,4 @@ async function getAllUsers(){
         console.log(err)
     }
 }
-module.exports = {admin,userDB,chatRoomDB,addLike,removeLike,getLikes,getUserApi,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute,redPage,getAllUsersApi}
+module.exports = {admin,userDB,chatRoomDB,addLike,removeLike,getLikes,getUserApi,checkIfDocExists,uploadPostPage,uploadFile,postPreviewPage,postComments,deleteComment,searchPage,followUser,assignNotif,test,assignNotif,unfollowUser,registerPost,loginPost,logout,changeCredentials,mainPage,login,register,profile,verifyUser,notifPage,deletePost,chatRoom,chatPage,settings,getChatMembers,checkIfUserExistsRoute,redPage,getAllUsersApi,pageUnderConstruction}
