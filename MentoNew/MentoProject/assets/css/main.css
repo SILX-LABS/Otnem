@@ -852,6 +852,7 @@ section {
   right: 0;
   display: flex;
   flex-direction: column;
+  margin-top: 30px;
   align-items: flex-end;
   padding: 1rem;
 }
@@ -912,8 +913,8 @@ section {
 #chat-messages {
   display: flex;
   flex-direction: column;
-  max-height: 800px;
-  overflow-y: scroll;
+  max-height: 100vh;
+  overflow-y: hidden;
 }
 
 .grid_posts .post_box .bottom .UserImage,
@@ -1331,7 +1332,7 @@ textarea:focus {
 }
 .chat-msg {
   word-wrap: break-word;
-  max-width: 100%;
+  max-width: 300px;
   text-align: left;
   padding: 1em;
   border-radius: 0em 2em 2em 2em;
