@@ -101,12 +101,12 @@
                 <div class="item sned" onclick="location.href = `/chatRoom?user={{name}}&redirect=true`" style="z-index: 2;">   <i class="fas fa-comment"></i> </div>
 
                 {{#if isLiked}}
-                  <div class="item star" style="z-index: 2;" id="{{id}}-id" postNum="{{id}}" user="{{name}}" onclick="removeLike('{{name}}','{{id}}')">
+                  <div class="item star" style="z-index: 3;" id="{{id}}-id" postNum="{{id}}" user="{{name}}" onclick="removeLike('{{name}}','{{id}}')">
                     <i class="fa-solid fa-heart-broken"></i>
                   </div>
                 {{/if}}
                 {{#unless isLiked}}
-                  <div class="item star" style="z-index: 2;" id="{{id}}-id" postNum="{{id}}" user="{{name}}" onclick="addLike('{{name}}','{{id}}')">
+                  <div class="item star" style="z-index: 3;" id="{{id}}-id" postNum="{{id}}" user="{{name}}" onclick="addLike('{{name}}','{{id}}')">
                     <i class="fa-solid fa-heart"></i>
                   </div>
                 {{/unless}}
@@ -188,13 +188,17 @@ document.querySelector('title').textContent = newPageTitle;
   async function addLike(user,postNum){
     if($('#isAuth').attr('isAuth') === '')
       location.href = '/login'
-    await axios.post('/addLike',{user,postNum})
+    let response = await axios.post('/addLike',{user,postNum})
+    if(response.data.startsWith('<!D'))
+      return location.href = '/login'
     location.href = `/postPreview?postNum=${postNum}&&user=${user}`
   }
   async function removeLike(user,postNum){
     if($('#isAuth').attr('isAuth') === '')
-      location.href = '/login'
-    await axios.post('/removeLike',{user,postNum})
+      return location.href = '/login'
+    let response = await axios.post('/removeLike',{user,postNum})
+    if(response.data.startsWith('<!D'))
+      return location.href = '/login'
     location.href = `/postPreview?postNum=${postNum}&&user=${user}`
   }
 
