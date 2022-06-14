@@ -13,7 +13,7 @@
         padding-bottom: 0;
     }
     #chat-messages{
-        max-height: -webkit-fill-available;
+        max-height: calc(var(--vh, 1vh) * 100);;
     }
     #chat{
         color:#000;
@@ -121,6 +121,8 @@
     <noscript id="vars" user="{{userName}}" pfp="{{profilePic}}"></noscript>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
     $('#back').click(e=>{
         $('#chat-messages').attr('style','display:none')
         $('#back').attr('style','display:none;visibility:hidden;height:0')
