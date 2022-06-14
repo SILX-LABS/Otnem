@@ -1,5 +1,7 @@
     {{> navBar profilePic = profilePic isAuth = true}}
-
+    <div id="loading-c">
+        <div id="loading">Uploading...</div>
+    </div>
     <noscript id="fields" num="1"></noscript>
     <div class="top d-lg-none d-flex">
     <div class="container bg-white">
@@ -56,6 +58,21 @@
     <style>
     *{
         font-family: 'Helvetica';
+    }
+    #loading-c{
+        width: 100vw;
+        height:100vh;
+        z-index: 10;
+        display: grid;
+        place-items: center;
+        position: fixed;
+        font-size: 5em;
+        background:#23F649;
+        display:none;
+        transition: all 400ms;
+    }
+    #loading{
+        text-align: center;
     }
     @media screen and (max-width: 991px)  {
     .navbar__  {
@@ -225,6 +242,7 @@
         let category = $('#opts').find(":selected").text()
         formData.append('category',category)
         formData.append('tags',tags)
+        $('#loading-c').attr('style','display:grid')
         let res = await axios.post('/upload', formData)
         if(res.data.success)
             location.href = `/postPreview?user=${res.data.user}&&postNum=${res.data.num}`
