@@ -8,6 +8,8 @@
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!--========== Font Awesome ICONS ==========-->
+           <link rel="manifest" href="manifest.json">
+
     <link rel="stylesheet" href="assets/css/fontawesome.min.css" />
     <!--========== Google Fonts ==========-->
 
@@ -25,7 +27,12 @@
     <link rel="text" href="MentoProject/sass/style.css" />
     <link rel="stylesheet" href="MentoProject/assets/css/scrollbar.css" />
 </head>
-
+  <script>
+        //if browser support service worker
+        if('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('sw.js');
+        };
+      </script>
     <style>
    .popup {
   display: none;
